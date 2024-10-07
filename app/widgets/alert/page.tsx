@@ -1,3 +1,4 @@
+import HomeAlert from "@/components/alert/home";
 import { Metadata } from "next";
 import React from "react";
 
@@ -76,7 +77,7 @@ const AlertPage = async ({ searchParams }: URLProps) => {
     return <div>Invalid Stream Key</div>;
   }
 
-  return <div>AlertPage</div>;
+  return <HomeAlert />;
 };
 
 export default AlertPage;

@@ -12,7 +12,10 @@
     "crypto-js": "^4.2.0",
     "next": "14.2.14",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "socket.io": "^4.8.0",
+    "socket.io-client": "^4.8.0",
+    "socket.io-react-hook": "^2.4.5"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",

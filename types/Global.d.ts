@@ -7,4 +7,8 @@ declare global {
     params: { id: string };
     searchParams: { [key: string]: string | undefined };
   }
+
+  interface ChildrenProps {
+    children: React.ReactNode;
+  }
 }
