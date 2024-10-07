@@ -1,4 +1,10 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { HmacSHA256, enc } from "crypto-js";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 interface GenerateSignatureprops {
   method: string;

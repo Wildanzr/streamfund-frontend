@@ -1,64 +1,54 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { socket } from "../shared/socket";
-import useSocketIO from "@/hooks/socket";
+import { useSocket, useSocketEvent } from "socket.io-react-hook";
 
 export default function HomeAlert() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [transport, setTransport] = useState("N/A");
-  useSocketIO();
+  const searchParams = useSearchParams();
+  const streamkey = searchParams.get("streamkey") as string;
+  const [sended, setSended] = useState(false);
 
-  function handlePing() {
-    const paylod = {
-      address: "0x20047D546F34DC8A58F8DA13fa22143B4fC5404a",
-    };
-    console.log("Ping sent");
-    socket.emit("ping", JSON.stringify(paylod));
-  }
+  const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamkey=${streamkey}`;
+  const { socket, connected } = useSocket(HOST);
+  const { sendMessage } = useSocketEvent<string>(socket, "listen-support");
+  const { lastMessage: notif } = useSocketEvent<ListenSupportResponse>(
+    socket,
+    "support",
+    {
+      onMessage: (message) => console.log("message", message),
+    }
+  );
+
+  // {message: 'Pong', data: 'meong'}
+  const { lastMessage } = useSocketEvent<ListenSupportResponse>(
+    socket,
+    "support-init",
+    {
+      onMessage: (message) => {
+        console.log("message", message);
+      },
+    }
+  );
 
   useEffect(() => {
-    if (socket.connected) {
-      onConnect();
+    if (connected && !sended) {
+      console.log("send message");
+      sendMessage();
+      setSended(true);
     }
-
-    function onConnect() {
-      setIsConnected(true);
-      setTransport(socket.io.engine.transport.name);
-
-      socket.io.engine.on("upgrade", (transport) => {
-        setTransport(transport.name);
-      });
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-      setTransport("N/A");
-    }
-
-    function onPong() {
-      console.log("Pong received");
-    }
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("pong", onPong);
-
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("pong", onPong);
-    };
-  }, []);
+  }, [connected, sendMessage, sended]);
 
   return (
-    <div>
-      <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-      <p>Transport: {transport}</p>
-
-      <button className="p-5 bg-red-500" onClick={handlePing}>
-        PING
-      </button>
+    <div className="flex flex-col items-center justify-center w-full h-screen space-y-3 text-white bg-black">
+      <p className="text-2xl">Hello world</p>
+      <p>Stream key: {streamkey}</p>
+      <p>Host: {HOST}</p>
+      <p>Connected: {connected ? "yes" : "no"}</p>
+      <p>
+        Last message:
+        {lastMessage && lastMessage.data ? lastMessage.data.address : ""}
+      </p>
     </div>
   );
 }
