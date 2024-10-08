@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Zap, Shield, Coins, Bitcoin } from "lucide-react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import Link from "next/link";
 
 export function LandingPageComponent() {
   const [donationAmount, setDonationAmount] = useState("5");
@@ -92,19 +94,12 @@ export function LandingPageComponent() {
           <nav>
             <ul className="flex space-x-4">
               <li>
-                <a href="#" className="hover:text-purple-500 transition-colors">
-                  Features
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-purple-500 transition-colors">
-                  Pricing
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-purple-500 transition-colors">
-                  FAQ
-                </a>
+                <Link
+                  href="/app"
+                  className="hover:text-purple-500 transition-colors"
+                >
+                  APP
+                </Link>
               </li>
             </ul>
           </nav>
@@ -120,9 +115,9 @@ export function LandingPageComponent() {
               Monetize your stream effortlessly with Web3 donations and build a
               loyal community.
             </p>
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105">
-              Get Started
-            </Button>
+            <div className="flex flex-col items-center justify-center w-full h-full">
+              <ConnectButton />
+            </div>
           </section>
 
           <section className="container mx-auto px-4 py-20">

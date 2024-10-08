@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import SocketProvider from "@/provider/SocketProvider";
+import Web3Provider from "@/provider/Web3Provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,7 +30,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SocketProvider>{children}</SocketProvider>
+        <Web3Provider>
+          <SocketProvider>{children}</SocketProvider>
+        </Web3Provider>
       </body>
     </html>
   );
