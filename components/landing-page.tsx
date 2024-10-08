@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Zap, Shield, Coins, Bitcoin } from "lucide-react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
+import WalletButton from "./shared/WalletButton";
 
 export function LandingPageComponent() {
   const [donationAmount, setDonationAmount] = useState("5");
@@ -116,7 +116,7 @@ export function LandingPageComponent() {
               loyal community.
             </p>
             <div className="flex flex-col items-center justify-center w-full h-full">
-              <ConnectButton />
+              <WalletButton />
             </div>
           </section>
 

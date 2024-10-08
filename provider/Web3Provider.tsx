@@ -1,21 +1,66 @@
 "use client";
 
 import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { WagmiProvider } from "wagmi";
+import {
+  connectorsForWallets,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
+import {
+  cookieStorage,
+  createConfig,
+  createStorage,
+  http,
+  WagmiProvider,
+} from "wagmi";
 import { baseSepolia } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import {
+  coinbaseWallet,
+  metaMaskWallet,
+  rainbowWallet,
+  walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 
-const config = getDefaultConfig({
-  appName: "My RainbowKit App",
-  projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
-  chains: [baseSepolia],
-  ssr: true, // If your dApp uses server side rendering (SSR)
-});
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: "Recommended",
+      wallets: [coinbaseWallet],
+    },
+    {
+      groupName: "Popular",
+      wallets: [rainbowWallet, metaMaskWallet],
+    },
+    {
+      groupName: "Wallet Connect",
+      wallets: [walletConnectWallet],
+    },
+  ],
+  {
+    appName: "Streamfund",
+    projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
+  }
+);
+
+export function getConfig() {
+  return createConfig({
+    connectors,
+    chains: [baseSepolia],
+    storage: createStorage({
+      storage: cookieStorage,
+    }),
+    ssr: true,
+    transports: {
+      [baseSepolia.id]: http(),
+    },
+  });
+}
 
 const queryClient = new QueryClient();
 
 const Web3Provider = ({ children }: ChildrenProps) => {
+  const config = getConfig();
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
@@ -24,5 +69,11 @@ const Web3Provider = ({ children }: ChildrenProps) => {
     </WagmiProvider>
   );
 };
+
+declare module "wagmi" {
+  interface Register {
+    config: ReturnType<typeof getConfig>;
+  }
+}
 
 export default Web3Provider;
