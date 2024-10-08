@@ -10,50 +10,50 @@ export default function HomeAlert() {
   const streamkey = searchParams.get("streamkey") as string;
   const [sended, setSended] = useState(false);
 
-  // type AnimationType =
-  // | "wave"
-  // | "bounce"
-  // | "pulse"
-  // | "rubberBand"
-  // | "tada"
-  // | "spin"
-  // | "wiggle"
-  // | "float"
-  // | "jiggle"
-  // | "heartbeat"
-  // | "swing"
-  // | "blink"
-  // | "twist"
-  // | "pendulum"
-  // | "rotate";
   const all = [
-    "wave",
+    // "wave",
     "bounce",
-    "pulse",
-    "rubberBand",
-    "tada",
-    "spin",
-    "wiggle",
-    "float",
-    "jiggle",
-    "heartbeat",
-    "swing",
-    "blink",
-    "twist",
-    "pendulum",
-    "rotate",
+    // "pulse",
+    // "rubberBand",
+    // "tada",
+    // "spin",
+    // "wiggle",
+    // "float",
+    // "jiggle",
+    // "heartbeat",
+    // "swing",
+    // "blink",
+    // "twist",
+    // "pendulum",
+    // "rotate",
+  ] as const;
+
+  const bgs = [
+    "bg-green-500",
+    "bg-red-500",
+    "bg-yellow-500",
+    "bg-purple-500",
+    "bg-pink-500",
+    "bg-indigo-500",
+    "bg-gray-500",
+    "bg-black",
+    "bg-white",
   ];
 
   const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamkey=${streamkey}`;
   const { socket, connected } = useSocket(HOST);
+  const [isVisible, setIsVisible] = useState(false);
   const { sendMessage } = useSocketEvent<string>(socket, "listen-support");
-  const { lastMessage: notif } = useSocketEvent<ListenSupportResponse>(
-    socket,
-    "support",
-    {
-      onMessage: (message) => console.log("message", message),
-    }
-  );
+  useSocketEvent<ListenSupportResponse>(socket, "support", {
+    onMessage: (message) => {
+      console.log("message", message);
+      setIsVisible(true);
+
+      setTimeout(() => {
+        setIsVisible(false);
+      }, 10000);
+    },
+  });
 
   // {message: 'Pong', data: 'meong'}
   const { lastMessage } = useSocketEvent<ListenSupportResponse>(
@@ -75,38 +75,46 @@ export default function HomeAlert() {
   }, [connected, sendMessage, sended]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-20 space-y-3 text-white bg-black">
-      <p className="text-2xl">Hello world</p>
-      <p>Stream key: {streamkey}</p>
-      <p>Host: {HOST}</p>
-      <p>Connected: {connected ? "yes" : "no"}</p>
-      <p>
-        Last message:
-        {lastMessage && lastMessage.data ? lastMessage.data.address : ""}
-      </p>
-
-      {/* <WaveText
-        text="wildanzrrr.base.eth just donated 0.1 ETH"
-        fontSize={48}
-        color="#a0a0a0"
-        amplitude={6}
-        frequency={0.8}
-        speed={1}
-      /> */}
+    <div className="flex flex-col items-start justify-start w-full h-full min-h-screen p-20 space-y-3 text-white bg-transparent">
+      <div className="flex-col space-y-5 items-center justify-center hidden">
+        <p className="text-2xl">Hello world</p>
+        <p>Stream key: {streamkey}</p>
+        <p>Host: {HOST}</p>
+        <p>Connected: {connected ? "yes" : "no"}</p>
+        <p>
+          Last message:
+          {lastMessage && lastMessage.data ? lastMessage.data.address : ""}
+        </p>
+      </div>
 
       {all.map((animationType) => (
-        <TextAnimation
+        <div
           key={animationType}
-          text="wildanzrrr.base.eth just donated 0.1 ETH"
-          type={animationType}
-          duration={1.5}
-          delay={0.1}
-          staggerChildren={0.2}
-          fontSize={32}
-          color="#3366ff"
-          revealSpeed={0.8}
-          revealDuration={3}
-        />
+          className={`${
+            isVisible ? "flex" : "hidden"
+          } flex-col w-full h-full max-w-5xl rounded-[20px] shadow border`}
+        >
+          <div
+            className={`flex flex-col items-center justify-center w-full max-w-5xl min-h-40 h-full space-y-3 ${
+              bgs[Math.floor(Math.random() * bgs.length)]
+            } rounded-t-[20px] shadow border`}
+          >
+            <TextAnimation
+              text="wildanzrrr.base.eth just donated 0.1 ETH"
+              type={animationType}
+              duration={1.5}
+              delay={0.1}
+              staggerChildren={0.2}
+              fontSize={32}
+              color="#3366ff"
+              revealSpeed={0.8}
+              revealDuration={3}
+            />
+          </div>
+          <div className="flex flex-col items-center justify-center min-h-10 bg-white rounded-b-[20px] shadow border">
+            <p className="text-black">wildanzrrr.base.eth</p>
+          </div>
+        </div>
       ))}
     </div>
   );
