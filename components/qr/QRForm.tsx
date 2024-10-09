@@ -203,8 +203,9 @@ const QRForm = () => {
 
         {/* display stream link */}
         <div className="flex flex-col items-start justify-start w-full h-full">
-          <p className="font-play text-4xl text-white pb-1">
-            {watchedValues.address}
+          <p className="font-play text-xl text-white pb-1">
+            {process.env.NEXT_PUBLIC_HOST_URL}
+            /widgets/qr?streamkey=18931238917312827193
           </p>
           <div className="bg-white rounded-md w-full h-[1px]" />
         </div>

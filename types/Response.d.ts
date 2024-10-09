@@ -17,4 +17,18 @@ declare global {
       address: string;
     };
   }
+
+  interface StreamerResponse {
+    _id: string;
+    address: string;
+  }
+
+  interface QRConfigResponse {
+    quietZone: number;
+    bgColor: string;
+    fgColor: string;
+    level: "H" | "L" | "M" | "Q" | undefined;
+    style: "squares" | "dots" | "fluid" | undefined;
+    streamer: StreamerResponse;
+  }
 }
