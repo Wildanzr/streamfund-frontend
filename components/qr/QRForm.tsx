@@ -278,6 +278,12 @@ const QRForm = ({ address, streamkey }: QRFormProps) => {
             type="button"
             variant="secondary"
             className="w-full bg-sunset text-midnight text-lg font-bold"
+            onClick={() =>
+              window.open(
+                `${process.env.NEXT_PUBLIC_HOST_URL}/widgets/qr?streamkey=${streamkey}`,
+                "_blank"
+              )
+            }
           >
             Open in new tab
           </Button>

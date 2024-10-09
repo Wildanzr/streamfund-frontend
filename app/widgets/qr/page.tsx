@@ -79,7 +79,7 @@ const QRPage = async ({ searchParams }: URLProps) => {
   const qrConfig = await reqQRConfig.json();
   const qrData = qrConfig.data.config as QRConfigResponse;
   return (
-    <div className="flex flex-col w-full h-full min-h-screen bg-white items-start justify-start">
+    <div className="flex flex-col w-full h-full min-h-screen bg-transparent items-start justify-start">
       <QR
         address={qrData.streamer.address}
         bgColor={qrData.bgColor}
