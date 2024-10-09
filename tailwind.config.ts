@@ -56,6 +56,11 @@ const config: Config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        vivid: "#a753a4",
+        aqua: "#1accf4",
+        midnight: "#37284d",
+        sapphire: "#066cb2",
+        sunset: "#fb9071",
       },
       backgroundImage: {
         woman: "url('/images/woman-streaming.jpeg')",

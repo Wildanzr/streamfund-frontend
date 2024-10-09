@@ -1,3 +1,4 @@
+import Header from "@/components/layout/header";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -42,8 +43,12 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="flex flex-col bg-woman bg-top bg-fixed bg-cover bg-no-repeat items-center justify-center w-full h-full min-h-screen">
-      <p>HEllooo</p>
+    <div className="flex relative flex-col items-start justify-start w-full h-full min-h-screen">
+      <div className="absolute inset-0 bg-woman bg-top bg-fixed bg-cover bg-no-repeat blur-sm z-0"></div>
+      <div className="flex flex-col space-y-10 items-center justify-start w-full h-full z-10">
+        <Header />
+        <p className="text-4xl text-white">HEllooo</p>
+      </div>
     </div>
   );
 }
