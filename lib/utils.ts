@@ -27,6 +27,8 @@ export const generateSignature = ({
     body ? `|${JSON.stringify(body)}` : ""
   }`;
 
+  console.log("To be signed", toBeSigned);
+
   // Generate the HMAC signature
   const signature = HmacSHA256(toBeSigned, secretKey).toString(enc.Hex);
 

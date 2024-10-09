@@ -19,7 +19,7 @@ export function Basenames({ address, color }: DisplayBasenameProps) {
       <Name
         address={address}
         chain={base}
-        className="font-play text-4xl"
+        className="font-play text-5xl"
         style={color ? { color } : {}}
       />
     </Identity>

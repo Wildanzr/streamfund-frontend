@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { generateClientSignature } from "@/lib/client";
+import QRManagement from "./qr/Management";
 
 export function ManagementPlatformComponent() {
   const [activeTab, setActiveTab] = useState("alert");
@@ -97,7 +98,7 @@ export function ManagementPlatformComponent() {
               value="qr-code"
               className="flex flex-col w-full h-full space-y-3"
             >
-              <QRForm
+              <QRManagement
                 address={streamer?.address!}
                 streamkey={streamer?.streamkey!}
               />

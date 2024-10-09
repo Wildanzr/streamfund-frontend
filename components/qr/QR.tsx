@@ -41,14 +41,6 @@ const QR = ({
       <div className="flex flex-col items-center justify-center">
         <Basenames address={parsedAddress} color={fgColor} />
         <p
-          className="font-play text-4xl"
-          style={{
-            color: fgColor,
-          }}
-        >
-          {address}
-        </p>
-        <p
           className="font-play text-base"
           style={{
             color: fgColor,

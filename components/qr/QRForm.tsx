@@ -25,9 +25,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useAccount } from "wagmi";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { generateClientSignature } from "@/lib/client";
 
 interface QRProps {
   value: string;
@@ -57,15 +57,63 @@ interface QRFormProps {
 }
 
 const QRForm = ({ address, streamkey }: QRFormProps) => {
+  const queryClient = useQueryClient();
+  const { data: config } = useQuery<QRConfigResponse>({
+    queryKey: ["qr-config", streamkey],
+    queryFn: async () => {
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/qr?streamkey=${streamkey}`;
+      const timestamp = Math.floor(Date.now() / 1000);
+      const headers = await generateClientSignature({
+        method: "GET",
+        timestamp,
+        url,
+      });
+      console.log("fetching qr config");
+      const { data } = await axios.get(url, {
+        headers,
+      });
+      const res = data?.data?.config as QRConfigResponse;
+      return res;
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationKey: ["update-qr-config"],
+    mutationFn: async (values: z.infer<typeof formSchema>) => {
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/qr?streamkey=${streamkey}`;
+      const timestamp = Math.floor(Date.now() / 1000);
+      const payload = {
+        quietZone: values.quietZone,
+        bgColor: values.bgColor,
+        fgColor: values.fgColor,
+        level: values.ecLevel,
+        style: values.qrStyle,
+      };
+      const headers = await generateClientSignature({
+        method: "PUT",
+        timestamp,
+        url,
+        body: payload,
+      });
+      const { data } = await axios.put(url, payload, {
+        headers,
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["qr-config", streamkey] });
+    },
+  });
+
   const [qrConfig, setQrConfig] = useState<QRProps>({
     address,
-    bgColor: "#ffffff",
-    fgColor: "#000000",
-    ecLevel: "H",
-    qrStyle: "squares",
-    quietZone: 20,
+    bgColor: config?.bgColor!,
+    fgColor: config?.fgColor!,
+    ecLevel: config?.level!,
+    qrStyle: config?.style!,
+    quietZone: config?.quietZone!,
     size: 500,
-    value: "https://example.com",
+    value: `${process.env.NEXT_PUBLIC_HOST_URL}/support/${address}`,
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -74,10 +122,10 @@ const QRForm = ({ address, streamkey }: QRFormProps) => {
   });
   const watchedValues = form.watch();
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setQrConfig(values);
-  }
+    await updateMutation.mutateAsync(values);
+  };
 
   return (
     <Form {...form}>
@@ -220,14 +268,14 @@ const QRForm = ({ address, streamkey }: QRFormProps) => {
 
         <div className="flex flex-col w-full h-full space-y-2 md:flex-row md:space-y-0 md:space-x-2">
           <Button
-            type="submit"
+            type="button"
             variant="secondary"
             className="w-full bg-vivid text-midnight text-lg font-bold"
           >
             Copy QR URL
           </Button>
           <Button
-            type="submit"
+            type="button"
             variant="secondary"
             className="w-full bg-sunset text-midnight text-lg font-bold"
           >

@@ -21,7 +21,7 @@ export const generateClientSignature = async ({
         method,
         url,
         timestamp,
-        body: body ? JSON.stringify(body) : null,
+        body: body ? body : null,
       }),
     }
   );
