@@ -1,9 +1,9 @@
 import Header from "@/components/layout/header";
-import ParticleBg from "@/components/layout/particle";
 import { Metadata } from "next";
 
 import Game from "../public/icons/game.json";
 import DisplayLottie from "@/components/lottie/lottie";
+import Background from "@/components/layout/background";
 
 export const metadata: Metadata = {
   title: "StreamFund",
@@ -48,8 +48,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="flex relative flex-col items-start justify-start w-full h-full min-h-screen">
-      <div className="absolute inset-0 bg-woman bg-top bg-fixed bg-cover bg-no-repeat blur-lg z-0 brightness-50 " />
-      <ParticleBg />
+      <Background />
       <div className="flex flex-col space-y-10 items-center justify-start w-full h-full z-10">
         <Header />
         <div className="flex flex-col space-y-5 w-full h-full items-center justify-center p-10">

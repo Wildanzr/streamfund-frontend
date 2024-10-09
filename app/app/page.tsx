@@ -1,5 +1,5 @@
+import Background from "@/components/layout/background";
 import Header from "@/components/layout/header";
-import ParticleBg from "@/components/layout/particle";
 import { ManagementPlatformComponent } from "@/components/management-platform";
 import { Metadata } from "next";
 
@@ -46,9 +46,8 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="flex relative flex-col items-start justify-start w-full h-full min-h-screen">
+      <Background />
       <Header />
-      <div className="absolute inset-0 bg-woman bg-top bg-fixed bg-cover bg-no-repeat blur-lg z-0 brightness-50 " />
-      <ParticleBg />
       <div className="flex flex-col space-y-10 items-center justify-start w-full h-full z-10 pt-10">
         <ManagementPlatformComponent />
       </div>

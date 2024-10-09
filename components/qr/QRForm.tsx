@@ -64,6 +64,7 @@ const QRForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: qrConfig,
   });
+  const watchedValues = form.watch();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -189,21 +190,49 @@ const QRForm = () => {
           />
         </div>
 
-        <Button type="submit">Generate QR Code</Button>
-      </form>
-
-      <div className="flex w-full h-full p-5 overflow-auto">
         <QR
-          address={qrConfig.address}
-          bgColor={qrConfig.bgColor}
-          ecLevel={qrConfig.ecLevel}
-          fgColor={qrConfig.fgColor}
-          qrStyle={qrConfig.qrStyle}
-          quietZone={qrConfig.quietZone}
-          size={qrConfig.size}
-          value={qrConfig.value}
+          address={watchedValues.address}
+          bgColor={watchedValues.bgColor}
+          ecLevel={watchedValues.ecLevel}
+          fgColor={watchedValues.fgColor}
+          qrStyle={watchedValues.qrStyle}
+          quietZone={watchedValues.quietZone}
+          size={watchedValues.size}
+          value={watchedValues.value}
         />
-      </div>
+
+        {/* display stream link */}
+        <div className="flex flex-col items-start justify-start w-full h-full">
+          <p className="font-play text-4xl text-white pb-1">
+            {watchedValues.address}
+          </p>
+          <div className="bg-white rounded-md w-full h-[1px]" />
+        </div>
+
+        <div className="flex flex-col w-full h-full space-y-2 md:flex-row md:space-y-0 md:space-x-2">
+          <Button
+            type="submit"
+            variant="secondary"
+            className="w-full bg-vivid text-midnight text-lg font-bold"
+          >
+            Copy QR URL
+          </Button>
+          <Button
+            type="submit"
+            variant="secondary"
+            className="w-full bg-sunset text-midnight text-lg font-bold"
+          >
+            Open in new tab
+          </Button>
+          <Button
+            type="submit"
+            variant="secondary"
+            className="w-full bg-aqua text-midnight text-lg font-bold"
+          >
+            Save configuration
+          </Button>
+        </div>
+      </form>
     </Form>
   );
 };

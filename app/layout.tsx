@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${protest.variable} ${space_grotesk.variable} ${play.variable} antialiased bg-midnight`}
+        className={`${protest.variable} ${space_grotesk.variable} ${play.variable} antialiased bg-midnight font-grotesk`}
       >
         <Web3Provider>
           <SocketProvider>{children}</SocketProvider>
