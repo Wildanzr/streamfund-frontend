@@ -65,7 +65,12 @@ export function LandingPageComponent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white overflow-hidden relative">
+    <div
+      className="min-h-screen text-white overflow-hidden relative"
+      style={{
+        backgroundImage: "url('/images/woman-streaming.jpeg')",
+      }}
+    >
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden z-0">
         {particles.map((particle, index) => (
@@ -87,8 +92,8 @@ export function LandingPageComponent() {
         <header className="container mx-auto px-4 py-6 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Zap className="w-8 h-8 text-purple-500" />
-            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-              StreamChain
+            <span className="font-protest tracking-wider text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
+              StreamFund
             </span>
           </div>
           <nav>
