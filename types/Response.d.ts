@@ -31,4 +31,25 @@ declare global {
     style: "squares" | "dots" | "fluid" | undefined;
     streamer: StreamerResponse;
   }
+
+  interface SupportResponse {
+    _id: string;
+    from: string;
+    amount: number;
+    message: string;
+    token: {
+      _id: string;
+      decimal: number;
+      symbol: string;
+      logo: string;
+    };
+    hash: string;
+  }
+
+  interface QueryStreamerResponse {
+    _id: string;
+    streamkey: string;
+    address: string;
+    supports: SupportResponse[];
+  }
 }

@@ -25,6 +25,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useAccount } from "wagmi";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 interface QRProps {
   value: string;
@@ -48,9 +51,14 @@ const formSchema = z.object({
   quietZone: z.number().min(0).max(100),
 });
 
-const QRForm = () => {
+interface QRFormProps {
+  address: string;
+  streamkey: string;
+}
+
+const QRForm = ({ address, streamkey }: QRFormProps) => {
   const [qrConfig, setQrConfig] = useState<QRProps>({
-    address: "wildanzrrr.base.eth",
+    address,
     bgColor: "#ffffff",
     fgColor: "#000000",
     ecLevel: "H",
@@ -205,7 +213,7 @@ const QRForm = () => {
         <div className="flex flex-col items-start justify-start w-full h-full">
           <p className="font-play text-xl text-white pb-1">
             {process.env.NEXT_PUBLIC_HOST_URL}
-            /widgets/qr?streamkey=18931238917312827193
+            /widgets/qr?streamkey={streamkey}
           </p>
           <div className="bg-white rounded-md w-full h-[1px]" />
         </div>

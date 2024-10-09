@@ -1,4 +1,5 @@
 import QR from "@/components/qr/QR";
+import { generateServerSignature } from "@/lib/server";
 import { Metadata } from "next";
 import React from "react";
 
@@ -36,33 +37,17 @@ export const metadata: Metadata = {
 
 const QRPage = async ({ searchParams }: URLProps) => {
   const streamkey = searchParams.streamkey;
-  console.log("streamkey", streamkey);
-
   if (!searchParams.streamkey) {
     return <div>Invalid Stream Key</div>;
   }
 
   let url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/contracts/streamkey?key=${streamkey}`;
   let timestamp = Math.floor(Date.now() / 1000);
-  let reqSignature = await fetch(
-    `${process.env.NEXT_PUBLIC_HOST_URL}/api/signature`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        method: "GET",
-        url,
-        timestamp,
-        body: null,
-      }),
-    }
-  );
-  let signature = await reqSignature.json();
-  let headers = {
-    "Content-Type": "application/json",
-    "x-api-key": process.env.NEXT_PUBLIC_PUBLIC_KEY!,
-    "x-timestamp": timestamp.toString(),
-    "x-signature": signature,
-  };
+  let headers = generateServerSignature({
+    method: "GET",
+    timestamp,
+    url,
+  });
   const reqCheckStreamKey = await fetch(url, {
     method: "GET",
     headers,
@@ -76,27 +61,14 @@ const QRPage = async ({ searchParams }: URLProps) => {
   if (!data.valid) {
     return <div>Invalid Stream Key</div>;
   }
+
   url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/qr?streamkey=${streamkey}`;
   timestamp = Math.floor(Date.now() / 1000);
-  reqSignature = await fetch(
-    `${process.env.NEXT_PUBLIC_HOST_URL}/api/signature`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        method: "GET",
-        url,
-        timestamp,
-        body: null,
-      }),
-    }
-  );
-  signature = await reqSignature.json();
-  headers = {
-    "Content-Type": "application/json",
-    "x-api-key": process.env.NEXT_PUBLIC_PUBLIC_KEY!,
-    "x-timestamp": timestamp.toString(),
-    "x-signature": signature,
-  };
+  headers = generateServerSignature({
+    method: "GET",
+    timestamp,
+    url,
+  });
   const reqQRConfig = await fetch(url, {
     method: "GET",
     headers,

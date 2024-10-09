@@ -1,4 +1,5 @@
 import HomeAlert from "@/components/alert/home";
+import { generateServerSignature } from "@/lib/server";
 import { Metadata } from "next";
 import React from "react";
 
@@ -43,26 +44,11 @@ const AlertPage = async ({ searchParams }: URLProps) => {
 
   const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/contracts/streamkey?key=${streamkey}`;
   const timestamp = Math.floor(Date.now() / 1000);
-  const reqSignature = await fetch(
-    `${process.env.NEXT_PUBLIC_HOST_URL}/api/signature`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        method: "GET",
-        url,
-        timestamp,
-        body: null,
-      }),
-    }
-  );
-  const signature = await reqSignature.json();
-
-  const headers = {
-    "Content-Type": "application/json",
-    "x-api-key": process.env.NEXT_PUBLIC_PUBLIC_KEY!,
-    "x-timestamp": timestamp.toString(),
-    "x-signature": signature,
-  };
+  const headers = generateServerSignature({
+    method: "GET",
+    timestamp,
+    url,
+  });
   const reqCheckStreamKey = await fetch(url, {
     method: "GET",
     headers,
