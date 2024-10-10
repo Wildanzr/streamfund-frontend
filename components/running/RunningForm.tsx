@@ -25,13 +25,19 @@ import {
 import { HexColorPicker } from "react-colorful";
 import MQ from "./Marquee";
 import { AVAILABLE_FONTS } from "@/constant/common";
+import { Button } from "../ui/button";
+import Loader from "../shared/Loader";
+import { useCopyToClipboard } from "usehooks-ts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { generateClientSignature } from "@/lib/client";
+import axios from "axios";
 
 interface MarqueeProps {
   backgroundColor: string;
   textColor: string;
   font: string;
   text: string;
-  textSize: string;
+  textSize: number;
 }
 
 interface RunningFormProps {
@@ -41,21 +47,52 @@ interface RunningFormProps {
 }
 
 const formSchema = z.object({
-  address: z.string().min(2).max(50),
   backgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
   textColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
   font: z.string(),
   text: z.string(),
-  textSize: z.string(),
+  textSize: z.number(),
 });
 
-const RunningForm = ({ config }: RunningFormProps) => {
-  const [mqConfig] = useState<MarqueeProps>({
+const RunningForm = ({ config, streamkey }: RunningFormProps) => {
+  const [_, copy] = useCopyToClipboard();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
+
+  const updateMutation = useMutation({
+    mutationKey: ["update-mq-config"],
+    mutationFn: async (values: z.infer<typeof formSchema>) => {
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/mq?streamkey=${streamkey}`;
+      const timestamp = Math.floor(Date.now() / 1000);
+      const payload = {
+        backgroundColor: values.backgroundColor,
+        textColor: values.textColor,
+        font: values.font,
+        textSize: values.textSize.toString(),
+        text: values.text,
+      };
+      const headers = await generateClientSignature({
+        method: "PUT",
+        timestamp,
+        url,
+        body: payload,
+      });
+      const { data } = await axios.put(url, payload, {
+        headers,
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["mq-config", streamkey] });
+    },
+  });
+
+  const [mqConfig, setMqConfig] = useState<MarqueeProps>({
     backgroundColor: config?.backgroundColor || "#000000",
     textColor: config?.textColor || "#ffffff",
     font: config?.font || "monospace",
     text: config?.text || "This is simple marquee",
-    textSize: config?.textSize || "20",
+    textSize: Number(config?.textSize) || 20,
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,8 +100,25 @@ const RunningForm = ({ config }: RunningFormProps) => {
   });
   const watchedValues = form.watch();
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    console.log("Data", data);
+    setIsSubmitting(true);
+    try {
+      setMqConfig(data);
+      await updateMutation.mutateAsync(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCopy = () => {
+    copy(
+      `${process.env.NEXT_PUBLIC_HOST_URL}/widgets/mq?streamkey=${streamkey}`
+    );
+
+    alert("Copied to clipboard");
   };
   return (
     <Form {...form}>
@@ -99,7 +153,7 @@ const RunningForm = ({ config }: RunningFormProps) => {
                   min={0}
                   max={128}
                   step={1}
-                  value={[Number(field.value)]}
+                  value={[field.value]}
                   onValueChange={(value) => field.onChange(value[0])}
                 />
               </FormControl>
@@ -183,9 +237,50 @@ const RunningForm = ({ config }: RunningFormProps) => {
             textColor={watchedValues.textColor}
             font={watchedValues.font}
             text={watchedValues.text}
-            textSize={watchedValues.textSize}
+            textSize={watchedValues.textSize.toString()}
           />
         )}
+
+        {/* display stream link */}
+        <div className="flex flex-col items-start justify-start w-full h-full">
+          <p className="font-play text-xl text-white pb-1">
+            {process.env.NEXT_PUBLIC_HOST_URL}
+            /widgets/mq?streamkey={streamkey}
+          </p>
+          <div className="bg-white rounded-md w-full h-[1px]" />
+        </div>
+
+        <div className="flex flex-col w-full h-full space-y-2 md:flex-row md:space-y-0 md:space-x-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleCopy}
+            className="w-full bg-vivid text-midnight text-lg font-bold"
+          >
+            Copy QR URL
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            className="w-full bg-sunset text-midnight text-lg font-bold"
+            onClick={() =>
+              window.open(
+                `${process.env.NEXT_PUBLIC_HOST_URL}/widgets/mq?streamkey=${streamkey}`,
+                "_blank"
+              )
+            }
+          >
+            Open in new tab
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            variant="secondary"
+            className="w-full bg-aqua text-midnight text-lg font-bold"
+          >
+            {isSubmitting ? <Loader size="20" /> : "Update QR Code"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

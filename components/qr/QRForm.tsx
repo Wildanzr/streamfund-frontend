@@ -29,6 +29,7 @@ import axios from "axios";
 import { generateClientSignature } from "@/lib/client";
 import QR from "./QR";
 import Loader from "../shared/Loader";
+import { useCopyToClipboard } from "usehooks-ts";
 
 interface QRProps {
   value: string;
@@ -60,6 +61,7 @@ interface QRFormProps {
 
 const QRForm = ({ address, streamkey, config }: QRFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [_, copy] = useCopyToClipboard();
   const queryClient = useQueryClient();
 
   const updateMutation = useMutation({
@@ -117,6 +119,14 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCopy = () => {
+    copy(
+      `${process.env.NEXT_PUBLIC_HOST_URL}/widgets/qr?streamkey=${streamkey}`
+    );
+
+    alert("Copied to clipboard");
   };
 
   return (
@@ -264,6 +274,7 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
           <Button
             type="button"
             variant="secondary"
+            onClick={handleCopy}
             className="w-full bg-vivid text-midnight text-lg font-bold"
           >
             Copy QR URL

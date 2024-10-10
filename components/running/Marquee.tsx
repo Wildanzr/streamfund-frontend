@@ -18,7 +18,7 @@ const MQ = ({ backgroundColor, font, text, textColor, textSize }: MQProps) => {
       style={{
         backgroundColor,
         color: textColor,
-        fontSize: textSize,
+        fontSize: `${textSize}px`,
       }}
     >
       {text}

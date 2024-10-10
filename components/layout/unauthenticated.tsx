@@ -11,11 +11,10 @@ const Unauthenticated = () => {
         streamkey="0x"
         config={{
           backgroundColor: "#000000",
-          borderColor: "#ffffff",
           font: "monospace",
           text: "This is simple marquee",
           textColor: "#ffffff",
-          textSize: "20",
+          textSize: 20,
           streamer: {
             _id: "0x",
             address: "0x",

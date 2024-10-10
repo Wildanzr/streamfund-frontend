@@ -35,9 +35,8 @@ declare global {
   interface MarqueeConfigResponse {
     backgroundColor: string;
     textColor: string;
-    borderColor: string;
     font: string;
-    textSize: string;
+    textSize: number;
     text: string;
     streamer: StreamerResponse;
   }

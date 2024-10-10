@@ -14,10 +14,10 @@ const RunninngManagement = ({
   streamkey,
   address,
 }: RunninngManagementProps) => {
-  const { data: config, isLoading } = useQuery<QRConfigResponse>({
-    queryKey: ["qr-config", streamkey],
+  const { data: config, isLoading } = useQuery<MarqueeConfigResponse>({
+    queryKey: ["mq-config", streamkey],
     queryFn: async () => {
-      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/qr?streamkey=${streamkey}`;
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/mq?streamkey=${streamkey}`;
       const timestamp = Math.floor(Date.now() / 1000);
       const headers = await generateClientSignature({
         method: "GET",
@@ -28,7 +28,8 @@ const RunninngManagement = ({
       const { data } = await axios.get(url, {
         headers,
       });
-      const res = data?.data?.config as QRConfigResponse;
+      console.log("Data", data);
+      const res = data?.data?.config as MarqueeConfigResponse;
       return res;
     },
   });
@@ -38,22 +39,7 @@ const RunninngManagement = ({
       {isLoading || !config ? (
         <Loader />
       ) : (
-        <RunningForm
-          address={address}
-          streamkey={streamkey}
-          config={{
-            backgroundColor: "#000000",
-            borderColor: "#ffffff",
-            font: "monospace",
-            text: "This is simple marquee",
-            textColor: "#ffffff",
-            textSize: "20",
-            streamer: {
-              _id: "0x",
-              address: "0x",
-            },
-          }}
-        />
+        <RunningForm address={address} streamkey={streamkey} config={config} />
       )}
     </div>
   );
