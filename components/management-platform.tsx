@@ -13,7 +13,7 @@ import { useSearchParams } from "next/navigation";
 
 const validPath = [
   "alert",
-  "shilling",
+  // "shilling",
   "running-text",
   "qr-code",
   "support-history",

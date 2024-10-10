@@ -39,7 +39,7 @@ const ManagementApp = ({
           onValueChange={setActiveTab}
           className="w-full h-full"
         >
-          <TabsList className="grid w-full h-full grid-cols-5 mb-6 p-2 bg-transparent text-white">
+          <TabsList className="grid w-full h-full grid-cols-4 mb-6 p-2 bg-transparent text-white">
             <TabsTrigger
               value="alert"
               className="flex flex-col items-center gap-2 py-2"
@@ -48,14 +48,14 @@ const ManagementApp = ({
               <AlertCircle className="h-5 w-5" />
               Alert
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="shiling"
               className="flex flex-col items-center gap-2 py-2"
               onClick={() => handleTabChange("shiling")}
             >
               <Shield className="h-5 w-5" />
               Shiling Crypto
-            </TabsTrigger>
+            </TabsTrigger> */}
             <TabsTrigger
               value="running-text"
               className="flex flex-col items-center gap-2 py-2"
@@ -86,9 +86,9 @@ const ManagementApp = ({
             <p>Alert </p>
           </TabsContent>
 
-          <TabsContent value="shiling">
+          {/* <TabsContent value="shiling">
             <p>Shilling </p>
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="running-text">
             <RunninngManagement

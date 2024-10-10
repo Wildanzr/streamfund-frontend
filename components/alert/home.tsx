@@ -11,21 +11,21 @@ export default function HomeAlert() {
   const [sended, setSended] = useState(false);
 
   const all = [
-    // "wave",
+    "wave",
     "bounce",
-    // "pulse",
-    // "rubberBand",
-    // "tada",
-    // "spin",
-    // "wiggle",
-    // "float",
-    // "jiggle",
-    // "heartbeat",
-    // "swing",
-    // "blink",
-    // "twist",
-    // "pendulum",
-    // "rotate",
+    "pulse",
+    "rubberBand",
+    "tada",
+    "spin",
+    "wiggle",
+    "float",
+    "jiggle",
+    "heartbeat",
+    "swing",
+    "blink",
+    "twist",
+    "pendulum",
+    "rotate",
   ] as const;
 
   const bgs = [
@@ -42,7 +42,7 @@ export default function HomeAlert() {
 
   const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamkey=${streamkey}`;
   const { socket, connected } = useSocket(HOST);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const { sendMessage } = useSocketEvent<string>(socket, "listen-support");
   useSocketEvent<ListenSupportResponse>(socket, "support", {
     onMessage: (message) => {
@@ -75,7 +75,7 @@ export default function HomeAlert() {
   }, [connected, sendMessage, sended]);
 
   return (
-    <div className="flex flex-col items-start justify-start w-full h-full min-h-screen p-20 space-y-3 text-white bg-transparent">
+    <div className="flex flex-col items-start justify-start w-full h-full min-h-screen space-y-3 text-white bg-transparent">
       <div className="flex-col space-y-5 items-center justify-center hidden">
         <p className="text-2xl">Hello world</p>
         <p>Stream key: {streamkey}</p>

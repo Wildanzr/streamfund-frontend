@@ -230,10 +230,11 @@ export default function TextAnimation({
           variants={child}
         >
           <motion.span
+            className="font-protest"
             animate={type}
             variants={animationVariants}
             custom={index}
-            style={{ display: "inline-block" }}
+            style={{ display: "inline-block", fontWeight: "800" }}
             transition={{
               duration: duration,
               repeat: Infinity,
