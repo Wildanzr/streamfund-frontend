@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
 import QRForm from "./QRForm";
+import Loader from "../shared/Loader";
 
 interface QRManagementProps {
   streamkey: string;
@@ -10,7 +11,7 @@ interface QRManagementProps {
 }
 
 const QRManagement = ({ streamkey, address }: QRManagementProps) => {
-  const { data: config } = useQuery<QRConfigResponse>({
+  const { data: config, isLoading } = useQuery<QRConfigResponse>({
     queryKey: ["qr-config", streamkey],
     queryFn: async () => {
       const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/qr?streamkey=${streamkey}`;
@@ -28,9 +29,14 @@ const QRManagement = ({ streamkey, address }: QRManagementProps) => {
       return res;
     },
   });
+
   return (
-    <div className="flex flex-col items-start justify-start w-full h-full">
-      {config && <QRForm address={address} streamkey={streamkey} />}
+    <div className="flex flex-col items-center justify-center w-full h-full">
+      {isLoading || !config ? (
+        <Loader />
+      ) : (
+        <QRForm address={address} streamkey={streamkey} config={config} />
+      )}
     </div>
   );
 };

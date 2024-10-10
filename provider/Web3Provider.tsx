@@ -56,9 +56,8 @@ export function getConfig() {
   });
 }
 
-const queryClient = new QueryClient();
-
 const Web3Provider = ({ children }: ChildrenProps) => {
+  const queryClient = new QueryClient();
   const config = getConfig();
   const customTheme = {
     colors: {

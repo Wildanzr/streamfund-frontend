@@ -5,7 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useAccount } from "wagmi";
 
-const WalletButton = () => {
+interface WalletButtonProps {
+  label?: string;
+}
+
+const WalletButton = ({ label }: WalletButtonProps) => {
   const { status } = useAccount();
   const router = useRouter();
   const pathname = usePathname();
@@ -17,7 +21,7 @@ const WalletButton = () => {
       }, 2000);
     }
   }, [pathname, router, status]);
-  return <ConnectButton />;
+  return <ConnectButton label={label} />;
 };
 
 export default WalletButton;

@@ -15,7 +15,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import QR from "./QR";
 import { Slider } from "../ui/slider";
 import { HexColorPicker } from "react-colorful";
 import {
@@ -25,9 +24,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { generateClientSignature } from "@/lib/client";
+import QR from "./QR";
 
 interface QRProps {
   value: string;
@@ -54,28 +54,11 @@ const formSchema = z.object({
 interface QRFormProps {
   address: string;
   streamkey: string;
+  config: QRConfigResponse;
 }
 
-const QRForm = ({ address, streamkey }: QRFormProps) => {
+const QRForm = ({ address, streamkey, config }: QRFormProps) => {
   const queryClient = useQueryClient();
-  const { data: config } = useQuery<QRConfigResponse>({
-    queryKey: ["qr-config", streamkey],
-    queryFn: async () => {
-      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/qr?streamkey=${streamkey}`;
-      const timestamp = Math.floor(Date.now() / 1000);
-      const headers = await generateClientSignature({
-        method: "GET",
-        timestamp,
-        url,
-      });
-      console.log("fetching qr config");
-      const { data } = await axios.get(url, {
-        headers,
-      });
-      const res = data?.data?.config as QRConfigResponse;
-      return res;
-    },
-  });
 
   const updateMutation = useMutation({
     mutationKey: ["update-qr-config"],
@@ -107,11 +90,11 @@ const QRForm = ({ address, streamkey }: QRFormProps) => {
 
   const [qrConfig, setQrConfig] = useState<QRProps>({
     address,
-    bgColor: config?.bgColor!,
-    fgColor: config?.fgColor!,
-    ecLevel: config?.level!,
-    qrStyle: config?.style!,
-    quietZone: config?.quietZone!,
+    bgColor: config?.bgColor || "#FFFFFF",
+    fgColor: config?.fgColor || "#000000",
+    ecLevel: config?.level || "H",
+    qrStyle: config?.style || "squares",
+    quietZone: config?.quietZone || 20,
     size: 500,
     value: `${process.env.NEXT_PUBLIC_HOST_URL}/support/${address}`,
   });
@@ -246,16 +229,18 @@ const QRForm = ({ address, streamkey }: QRFormProps) => {
           />
         </div>
 
-        <QR
-          address={watchedValues.address}
-          bgColor={watchedValues.bgColor}
-          ecLevel={watchedValues.ecLevel}
-          fgColor={watchedValues.fgColor}
-          qrStyle={watchedValues.qrStyle}
-          quietZone={watchedValues.quietZone}
-          size={watchedValues.size}
-          value={watchedValues.value}
-        />
+        {watchedValues && (
+          <QR
+            address={watchedValues.address}
+            bgColor={watchedValues.bgColor}
+            ecLevel={watchedValues.ecLevel}
+            fgColor={watchedValues.fgColor}
+            qrStyle={watchedValues.qrStyle}
+            quietZone={watchedValues.quietZone}
+            size={watchedValues.size}
+            value={watchedValues.value}
+          />
+        )}
 
         {/* display stream link */}
         <div className="flex flex-col items-start justify-start w-full h-full">
