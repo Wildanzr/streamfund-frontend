@@ -32,6 +32,16 @@ declare global {
     streamer: StreamerResponse;
   }
 
+  interface MarqueeConfigResponse {
+    backgroundColor: string;
+    textColor: string;
+    borderColor: string;
+    font: string;
+    textSize: string;
+    text: string;
+    streamer: StreamerResponse;
+  }
+
   interface SupportResponse {
     _id: string;
     from: string;

@@ -8,24 +8,15 @@ interface MQProps {
   textColor?: string;
   textSize?: string;
   backgroundColor?: string;
-  borderColor?: string;
 }
 
-const MQ = ({
-  backgroundColor,
-  borderColor,
-  font,
-  text,
-  textColor,
-  textSize,
-}: MQProps) => {
+const MQ = ({ backgroundColor, font, text, textColor, textSize }: MQProps) => {
   return (
     <Marquee
       speed={100}
       className={`${cn(font, "py-5")}`}
       style={{
         backgroundColor,
-        borderColor,
         color: textColor,
         fontSize: textSize,
       }}
