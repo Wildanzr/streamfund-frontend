@@ -28,6 +28,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { generateClientSignature } from "@/lib/client";
 import QR from "./QR";
+import Loader from "../shared/Loader";
 
 interface QRProps {
   value: string;
@@ -58,6 +59,7 @@ interface QRFormProps {
 }
 
 const QRForm = ({ address, streamkey, config }: QRFormProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
 
   const updateMutation = useMutation({
@@ -106,8 +108,15 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
   const watchedValues = form.watch();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setQrConfig(values);
-    await updateMutation.mutateAsync(values);
+    setIsSubmitting(true);
+    try {
+      setQrConfig(values);
+      await updateMutation.mutateAsync(values);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -128,7 +137,7 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
                   onValueChange={(value) => field.onChange(value[0])}
                 />
               </FormControl>
-              <FormDescription>
+              <FormDescription className="text-white/80">
                 Size of the quiet zone around the QR code.
               </FormDescription>
               <FormMessage />
@@ -194,7 +203,7 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
                     <SelectItem value="H">High</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormDescription>
+                <FormDescription className="text-white/80">
                   Higher levels provide better error correction but increase QR
                   code size.
                 </FormDescription>
@@ -274,10 +283,11 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
           </Button>
           <Button
             type="submit"
+            disabled={isSubmitting}
             variant="secondary"
             className="w-full bg-aqua text-midnight text-lg font-bold"
           >
-            Save configuration
+            {isSubmitting ? <Loader size="20" /> : "Update QR Code"}
           </Button>
         </div>
       </form>

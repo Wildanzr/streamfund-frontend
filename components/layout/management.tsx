@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, Shield, Type, QrCode, History } from "lucide-react";
 import QRManagement from "../qr/Management";
+import { useRouter, useSearchParams } from "next/navigation";
+import { formUrlQuery } from "@/lib/utils";
 
 interface ManagementAppProps {
   activeTab: string;
@@ -16,6 +18,18 @@ const ManagementApp = ({
   setActiveTab,
   streamer,
 }: ManagementAppProps) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    const newUrl = formUrlQuery({
+      params: searchParams.toString(),
+      key: "menu",
+      value: value,
+    });
+    router.push(newUrl);
+  };
   return (
     <Card className="w-full max-w-6xl mx-auto bg-transparent text-white">
       <CardContent className="p-6">
@@ -28,6 +42,7 @@ const ManagementApp = ({
             <TabsTrigger
               value="alert"
               className="flex flex-col items-center gap-2 py-2"
+              onClick={() => handleTabChange("alert")}
             >
               <AlertCircle className="h-5 w-5" />
               Alert
@@ -35,6 +50,7 @@ const ManagementApp = ({
             <TabsTrigger
               value="shiling"
               className="flex flex-col items-center gap-2 py-2"
+              onClick={() => handleTabChange("shiling")}
             >
               <Shield className="h-5 w-5" />
               Shiling Crypto
@@ -42,6 +58,7 @@ const ManagementApp = ({
             <TabsTrigger
               value="running-text"
               className="flex flex-col items-center gap-2 py-2"
+              onClick={() => handleTabChange("running-text")}
             >
               <Type className="h-5 w-5" />
               Running Text
@@ -49,6 +66,7 @@ const ManagementApp = ({
             <TabsTrigger
               value="qr-code"
               className="flex flex-col items-center gap-2 py-2"
+              onClick={() => handleTabChange("qr-code")}
             >
               <QrCode className="h-5 w-5" />
               QR Code
@@ -56,6 +74,7 @@ const ManagementApp = ({
             <TabsTrigger
               value="support-history"
               className="flex flex-col items-center gap-2 py-2"
+              onClick={() => handleTabChange("support-history")}
             >
               <History className="h-5 w-5" />
               Support History

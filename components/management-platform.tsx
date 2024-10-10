@@ -9,10 +9,22 @@ import ManagementApp from "./layout/management";
 import Unauthenticated from "./layout/unauthenticated";
 import Register from "./layout/register";
 import Loader from "./shared/Loader";
+import { useSearchParams } from "next/navigation";
+
+const validPath = [
+  "alert",
+  "shilling",
+  "running-text",
+  "qr-code",
+  "support-history",
+];
 
 export function ManagementPlatformComponent() {
-  const [activeTab, setActiveTab] = useState("alert");
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("menu") ?? "alert";
+  const currentPath = validPath.includes(tab) ? tab : "alert";
   const { address, isConnected } = useAccount();
+  const [activeTab, setActiveTab] = useState(currentPath);
 
   const { data: streamer, isLoading } = useQuery({
     queryKey: ["streamer", address],
@@ -32,6 +44,7 @@ export function ManagementPlatformComponent() {
       return streamkey;
     },
     enabled: !!address,
+    retry: false,
   });
 
   return (

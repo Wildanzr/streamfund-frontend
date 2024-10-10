@@ -3,7 +3,6 @@ import { Protest_Strike, Space_Grotesk, Play } from "next/font/google";
 import "./globals.css";
 import SocketProvider from "@/provider/SocketProvider";
 import Web3Provider from "@/provider/Web3Provider";
-import QueryProvider from "@/provider/QueryProvider";
 
 const protest = Protest_Strike({
   weight: ["400"],
@@ -41,11 +40,9 @@ export default function RootLayout({
       <body
         className={`${protest.variable} ${space_grotesk.variable} ${play.variable} antialiased bg-transparent font-grotesk`}
       >
-        <QueryProvider>
-          <Web3Provider>
-            <SocketProvider>{children}</SocketProvider>
-          </Web3Provider>
-        </QueryProvider>
+        <Web3Provider>
+          <SocketProvider>{children}</SocketProvider>
+        </Web3Provider>
       </body>
     </html>
   );
