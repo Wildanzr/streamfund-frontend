@@ -69,6 +69,7 @@ const formSchema = z.object({
 const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
   const [, copy] = useCopyToClipboard();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
   const [alertKey, setAlertKey] = useState(0);
 
   const queryClient = useQueryClient();
@@ -136,6 +137,19 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
     );
 
     alert("Copied to clipboard");
+  };
+
+  const handleTestAlert = async () => {
+    setIsTesting(true);
+    try {
+      console.log("Testing");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setTimeout(() => {
+        setIsTesting(false);
+      }, 10000);
+    }
   };
 
   useEffect(() => {
@@ -344,6 +358,15 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
         <div className="flex flex-col w-full h-full space-y-2 md:flex-row md:space-y-0 md:space-x-2">
           <Button
             type="button"
+            disabled={isTesting}
+            variant="secondary"
+            onClick={handleTestAlert}
+            className="w-full bg-green-500 text-white text-lg font-bold"
+          >
+            {isTesting ? <Loader size="20" /> : "Test Alert"}
+          </Button>
+          <Button
+            type="button"
             variant="secondary"
             onClick={handleCopy}
             className="w-full bg-vivid text-midnight text-lg font-bold"
@@ -356,7 +379,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
             className="w-full bg-sunset text-midnight text-lg font-bold"
             onClick={() =>
               window.open(
-                `${process.env.NEXT_PUBLIC_HOST_URL}/widgets/mq?streamkey=${streamkey}`,
+                `${process.env.NEXT_PUBLIC_HOST_URL}/widgets/alert?streamkey=${streamkey}`,
                 "_blank"
               )
             }

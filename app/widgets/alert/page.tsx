@@ -1,4 +1,4 @@
-import HomeAlert from "@/components/alert/home";
+import SupportAlert from "@/components/alert/SupportAlert";
 import { generateServerSignature } from "@/lib/server";
 import { Metadata } from "next";
 import React from "react";
@@ -42,9 +42,9 @@ const AlertPage = async ({ searchParams }: URLProps) => {
     return <div>Invalid Stream Key</div>;
   }
 
-  const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/contracts/streamkey?key=${streamkey}`;
-  const timestamp = Math.floor(Date.now() / 1000);
-  const headers = generateServerSignature({
+  let url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/contracts/streamkey?key=${streamkey}`;
+  let timestamp = Math.floor(Date.now() / 1000);
+  let headers = generateServerSignature({
     method: "GET",
     timestamp,
     url,
@@ -63,7 +63,39 @@ const AlertPage = async ({ searchParams }: URLProps) => {
     return <div>Invalid Stream Key</div>;
   }
 
-  return <HomeAlert />;
+  url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/alert?streamkey=${streamkey}`;
+  timestamp = Math.floor(Date.now() / 1000);
+  headers = generateServerSignature({
+    method: "GET",
+    timestamp,
+    url,
+  });
+
+  const reqAlertConfig = await fetch(url, {
+    method: "GET",
+    headers,
+    next: {
+      tags: ["alert-config"],
+    },
+  });
+  const alertConfig = await reqAlertConfig.json();
+  const config = alertConfig.data.config as AlertConfigResponse;
+  console.log("Config", config);
+
+  return (
+    <div className="flex flex-col w-full h-full min-h-screen bg-transparent items-start justify-start">
+      <SupportAlert
+        effect={config.effect}
+        font={config.font}
+        mainColor={config.mainColor}
+        owner={config.streamer.address}
+        secondColor={config.secondColor}
+        backgroundColor={config.backgroundColor}
+        textSize={config.textSize.toString()}
+        streamkey={streamkey!}
+      />
+    </div>
+  );
 };
 
 export default AlertPage;

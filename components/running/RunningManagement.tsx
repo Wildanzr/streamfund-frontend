@@ -28,7 +28,6 @@ const RunninngManagement = ({
       const { data } = await axios.get(url, {
         headers,
       });
-      console.log("Data", data);
       const res = data?.data?.config as MarqueeConfigResponse;
       return res;
     },

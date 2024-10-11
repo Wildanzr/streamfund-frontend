@@ -1,4 +1,3 @@
-import QR from "@/components/qr/QR";
 import MQ from "@/components/running/Marquee";
 import { generateServerSignature } from "@/lib/server";
 import { Metadata } from "next";
