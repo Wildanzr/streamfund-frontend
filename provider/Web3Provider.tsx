@@ -23,10 +23,10 @@ import {
 
 const connectors = connectorsForWallets(
   [
-    {
-      groupName: "Recommended",
-      wallets: [coinbaseWallet],
-    },
+    // {
+    //   groupName: "Recommended",
+    //   wallets: [coinbaseWallet],
+    // },
     {
       groupName: "Popular",
       wallets: [rainbowWallet, metaMaskWallet],

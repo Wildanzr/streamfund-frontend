@@ -1,4 +1,4 @@
-export const ABI = [
+export const STREAMFUND_ABI = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   { inputs: [], name: "AccessControlBadConfirmation", type: "error" },
   {
