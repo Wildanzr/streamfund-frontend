@@ -99,7 +99,7 @@ export default function HomeAlert() {
               bgs[Math.floor(Math.random() * bgs.length)]
             } rounded-t-[20px] shadow border`}
           >
-            <TextAnimation
+            {/* <TextAnimation
               text="wildanzrrr.base.eth just donated 0.1 ETH"
               type={animationType}
               duration={1.5}
@@ -109,7 +109,7 @@ export default function HomeAlert() {
               color="#3366ff"
               revealSpeed={0.8}
               revealDuration={3}
-            />
+            /> */}
           </div>
           <div className="flex flex-col items-center justify-center min-h-10 bg-white rounded-b-[20px] shadow border">
             <p className="text-black">wildanzrrr.base.eth</p>

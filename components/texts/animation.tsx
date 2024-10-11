@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion, Variants } from "framer-motion";
+import { motion, Variants, AnimatePresence } from "framer-motion";
 
 type AnimationType =
   | "wave"
@@ -20,14 +20,21 @@ type AnimationType =
   | "pendulum"
   | "rotate";
 
-interface AnimationProps {
+interface TextSegment {
   text: string;
+  isMain?: boolean;
+}
+
+interface AnimationProps {
+  segments: TextSegment[];
   type: AnimationType;
-  duration?: number;
   delay?: number;
   staggerChildren?: number;
   fontSize?: number;
   color?: string;
+  mainColor?: string;
+  fontWeight?: number;
+  mainFontWeight?: number;
   revealSpeed?: number;
   revealDuration?: number;
 }
@@ -163,17 +170,19 @@ const animationVariants: Variants = {
 };
 
 export default function TextAnimation({
-  text,
+  segments,
   type,
-  duration = 1,
   delay = 0,
   staggerChildren = 0.1,
   fontSize = 24,
   color = "#000000",
+  mainColor = "#FF0000",
+  fontWeight = 400,
+  mainFontWeight = 700,
   revealSpeed = 0.5,
   revealDuration = 3,
 }: AnimationProps) {
-  const letters = Array.from(text);
+  let letterIndex = 0;
 
   const container: Variants = {
     hidden: { opacity: 0 },
@@ -215,36 +224,51 @@ export default function TextAnimation({
       style={{
         overflow: "visible",
         display: "flex",
+        flexWrap: "wrap",
         fontSize: `${fontSize}px`,
-        color: color,
         padding: type === "wave" ? "20px 0" : "0",
       }}
       variants={container}
       initial="hidden"
       animate="visible"
     >
-      {letters.map((letter, index) => (
-        <motion.span
-          key={index}
-          style={{ display: "inline-block" }}
-          variants={child}
-        >
-          <motion.span
-            className="font-protest"
-            animate={type}
-            variants={animationVariants}
-            custom={index}
-            style={{ display: "inline-block", fontWeight: "800" }}
-            transition={{
-              duration: duration,
-              repeat: Infinity,
-              repeatDelay: type === "rubberBand" || type === "tada" ? 1 : 0,
-            }}
-          >
-            {letter === " " ? "\u00A0" : letter}
-          </motion.span>
-        </motion.span>
-      ))}
+      <AnimatePresence>
+        {segments.map((segment, segmentIndex) => {
+          const letters = Array.from(segment.text);
+          return letters.map((letter, index) => {
+            const currentIndex = letterIndex++;
+            return (
+              <motion.span
+                key={`${segmentIndex}-${index}`}
+                className={`font-protest ${segment.isMain ? "main-text" : ""}`}
+                variants={child}
+                custom={currentIndex}
+                style={{
+                  display: "inline-block",
+                  color: segment.isMain ? mainColor : color,
+                  fontWeight: segment.isMain ? mainFontWeight : fontWeight,
+                }}
+              >
+                <motion.span
+                  animate={type}
+                  variants={animationVariants}
+                  custom={currentIndex}
+                  style={{ display: "inline-block" }}
+                  transition={{
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    repeatDelay:
+                      type === "rubberBand" || type === "tada" ? 1 : 0,
+                    delay: delay + currentIndex * 0.1,
+                  }}
+                >
+                  {letter === " " ? "\u00A0" : letter}
+                </motion.span>
+              </motion.span>
+            );
+          });
+        })}
+      </AnimatePresence>
     </motion.div>
   );
 }

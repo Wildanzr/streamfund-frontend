@@ -41,6 +41,17 @@ declare global {
     streamer: StreamerResponse;
   }
 
+  interface AlertConfigResponse {
+    backgroundColor: string;
+    mainColor: string;
+    secondColor: string;
+    font: string;
+    textSize: number;
+    sound: string;
+    effect: string;
+    streamer: StreamerResponse;
+  }
+
   interface SupportResponse {
     _id: string;
     from: string;

@@ -7,6 +7,7 @@ import QRManagement from "../qr/QRManagement";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formUrlQuery } from "@/lib/utils";
 import RunninngManagement from "../running/RunningManagement";
+import AlertManagement from "../alert/AlertManagement";
 
 interface ManagementAppProps {
   activeTab: string;
@@ -83,7 +84,10 @@ const ManagementApp = ({
           </TabsList>
 
           <TabsContent value="alert">
-            <p>Alert </p>
+            <AlertManagement
+              address={streamer.address}
+              streamkey={streamer.streamkey}
+            />
           </TabsContent>
 
           {/* <TabsContent value="shiling">

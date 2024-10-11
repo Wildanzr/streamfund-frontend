@@ -14,3 +14,21 @@ export const AVAILABLE_FONTS = [
     value: "font-protest",
   },
 ];
+
+export const AVAILABLE_ANIMATIONS = [
+  "wave",
+  "bounce",
+  "pulse",
+  "rubberBand",
+  "tada",
+  "spin",
+  "wiggle",
+  "float",
+  "jiggle",
+  "heartbeat",
+  "swing",
+  "blink",
+  "twist",
+  "pendulum",
+  "rotate",
+] as const;
