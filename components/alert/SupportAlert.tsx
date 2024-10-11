@@ -43,6 +43,7 @@ const SupportAlert = (props: SupportAlert) => {
   const { sendMessage } = useSocketEvent<string>(socket, "listen-support");
   useSocketEvent<ListenSupportResponse>(socket, "support", {
     onMessage: async (message) => {
+      console.log("Message", message);
       setNewSupport({
         message: "New Support",
         data: {
