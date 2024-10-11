@@ -13,7 +13,7 @@ interface MQProps {
 const MQ = ({ backgroundColor, font, text, textColor, textSize }: MQProps) => {
   return (
     <Marquee
-      speed={100}
+      speed={75}
       className={`${cn(font, "py-5")}`}
       style={{
         backgroundColor,

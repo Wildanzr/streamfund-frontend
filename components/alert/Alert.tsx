@@ -1,7 +1,6 @@
 import React from "react";
 import TextAnimation from "../texts/animation";
 import { formatUnits } from "viem";
-import { AVAILABLE_ANIMATIONS } from "@/constant/common";
 
 interface AlertProps {
   sender: string;
@@ -13,7 +12,8 @@ interface AlertProps {
   mainColor: string;
   secondColor: string;
   backgroundColor: string;
-  effect: (typeof AVAILABLE_ANIMATIONS)[number];
+  font: string;
+  effect: string;
 }
 
 const Alert = ({
@@ -27,6 +27,7 @@ const Alert = ({
   secondColor,
   mainColor,
   backgroundColor,
+  font,
 }: AlertProps) => {
   return (
     <div
@@ -44,7 +45,8 @@ const Alert = ({
             { text: ` ${symbol}`, isMain: true },
             { text: " to you" },
           ]}
-          type={effect}
+          type={effect as never}
+          font={font}
           fontSize={Number(textSize)}
           color={secondColor}
           mainColor={mainColor}

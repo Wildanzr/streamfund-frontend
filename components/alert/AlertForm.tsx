@@ -24,10 +24,15 @@ import {
 } from "../ui/select";
 // import { useCopyToClipboard } from "usehooks-ts";
 import { z } from "zod";
-import { AVAILABLE_ANIMATIONS, AVAILABLE_FONTS } from "@/constant/common";
+import {
+  AVAILABLE_ANIMATIONS,
+  AVAILABLE_FONTS,
+  AVAILABLE_SOUNDS,
+} from "@/constant/common";
 import { useForm } from "react-hook-form";
 import { HexColorPicker } from "react-colorful";
 import Alert from "./Alert";
+import Sound from "./Sound";
 
 interface AlertFormProps {
   address: string;
@@ -58,7 +63,9 @@ const formSchema = z.object({
 const AlertForm = ({ config }: AlertFormProps) => {
   // const [, copy] = useCopyToClipboard();
   // const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [alertKey, setAlertKey] = useState(0);
+
   // const queryClient = useQueryClient();
 
   // const updateMutation = useMutation({
@@ -123,7 +130,7 @@ const AlertForm = ({ config }: AlertFormProps) => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6 w-full h-full overflow-auto"
       >
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="font"
@@ -154,25 +161,28 @@ const AlertForm = ({ config }: AlertFormProps) => {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="sound"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Alert sound: </FormLabel>
                 <Select
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    handlePlaySound();
+                  }}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select sound" />
+                      <SelectValue placeholder="Select sound effect" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {AVAILABLE_FONTS.map((font) => (
-                      <SelectItem key={font.value} value={font.value}>
-                        {font.name}
+                    {AVAILABLE_SOUNDS.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -183,7 +193,7 @@ const AlertForm = ({ config }: AlertFormProps) => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <FormField
             control={form.control}
             name="effect"
@@ -201,8 +211,8 @@ const AlertForm = ({ config }: AlertFormProps) => {
                   </FormControl>
                   <SelectContent>
                     {AVAILABLE_ANIMATIONS.map((item) => (
-                      <SelectItem key={item} value={item}>
-                        {item}
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -215,6 +225,24 @@ const AlertForm = ({ config }: AlertFormProps) => {
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="effect"
+          render={({ field }) => (
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-6 gap-4">
+              {AVAILABLE_SOUNDS.map((item) => (
+                <div key={item.value}>
+                  <Sound
+                    {...item}
+                    selected={field.value}
+                    handleChange={field.onChange}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        />
 
         <FormField
           control={form.control}
@@ -303,13 +331,12 @@ const AlertForm = ({ config }: AlertFormProps) => {
               key={alertKey}
               amount={100000000000000}
               decimals={18}
-              effect={
-                watchedValues.effect as unknown as (typeof AVAILABLE_ANIMATIONS)[number]
-              }
+              effect={watchedValues.effect as never}
               textSize={watchedValues.textSize.toString()}
               backgroundColor={watchedValues.backgroundColor}
               mainColor={watchedValues.mainColor}
               secondColor={watchedValues.secondColor}
+              font={watchedValues.font}
               owner="wildanzrrr.base.eth"
               sender="0xxx"
               symbol="ETH"

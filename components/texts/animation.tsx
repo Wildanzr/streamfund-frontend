@@ -28,6 +28,7 @@ interface TextSegment {
 interface AnimationProps {
   segments: TextSegment[];
   type: AnimationType;
+  font?: string;
   delay?: number;
   staggerChildren?: number;
   fontSize?: number;
@@ -181,6 +182,7 @@ export default function TextAnimation({
   mainFontWeight = 700,
   revealSpeed = 0.5,
   revealDuration = 3,
+  font = "font-protest",
 }: AnimationProps) {
   let letterIndex = 0;
 
@@ -240,7 +242,7 @@ export default function TextAnimation({
             return (
               <motion.span
                 key={`${segmentIndex}-${index}`}
-                className={`font-protest ${segment.isMain ? "main-text" : ""}`}
+                className={`${font} ${segment.isMain ? "main-text" : ""}`}
                 variants={child}
                 custom={currentIndex}
                 style={{

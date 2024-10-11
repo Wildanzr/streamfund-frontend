@@ -278,7 +278,7 @@ const RunningForm = ({ config, streamkey }: RunningFormProps) => {
             variant="secondary"
             className="w-full bg-aqua text-midnight text-lg font-bold"
           >
-            {isSubmitting ? <Loader size="20" /> : "Update QR Code"}
+            {isSubmitting ? <Loader size="20" /> : "Update Running Text"}
           </Button>
         </div>
       </form>

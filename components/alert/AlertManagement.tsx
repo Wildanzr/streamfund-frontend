@@ -6,7 +6,6 @@ import axios from "axios";
 import React from "react";
 import Loader from "../shared/Loader";
 import AlertForm from "./AlertForm";
-import { config } from "process";
 
 interface AlertManagementProps {
   streamkey: string;
