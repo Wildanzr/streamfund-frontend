@@ -307,6 +307,9 @@ const AlertForm = ({ config }: AlertFormProps) => {
                 watchedValues.effect as unknown as (typeof AVAILABLE_ANIMATIONS)[number]
               }
               textSize={watchedValues.textSize.toString()}
+              backgroundColor={watchedValues.backgroundColor}
+              mainColor={watchedValues.mainColor}
+              secondColor={watchedValues.secondColor}
               owner="wildanzrrr.base.eth"
               sender="0xxx"
               symbol="ETH"

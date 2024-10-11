@@ -10,6 +10,9 @@ interface AlertProps {
   symbol: string;
   owner: string;
   textSize: string;
+  mainColor: string;
+  secondColor: string;
+  backgroundColor: string;
   effect: (typeof AVAILABLE_ANIMATIONS)[number];
 }
 
@@ -21,13 +24,17 @@ const Alert = ({
   sender,
   symbol,
   textSize,
+  secondColor,
+  mainColor,
+  backgroundColor,
 }: AlertProps) => {
   return (
     <div
       className={`flex flex-col w-full h-full max-w-5xl rounded-[20px] shadow border`}
     >
       <div
-        className={`flex flex-col items-center justify-center w-full max-w-5xl min-h-40 h-full space-y-3 bg-green-500 rounded-t-[20px] shadow border`}
+        className={`flex flex-col items-center justify-center w-full max-w-5xl min-h-40 h-full space-y-3  rounded-t-[20px] shadow border`}
+        style={{ backgroundColor: backgroundColor }}
       >
         <TextAnimation
           segments={[
@@ -39,8 +46,8 @@ const Alert = ({
           ]}
           type={effect}
           fontSize={Number(textSize)}
-          color="#333333"
-          mainColor="#FF0000"
+          color={secondColor}
+          mainColor={mainColor}
           fontWeight={700}
           mainFontWeight={800}
           delay={0.5}
