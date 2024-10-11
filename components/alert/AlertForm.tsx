@@ -33,6 +33,12 @@ import { useForm } from "react-hook-form";
 import { HexColorPicker } from "react-colorful";
 import Alert from "./Alert";
 import Sound from "./Sound";
+import { Button } from "../ui/button";
+import { useCopyToClipboard } from "usehooks-ts";
+import Loader from "../shared/Loader";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { generateClientSignature } from "@/lib/client";
+import axios from "axios";
 
 interface AlertFormProps {
   address: string;
@@ -60,35 +66,41 @@ const formSchema = z.object({
   effect: z.string(),
 });
 
-const AlertForm = ({ config }: AlertFormProps) => {
-  // const [, copy] = useCopyToClipboard();
-  // const [isSubmitting, setIsSubmitting] = useState(false);
-
+const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
+  const [, copy] = useCopyToClipboard();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [alertKey, setAlertKey] = useState(0);
 
-  // const queryClient = useQueryClient();
-
-  // const updateMutation = useMutation({
-  //   mutationKey: ["update-alert-config"],
-  //   mutationFn: async (values: z.infer<typeof formSchema>) => {
-  //     const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/alert?streamkey=${streamkey}`;
-  //     const timestamp = Math.floor(Date.now() / 1000);
-  //     const payload = { ...values };
-  //     const headers = await generateClientSignature({
-  //       method: "PUT",
-  //       timestamp,
-  //       url,
-  //       body: payload,
-  //     });
-  //     const { data } = await axios.put(url, payload, {
-  //       headers,
-  //     });
-  //     return data;
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["alert-config", streamkey] });
-  //   },
-  // });
+  const queryClient = useQueryClient();
+  const updateMutation = useMutation({
+    mutationKey: ["update-alert-config"],
+    mutationFn: async (values: z.infer<typeof formSchema>) => {
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/alert?streamkey=${streamkey}`;
+      const timestamp = Math.floor(Date.now() / 1000);
+      const payload = {
+        backgroundColor: values.backgroundColor,
+        mainColor: values.mainColor,
+        secondColor: values.secondColor,
+        textSize: values.textSize.toString(),
+        font: values.font,
+        sound: values.sound,
+        effect: values.effect,
+      };
+      const headers = await generateClientSignature({
+        method: "PUT",
+        timestamp,
+        url,
+        body: payload,
+      });
+      const { data } = await axios.put(url, payload, {
+        headers,
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["alert-config", streamkey] });
+    },
+  });
 
   const [alertConfig, setAlertConfig] = useState<AlertProps>({
     backgroundColor: config.backgroundColor,
@@ -107,17 +119,24 @@ const AlertForm = ({ config }: AlertFormProps) => {
   const watchedValues = form.watch();
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    setAlertConfig(data);
-    console.log("Data", data);
+    setIsSubmitting(true);
+    try {
+      setAlertConfig(data);
+      await updateMutation.mutateAsync(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  // const handleCopy = () => {
-  //   copy(
-  //     `${process.env.NEXT_PUBLIC_HOST_URL}/widgets/alert?streamkey=${streamkey}`
-  //   );
+  const handleCopy = () => {
+    copy(
+      `${process.env.NEXT_PUBLIC_HOST_URL}/widgets/alert?streamkey=${streamkey}`
+    );
 
-  //   alert("Copied to clipboard");
-  // };
+    alert("Copied to clipboard");
+  };
 
   useEffect(() => {
     // Increment the key whenever the effect changes
@@ -161,39 +180,6 @@ const AlertForm = ({ config }: AlertFormProps) => {
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={form.control}
-            name="sound"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Alert sound: </FormLabel>
-                <Select
-                  onValueChange={(value) => {
-                    field.onChange(value);
-                    handlePlaySound();
-                  }}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select sound effect" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {AVAILABLE_SOUNDS.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormDescription className="text-white/80">
-                  Sound effect to be played when the alert is triggered
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
           <FormField
             control={form.control}
             name="effect"
@@ -228,13 +214,15 @@ const AlertForm = ({ config }: AlertFormProps) => {
 
         <FormField
           control={form.control}
-          name="effect"
+          name="sound"
           render={({ field }) => (
             <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-6 gap-4">
               {AVAILABLE_SOUNDS.map((item) => (
                 <div key={item.value}>
                   <Sound
-                    {...item}
+                    name={item.name}
+                    src={item.src}
+                    value={item.value}
                     selected={field.value}
                     handleChange={field.onChange}
                   />
@@ -337,12 +325,53 @@ const AlertForm = ({ config }: AlertFormProps) => {
               mainColor={watchedValues.mainColor}
               secondColor={watchedValues.secondColor}
               font={watchedValues.font}
-              owner="wildanzrrr.base.eth"
+              owner={address}
               sender="0xxx"
               symbol="ETH"
             />
           </div>
         )}
+
+        {/* display stream link */}
+        <div className="flex flex-col items-start justify-start w-full h-full">
+          <p className="font-play text-xl text-white pb-1">
+            {process.env.NEXT_PUBLIC_HOST_URL}
+            /widgets/mq?streamkey={streamkey}
+          </p>
+          <div className="bg-white rounded-md w-full h-[1px]" />
+        </div>
+
+        <div className="flex flex-col w-full h-full space-y-2 md:flex-row md:space-y-0 md:space-x-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleCopy}
+            className="w-full bg-vivid text-midnight text-lg font-bold"
+          >
+            Copy QR URL
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            className="w-full bg-sunset text-midnight text-lg font-bold"
+            onClick={() =>
+              window.open(
+                `${process.env.NEXT_PUBLIC_HOST_URL}/widgets/mq?streamkey=${streamkey}`,
+                "_blank"
+              )
+            }
+          >
+            Open in new tab
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            variant="secondary"
+            className="w-full bg-aqua text-midnight text-lg font-bold"
+          >
+            {isSubmitting ? <Loader size="20" /> : "Update Alert"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

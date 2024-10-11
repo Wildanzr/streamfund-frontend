@@ -32,8 +32,6 @@ const AlertManagement = ({ address, streamkey }: AlertManagementProps) => {
     },
   });
 
-  console.log("Config", config);
-
   return (
     <div className="flex flex-col items-center justify-center w-full h-full">
       {isLoading || !config ? (

@@ -55,7 +55,7 @@ const formSchema = z.object({
 });
 
 const RunningForm = ({ config, streamkey }: RunningFormProps) => {
-  const [_, copy] = useCopyToClipboard();
+  const [, copy] = useCopyToClipboard();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
 
