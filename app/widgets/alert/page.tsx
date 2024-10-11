@@ -93,6 +93,7 @@ const AlertPage = async ({ searchParams }: URLProps) => {
         backgroundColor={config.backgroundColor}
         textSize={config.textSize.toString()}
         streamkey={streamkey!}
+        sound={config.sound}
       />
     </div>
   );

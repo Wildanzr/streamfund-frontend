@@ -130,7 +130,6 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
     try {
       setAlertConfig(data);
       await updateMutation.mutateAsync(data);
-      console.log("Done updating");
     } catch (error) {
       console.error(error);
     } finally {
@@ -153,7 +152,6 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
   const handleTestAlert = async () => {
     setIsTesting(true);
     try {
-      console.log("Testing");
       const payload = {
         to: address,
       };
@@ -354,7 +352,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
               mainColor={watchedValues.mainColor}
               secondColor={watchedValues.secondColor}
               font={watchedValues.font}
-              owner={address}
+              owner={"This is the message from your viewers"}
               sender="0xxx"
               symbol="ETH"
             />

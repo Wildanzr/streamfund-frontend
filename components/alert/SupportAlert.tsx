@@ -4,6 +4,9 @@ import { trimAddress } from "@/lib/utils";
 import Alert from "./Alert";
 import { useEffect, useState } from "react";
 import { useSocket, useSocketEvent } from "socket.io-react-hook";
+import useSound from "use-sound";
+import { Button } from "../ui/button";
+import { AVAILABLE_SOUNDS } from "@/constant/common";
 
 interface SupportAlert {
   owner: string;
@@ -14,6 +17,7 @@ interface SupportAlert {
   font: string;
   effect: string;
   streamkey: string;
+  sound: string;
 }
 
 const SupportAlert = (props: SupportAlert) => {
@@ -22,6 +26,10 @@ const SupportAlert = (props: SupportAlert) => {
   const [renderKey, setRenderKey] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [sended, setSended] = useState(false);
+  const selectedSound = AVAILABLE_SOUNDS.find(
+    (sound) => sound.value === props.sound
+  )!;
+  const [play, { stop }] = useSound(selectedSound.src);
   const [newSupport, setNewSupport] = useState<ListenSupportResponse>({
     message: "",
     data: {
@@ -48,7 +56,11 @@ const SupportAlert = (props: SupportAlert) => {
       setRenderKey((prev) => prev + 1);
       setIsVisible(true);
 
+      // play the sound via clicking button to avoid the browser's restriction
+      document.getElementById("play-sound")?.click();
+
       setTimeout(() => {
+        stop();
         setIsVisible(false);
       }, 10000);
     },
@@ -73,18 +85,29 @@ const SupportAlert = (props: SupportAlert) => {
       setSended(true);
     }
   }, [connected, sendMessage, sended]);
+
   return (
-    <div className={`w-full h-full ${isVisible ? "flex" : "hidden"}`}>
-      <Alert
-        key={renderKey}
-        {...props}
-        owner={newSupport.data.message}
-        sender={newSupport.data.from}
-        amount={newSupport.data.amount}
-        decimals={newSupport.data.decimals}
-        symbol={newSupport.data.symbol}
-      />
-    </div>
+    <>
+      <Button
+        onClick={() => play()}
+        variant="default"
+        id="play-sound"
+        className="hidden"
+      >
+        Play
+      </Button>
+      <div className={`w-full h-full ${isVisible ? "flex" : "hidden"}`}>
+        <Alert
+          key={renderKey}
+          {...props}
+          owner={newSupport.data.message}
+          sender={newSupport.data.from}
+          amount={newSupport.data.amount}
+          decimals={newSupport.data.decimals}
+          symbol={newSupport.data.symbol}
+        />
+      </div>
+    </>
   );
 };
 

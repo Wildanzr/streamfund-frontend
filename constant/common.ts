@@ -37,61 +37,61 @@ export const AVAILABLE_SOUNDS = [
   {
     name: "Among Us",
     value: "among-us",
-    src: "/sounds/amongus.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/amongus.mp3",
   },
   {
     name: "Boom",
     value: "boom",
-    src: "/sounds/boom.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/boom.mp3",
   },
   {
     name: "Bruh",
     value: "bruh",
-    src: "/sounds/bruh.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/bruh.mp3",
   },
   {
     name: "Buzzer",
     value: "buzzer",
-    src: "/sounds/buzzer.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/buzzer.mp3",
   },
   {
     name: "Discord notification",
     value: "discord",
-    src: "/sounds/discord.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/discord.mp3",
   },
   {
     name: "Dun dun dunnnnn",
     value: "dun",
-    src: "/sounds/dundundun.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/dundundun.mp3",
   },
   {
     name: "Spongebob fail",
     value: "fail",
-    src: "/sounds/fail.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/fail.mp3",
   },
   {
     name: "Fart",
     value: "fart",
-    src: "/sounds/fart.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/fart.mp3",
   },
   {
     name: "Fart moaning",
     value: "fart-moan",
-    src: "/sounds/fartmoan.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/fartmoan.mp3",
   },
   {
     name: "Get out",
     value: "get-out",
-    src: "/sounds/getout.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/getout.mp3",
   },
   {
     name: "Rizz",
     value: "rizz",
-    src: "/sounds/rizz.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/rizz.mp3",
   },
   {
     name: "Wow",
     value: "wow",
-    src: "/sounds/wow.mp3",
+    src: "https://storage.googleapis.com/sdq-charity/sounds/wow.mp3",
   },
 ] as const;
