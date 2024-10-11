@@ -14,7 +14,11 @@ declare global {
 
   interface ListenSupportResponse extends BaseWebsocketResponse {
     data: {
-      address: string;
+      amount: number;
+      decimals: number;
+      from: string;
+      message: string;
+      symbol: string;
     };
   }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { trimAddress } from "@/lib/utils";
 import Alert from "./Alert";
 import { useEffect, useState } from "react";
 import { useSocket, useSocketEvent } from "socket.io-react-hook";
@@ -18,12 +19,34 @@ interface SupportAlert {
 const SupportAlert = (props: SupportAlert) => {
   const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamkey=${props.streamkey}`;
   const { socket, connected } = useSocket(HOST);
-  const [isVisible, setIsVisible] = useState(false);
+  const [renderKey, setRenderKey] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
   const [sended, setSended] = useState(false);
+  const [newSupport, setNewSupport] = useState<ListenSupportResponse>({
+    message: "",
+    data: {
+      amount: 0,
+      decimals: 0,
+      from: "",
+      message: "",
+      symbol: "",
+    },
+  });
   const { sendMessage } = useSocketEvent<string>(socket, "listen-support");
   useSocketEvent<ListenSupportResponse>(socket, "support", {
-    onMessage: (message) => {
-      console.log("message support", message);
+    onMessage: async (message) => {
+      console.log("AMount", message.data.amount);
+      setNewSupport({
+        message: "New Support",
+        data: {
+          amount: message.data.amount,
+          decimals: message.data.decimals,
+          from: trimAddress(message.data.from),
+          message: message.data.message,
+          symbol: message.data.symbol,
+        },
+      });
+      setRenderKey((prev) => prev + 1);
       setIsVisible(true);
 
       setTimeout(() => {
@@ -49,11 +72,12 @@ const SupportAlert = (props: SupportAlert) => {
   return (
     <div className={`w-full h-full ${isVisible ? "flex" : "hidden"}`}>
       <Alert
+        key={renderKey}
         {...props}
-        sender="sender"
-        amount={1}
-        decimals={1}
-        symbol={"symbol"}
+        sender={newSupport.data.from}
+        amount={newSupport.data.amount}
+        decimals={newSupport.data.decimals}
+        symbol={newSupport.data.symbol}
       />
     </div>
   );

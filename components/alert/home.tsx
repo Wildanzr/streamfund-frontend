@@ -3,7 +3,6 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSocket, useSocketEvent } from "socket.io-react-hook";
-import TextAnimation from "../texts/animation";
 
 export default function HomeAlert() {
   const searchParams = useSearchParams();
@@ -56,15 +55,11 @@ export default function HomeAlert() {
   });
 
   // {message: 'Pong', data: 'meong'}
-  const { lastMessage } = useSocketEvent<ListenSupportResponse>(
-    socket,
-    "support-init",
-    {
-      onMessage: (message) => {
-        console.log("message", message);
-      },
-    }
-  );
+  useSocketEvent<ListenSupportResponse>(socket, "support-init", {
+    onMessage: (message) => {
+      console.log("message", message);
+    },
+  });
 
   useEffect(() => {
     if (connected && !sended) {
@@ -81,10 +76,6 @@ export default function HomeAlert() {
         <p>Stream key: {streamkey}</p>
         <p>Host: {HOST}</p>
         <p>Connected: {connected ? "yes" : "no"}</p>
-        <p>
-          Last message:
-          {lastMessage && lastMessage.data ? lastMessage.data.address : ""}
-        </p>
       </div>
 
       {all.map((animationType) => (
