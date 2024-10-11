@@ -39,6 +39,7 @@ import Loader from "../shared/Loader";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { generateClientSignature } from "@/lib/client";
 import axios from "axios";
+import { useSocket, useSocketEvent } from "socket.io-react-hook";
 
 interface AlertFormProps {
   address: string;
@@ -71,6 +72,11 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [alertKey, setAlertKey] = useState(0);
+
+  const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamkey=${streamkey}`;
+  const { socket } = useSocket(HOST);
+  const { sendMessage: sendTesting } = useSocketEvent<string>(socket, "test");
+  const { sendMessage: sendReload } = useSocketEvent<string>(socket, "reload");
 
   const queryClient = useQueryClient();
   const updateMutation = useMutation({
@@ -124,10 +130,15 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
     try {
       setAlertConfig(data);
       await updateMutation.mutateAsync(data);
+      console.log("Done updating");
     } catch (error) {
       console.error(error);
     } finally {
       setIsSubmitting(false);
+      const payload = {
+        to: address,
+      };
+      sendReload(JSON.stringify(payload));
     }
   };
 
@@ -143,6 +154,10 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
     setIsTesting(true);
     try {
       console.log("Testing");
+      const payload = {
+        to: address,
+      };
+      sendTesting(JSON.stringify(payload));
     } catch (error) {
       console.error(error);
     } finally {

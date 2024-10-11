@@ -56,7 +56,9 @@ const Alert = ({
         />
       </div>
       <div className="flex flex-col items-center justify-center min-h-10 bg-white rounded-b-[20px] shadow border">
-        <p className="text-black">{owner}</p>
+        <p className={`text-black text-base p-5 text-center tracking-wider`}>
+          {owner}
+        </p>
       </div>
     </div>
   );
