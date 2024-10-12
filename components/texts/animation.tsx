@@ -233,42 +233,50 @@ export default function TextAnimation({
       variants={container}
       initial="hidden"
       animate="visible"
+      className="flex flex-wrap justify-center items-center text-center"
     >
       <AnimatePresence>
         {segments.map((segment, segmentIndex) => {
           const letters = Array.from(segment.text);
-          return letters.map((letter, index) => {
-            const currentIndex = letterIndex++;
-            return (
-              <motion.span
-                key={`${segmentIndex}-${index}`}
-                className={`${font} ${segment.isMain ? "main-text" : ""}`}
-                variants={child}
-                custom={currentIndex}
-                style={{
-                  display: "inline-block",
-                  color: segment.isMain ? mainColor : color,
-                  fontWeight: segment.isMain ? mainFontWeight : fontWeight,
-                }}
-              >
-                <motion.span
-                  animate={type}
-                  variants={animationVariants}
-                  custom={currentIndex}
-                  style={{ display: "inline-block" }}
-                  transition={{
-                    repeat: Infinity,
-                    repeatType: "loop",
-                    repeatDelay:
-                      type === "rubberBand" || type === "tada" ? 1 : 0,
-                    delay: delay + currentIndex * 0.1,
-                  }}
-                >
-                  {letter === " " ? "\u00A0" : letter}
-                </motion.span>
-              </motion.span>
-            );
-          });
+          return (
+            <div
+              key={segmentIndex}
+              className="flex justify-center items-center flex-wrap"
+            >
+              {letters.map((letter, index) => {
+                const currentIndex = letterIndex++;
+                return (
+                  <motion.span
+                    key={`${segmentIndex}-${index}`}
+                    className={`${font} ${segment.isMain ? "main-text" : ""}`}
+                    variants={child}
+                    custom={currentIndex}
+                    style={{
+                      display: "inline-block",
+                      color: segment.isMain ? mainColor : color,
+                      fontWeight: segment.isMain ? mainFontWeight : fontWeight,
+                    }}
+                  >
+                    <motion.span
+                      animate={type}
+                      variants={animationVariants}
+                      custom={currentIndex}
+                      style={{ display: "inline-block" }}
+                      transition={{
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        repeatDelay:
+                          type === "rubberBand" || type === "tada" ? 1 : 0,
+                        delay: delay + currentIndex * 0.1,
+                      }}
+                    >
+                      {letter === " " ? "\u00A0" : letter}
+                    </motion.span>
+                  </motion.span>
+                );
+              })}
+            </div>
+          );
         })}
       </AnimatePresence>
     </motion.div>

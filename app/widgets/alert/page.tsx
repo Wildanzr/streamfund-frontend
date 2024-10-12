@@ -80,7 +80,6 @@ const AlertPage = async ({ searchParams }: URLProps) => {
   });
   const alertConfig = await reqAlertConfig.json();
   const config = alertConfig.data.config as AlertConfigResponse;
-  console.log("Config", config);
 
   return (
     <div className="flex flex-col w-full h-full min-h-screen bg-transparent items-start justify-start">

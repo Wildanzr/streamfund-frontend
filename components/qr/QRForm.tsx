@@ -61,7 +61,7 @@ interface QRFormProps {
 
 const QRForm = ({ address, streamkey, config }: QRFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [_, copy] = useCopyToClipboard();
+  const [, copy] = useCopyToClipboard();
   const queryClient = useQueryClient();
 
   const updateMutation = useMutation({

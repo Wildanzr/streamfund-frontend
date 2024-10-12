@@ -17,8 +17,9 @@ export const generateServerSignature = ({
     method,
     timestamp,
     url,
+    body,
   });
-  let headers = {
+  const headers = {
     "Content-Type": "application/json",
     "x-api-key": process.env.NEXT_PUBLIC_PUBLIC_KEY!,
     "x-timestamp": timestamp.toString(),
