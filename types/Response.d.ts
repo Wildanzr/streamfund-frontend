@@ -7,6 +7,20 @@ declare global {
     valid: boolean;
   }
 
+  interface Token {
+    _id: string;
+    address: string;
+    decimal: number;
+    symbol: string;
+    logo: string;
+  }
+
+  interface TokenResponse {
+    tokens: Token[];
+  }
+
+  type CheckAddressResponse = CheckStreamKeyResponse;
+
   interface BaseWebsocketResponse {
     message: string;
     data: Record<string, unknown>;

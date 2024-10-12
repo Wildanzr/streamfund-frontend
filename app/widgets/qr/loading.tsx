@@ -1,7 +1,7 @@
 import React from "react";
 
 const LoadingPage = () => {
-  return <div>LoadingPage</div>;
+  return <div>Loading...</div>;
 };
 
 export default LoadingPage;
