@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Protest_Strike, Space_Grotesk, Play } from "next/font/google";
-import "./globals.css";
 import SocketProvider from "@/provider/SocketProvider";
-import Web3Provider from "@/provider/Web3Provider";
+import SimpleProvider from "@/provider/SimpleProvider";
+import { Toaster } from "@/components/ui/toaster";
+
+import "./globals.css";
 
 const protest = Protest_Strike({
   weight: ["400"],
@@ -40,9 +42,10 @@ export default function RootLayout({
       <body
         className={`${protest.variable} ${space_grotesk.variable} ${play.variable} antialiased bg-transparent font-grotesk`}
       >
-        <Web3Provider>
+        <SimpleProvider>
+          <Toaster />
           <SocketProvider>{children}</SocketProvider>
-        </Web3Provider>
+        </SimpleProvider>
       </body>
     </html>
   );

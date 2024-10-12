@@ -6,23 +6,33 @@ import { useAccount } from "wagmi";
 import { registerAsStreamer } from "@/web3/streamfund";
 import useWaitForTxAction from "@/hooks/useWaitForTxAction";
 import { Address } from "viem";
-import { useRouter } from "next/navigation";
 import Loader from "../shared/Loader";
+import { useToast } from "@/hooks/use-toast";
+import ToastTx from "../shared/ToastTx";
+import { getExplorer } from "@/lib/utils";
 
 const Register = () => {
-  const router = useRouter();
+  const etherscan = getExplorer();
   const { address } = useAccount();
+  const { toast } = useToast();
   const [isRegistering, setIsRegistering] = useState(false);
   const [txHash, setTxHash] = useState<Address | undefined>();
+  const RELOAD_TIME = 10 * 1000; // 10 seconds
+
+  const handlePostAction = () => {
+    toast({
+      title: "Transaction confirmed",
+      description: "Please wait for your profile to be created",
+      variant: "default",
+    });
+    setTimeout(() => {
+      window.location.reload();
+    }, RELOAD_TIME);
+  };
 
   useWaitForTxAction({
     txHash,
-    action: () => {
-      alert("Registration successful! Waiting to getting redirected...");
-      setTimeout(() => {
-        router.refresh();
-      }, 5000);
-    },
+    action: handlePostAction,
   });
 
   const handleRegister = async () => {
@@ -30,15 +40,31 @@ const Register = () => {
     setIsRegistering(true);
     try {
       const result = await registerAsStreamer(address);
+      console.log("Result", result);
       if (result === false) return;
-
       setTxHash(result);
+      toast({
+        title: "Transaction submitted",
+        action: (
+          <ToastTx
+            explorerLink={etherscan.url}
+            explorerName={etherscan.name}
+            txHash={txHash}
+          />
+        ),
+      });
     } catch (error) {
       console.error(error);
+      toast({
+        title: "Transaction failed",
+        description: "Failed to register as a streamer",
+        variant: "destructive",
+      });
     } finally {
       setIsRegistering(false);
     }
   };
+
   return (
     <div className="flex flex-col w-full h-full min-h-screen items-center justify-center space-y-4">
       <h3 className="font-play text-3xl font-bold">
@@ -47,7 +73,7 @@ const Register = () => {
       <Button
         onClick={handleRegister}
         disabled={isRegistering}
-        className="bg-aqua font-play font-bold text-2xl text-midnight hover:bg-aqua/80"
+        className="flex bg-aqua font-play font-bold text-2xl text-midnight hover:bg-aqua/80"
       >
         {isRegistering ? <Loader /> : "Register Now"}
       </Button>

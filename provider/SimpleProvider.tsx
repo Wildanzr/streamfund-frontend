@@ -5,29 +5,22 @@ import {
   connectorsForWallets,
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
-import {
-  cookieStorage,
-  createConfig,
-  createStorage,
-  http,
-  WagmiProvider,
-} from "wagmi";
+import { WagmiProvider, createConfig, http } from "wagmi";
 import { baseSepolia } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import {
+  coinbaseWallet,
   metaMaskWallet,
   rainbowWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
-const pID = process.env.NEXT_PUBLIC_PROJECT_ID;
-console.log("Project ID", pID);
 const connectors = connectorsForWallets(
   [
-    // {
-    //   groupName: "Recommended",
-    //   wallets: [coinbaseWallet],
-    // },
+    {
+      groupName: "Recommended",
+      wallets: [coinbaseWallet],
+    },
     {
       groupName: "Popular",
       wallets: [rainbowWallet, metaMaskWallet],
@@ -38,29 +31,32 @@ const connectors = connectorsForWallets(
     },
   ],
   {
-    appName: "Streamfund",
-    // projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
+    appName: "StreamFund",
     projectId: "ea864a0cc11bfcd32f55a4e9566ea3d0",
   }
 );
 
-export function getConfig() {
-  return createConfig({
-    // connectors,
-    chains: [baseSepolia],
-    storage: createStorage({
-      storage: cookieStorage,
-    }),
-    ssr: true,
-    transports: {
-      [baseSepolia.id]: http(),
-    },
-  });
-}
+// export const config = getDefaultConfig({
+//   appName: "My RainbowKit App",
+//   projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
+//   chains: [baseSepolia],
+//   ssr: true,
+//   transports: {
+//     [baseSepolia.id]: http(),
+//   },
+// });
 
-const Web3Provider = ({ children }: ChildrenProps) => {
-  const queryClient = new QueryClient();
-  const config = getConfig();
+export const config = createConfig({
+  connectors,
+  chains: [baseSepolia],
+  ssr: true,
+  transports: {
+    [baseSepolia.id]: http(),
+  },
+});
+
+const queryClient = new QueryClient();
+const SimpleProvider = ({ children }: ChildrenProps) => {
   const customTheme = {
     colors: {
       accentColor: "hsl(191 91% 53%)",
@@ -118,7 +114,6 @@ const Web3Provider = ({ children }: ChildrenProps) => {
       body: "...", // default
     },
   };
-
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
@@ -128,10 +123,4 @@ const Web3Provider = ({ children }: ChildrenProps) => {
   );
 };
 
-declare module "wagmi" {
-  interface Register {
-    config: ReturnType<typeof getConfig>;
-  }
-}
-
-export default Web3Provider;
+export default SimpleProvider;
