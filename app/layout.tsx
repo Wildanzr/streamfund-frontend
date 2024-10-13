@@ -11,6 +11,7 @@ const protest = Protest_Strike({
   style: "normal",
   variable: "--font-protest-strike",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const space_grotesk = Space_Grotesk({
@@ -18,6 +19,7 @@ const space_grotesk = Space_Grotesk({
   style: "normal",
   variable: "--font-space-grotesk",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const play = Play({
@@ -25,6 +27,7 @@ const play = Play({
   style: "normal",
   variable: "--font-play",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
