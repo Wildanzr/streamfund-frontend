@@ -23,8 +23,10 @@ const Register = () => {
     toast({
       title: "Transaction confirmed",
       description: "Please wait for your profile to be created",
-      variant: "default",
+      variant: "success",
     });
+
+    setTxHash(undefined);
     setTimeout(() => {
       window.location.reload();
     }, RELOAD_TIME);

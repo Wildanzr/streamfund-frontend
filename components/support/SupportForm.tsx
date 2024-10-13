@@ -25,14 +25,17 @@ import {
   FormMessage,
 } from "../ui/form";
 import Loader from "../shared/Loader";
-import { NATIVE_ADDRESS } from "@/constant/common";
+import { NATIVE_ADDRESS, SUPPORT_OPTIONS } from "@/constant/common";
 import { Address, formatUnits } from "viem";
 import {
+  giveAllowance,
   readAllowance,
   readAllowedTokenPrice,
   readTokenBalance,
+  supportWithETH,
+  supportWithToken,
 } from "@/web3/streamfund";
-import { displayFormatter } from "@/lib/utils";
+import { displayFormatter, getExplorer } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
 import {
   TooltipProvider,
@@ -41,8 +44,8 @@ import {
   TooltipContent,
 } from "@radix-ui/react-tooltip";
 import { useToast } from "@/hooks/use-toast";
-
-const quickSupportOptions = [1, 1.5, 3, 5, 10];
+import useWaitForTxAction from "@/hooks/useWaitForTxAction";
+import ToastTx from "../shared/ToastTx";
 
 interface SupportFormProps {
   streamer: string;
@@ -57,6 +60,7 @@ const formSchema = z.object({
 });
 
 export default function SupportForm({ tokens, streamer }: SupportFormProps) {
+  const etherscan = getExplorer();
   const { toast } = useToast();
   const { address } = useAccount();
   const { data, refetch } = useBalance({
@@ -65,6 +69,11 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
   const [quickAmount, setQuickAmount] = useState(0);
   const [isFetchingBalance, setIsFetchingBalance] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [supportState, setSupportState] = useState<"approve" | "support">(
+    "approve"
+  );
+  const [isApproving, setIsApproving] = useState(false);
+  const [txHash, setTxHash] = useState<Address | undefined>();
   const [tokenInfo, setTokenInfo] = useState({
     address: "",
     balance: 0,
@@ -73,7 +82,6 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
     allowance: 0,
     currentPrice: 0,
   });
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -82,6 +90,29 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
       amount: "",
       message: "",
     },
+  });
+
+  const handlePostAction = async () => {
+    if (isApproving) {
+      toast({
+        title: "Allowance has been approved",
+        variant: "success",
+      });
+      setIsApproving(false);
+      setSupportState("support");
+    } else {
+      toast({
+        title: "Your support has been received to the streamer.",
+        variant: "success",
+      });
+    }
+
+    setTxHash(undefined);
+  };
+
+  useWaitForTxAction({
+    txHash,
+    action: handlePostAction,
   });
 
   const getTokenInfo = useCallback(
@@ -93,7 +124,7 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
     [tokens]
   );
 
-  const hanldeFetchingBalance = useCallback(
+  const handleFetchingBalance = useCallback(
     async (token: string) => {
       if (!address) return;
       const parsedToken = token as Address;
@@ -113,6 +144,7 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
             allowance: 999999999,
             currentPrice: price,
           });
+          setSupportState("support");
         } else {
           const tokenDetail = getTokenInfo(token);
           const [balance, allowance] = await Promise.all([
@@ -127,6 +159,11 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
             allowance: Number(allowance) ?? 0,
             currentPrice: price,
           });
+          if (Number(allowance) === 0) {
+            setSupportState("approve");
+          } else {
+            setSupportState("support");
+          }
         }
       } catch (error) {
         console.error(error);
@@ -150,6 +187,34 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
     [form, tokenInfo.currentPrice, tokenInfo.decimals]
   );
 
+  const handleApprove = async (): Promise<void> => {
+    if (!address) return;
+    setIsApproving(true);
+    try {
+      const token = tokenInfo.address as Address;
+      const result = await giveAllowance(address, token);
+      if (result === false) return;
+      setTxHash(result);
+      toast({
+        title: "Transaction submitted",
+        action: (
+          <ToastTx
+            explorerLink={etherscan.url}
+            explorerName={etherscan.name}
+            txHash={result}
+          />
+        ),
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Transaction failed",
+        description: "Failed to give allowance",
+        variant: "destructive",
+      });
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!address) return;
     const amoutParsed = Number(values.amount) * 10 ** tokenInfo.decimals;
@@ -162,16 +227,63 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
       });
       return;
     }
+    const tokenDetail = getTokenInfo(values.token);
 
     try {
       setIsSubmitting(true);
-      console.log("TO", values.streamer);
-      console.log("TOKEN", tokenInfo.address);
-      console.log("AMOUNT", amoutParsed);
-      console.log("MESSAGE", values.message);
       // Implement your submission logic here
+      const streamer = values.streamer as Address;
+      const token = values.token as Address;
+      let result: boolean | Address = false;
+
+      const isNeedApprove =
+        tokenInfo.allowance === 0
+          ? true
+          : tokenInfo.allowance <
+            Number(form.watch("amount")) * 10 ** tokenInfo.decimals
+          ? true
+          : false;
+
+      if (
+        isNeedApprove &&
+        tokenDetail.address !== NATIVE_ADDRESS &&
+        supportState !== "support"
+      ) {
+        await handleApprove();
+        return;
+      }
+      if (tokenDetail.address === NATIVE_ADDRESS) {
+        result = await supportWithETH(amoutParsed, streamer, values.message);
+      } else {
+        result = await supportWithToken(
+          amoutParsed,
+          streamer,
+          token,
+          values.message
+        );
+      }
+      if (result === false) return;
+      setTxHash(result);
+      toast({
+        title: "Transaction submitted",
+        action: (
+          <ToastTx
+            explorerLink={etherscan.url}
+            explorerName={etherscan.name}
+            txHash={txHash}
+          />
+        ),
+      });
+
+      form.reset();
+      setQuickAmount(0);
     } catch (error) {
       console.error(error);
+      toast({
+        title: "Transaction failed",
+        description: "Failed to support the streamer",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -189,7 +301,7 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
-                  hanldeFetchingBalance(value);
+                  handleFetchingBalance(value);
                 }}
                 value={field.value}
               >
@@ -234,7 +346,7 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
         <div className="space-y-2">
           <Label>Quick support</Label>
           <div className="grid grid-cols-5 gap-5">
-            {quickSupportOptions.map((option) => (
+            {SUPPORT_OPTIONS.map((option) => (
               <Button
                 key={option}
                 variant="outline"
@@ -336,12 +448,27 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
         />
         <Button
           className="w-full bg-aqua text-black"
-          type="submit"
+          type={"submit"}
           variant="secondary"
-          disabled={isFetchingBalance || isSubmitting || !tokenInfo.address}
+          disabled={
+            isFetchingBalance ||
+            isSubmitting ||
+            !tokenInfo.address ||
+            form.watch("amount") === ""
+          }
         >
-          Support now
+          {isApproving || isSubmitting ? (
+            <Loader size="20" />
+          ) : (
+            <p className="mx-2">
+              {supportState === "approve" ? "Approve" : "Support Now"}
+            </p>
+          )}
         </Button>
+
+        <p>
+          Allowance: {tokenInfo.allowance} {tokenInfo.symbol}
+        </p>
       </form>
     </Form>
   );

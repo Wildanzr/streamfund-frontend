@@ -6,9 +6,9 @@ import { config } from "@/provider/SimpleProvider";
 import { publicClient } from "./client";
 import { TOKEN_ABI } from "@/constant/token-abi";
 
+// WRITE FUNCTIONS
 export const registerAsStreamer = async (address: Address) => {
   try {
-    // console.log("Config", config);
     console.log("Address", address);
     const result = await writeContract(config, {
       abi: STREAMFUND_ABI,
@@ -24,6 +24,69 @@ export const registerAsStreamer = async (address: Address) => {
   }
 };
 
+export const giveAllowance = async (user: Address, token: Address) => {
+  const maxAmount = BigInt(
+    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+  );
+  try {
+    const result = await writeContract(config, {
+      abi: TOKEN_ABI,
+      address: token,
+      functionName: "approve",
+      args: [STREAMFUND_ADDRESS, maxAmount],
+      account: user,
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error giving allowance:", error);
+    return false;
+  }
+};
+
+export const supportWithETH = async (
+  amount: number,
+  streamer: Address,
+  message: string
+) => {
+  try {
+    const result = await writeContract(config, {
+      abi: STREAMFUND_ABI,
+      address: STREAMFUND_ADDRESS,
+      functionName: "supportWithETH",
+      args: [streamer, message],
+      value: BigInt(amount),
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error supporting with ETH:", error);
+    return false;
+  }
+};
+
+export const supportWithToken = async (
+  amount: number,
+  streamer: Address,
+  token: Address,
+  message: string
+) => {
+  try {
+    const result = await writeContract(config, {
+      abi: STREAMFUND_ABI,
+      address: STREAMFUND_ADDRESS,
+      functionName: "supportWithToken",
+      args: [streamer, token, BigInt(amount), message],
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error supporting with token:", error);
+    return false;
+  }
+};
+
+// READ FUNCTIONS
 export const readStreamer = async (address: Address) => {
   try {
     const result = await publicClient.readContract({

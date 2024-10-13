@@ -16,8 +16,11 @@ const useWaitForTxAction = ({ action, txHash }: UseWaitForTxActionProps) => {
   });
 
   useEffect(() => {
+    const execute = async () => {
+      await action();
+    };
     if (waitTx?.status === "success") {
-      action();
+      execute();
     }
   }, [action, waitTx]);
 };
