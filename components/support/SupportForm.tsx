@@ -35,7 +35,7 @@ import {
   supportWithETH,
   supportWithToken,
 } from "@/web3/streamfund";
-import { displayFormatter, getExplorer } from "@/lib/utils";
+import { displayFormatter, getExplorer, trimAddress } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
 import {
   TooltipProvider,
@@ -46,6 +46,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import useWaitForTxAction from "@/hooks/useWaitForTxAction";
 import ToastTx from "../shared/ToastTx";
+import { Separator } from "../ui/separator";
+import Link from "next/link";
 
 interface SupportFormProps {
   streamer: string;
@@ -466,9 +468,20 @@ export default function SupportForm({ tokens, streamer }: SupportFormProps) {
           )}
         </Button>
 
-        <p>
-          Allowance: {tokenInfo.allowance} {tokenInfo.symbol}
-        </p>
+        <div className="flex flex-col space-y-2 w-full h-full items-center justify-center">
+          <Separator />
+          <h3 className="text-white/80 text-base text-center">
+            Need token? Mint here!
+          </h3>
+          {tokens.slice(1).map((token) => (
+            <Link
+              href={`${etherscan.url}/address/${token.address}`}
+              key={token._id}
+            >
+              {token.symbol} - {trimAddress(token.address)}
+            </Link>
+          ))}
+        </div>
       </form>
     </Form>
   );

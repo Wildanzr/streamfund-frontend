@@ -1,33 +1,26 @@
 import type { Metadata } from "next";
-import { Protest_Strike, Space_Grotesk, Play } from "next/font/google";
 import SocketProvider from "@/provider/SocketProvider";
 import SimpleProvider from "@/provider/SimpleProvider";
 import { Toaster } from "@/components/ui/toaster";
-
+import localFont from "next/font/local";
 import "./globals.css";
 
-const protest = Protest_Strike({
-  weight: ["400"],
-  style: "normal",
+const protestLocal = localFont({
+  src: "./fonts/ProtestStrike-Regular.ttf",
   variable: "--font-protest-strike",
-  subsets: ["latin"],
-  display: "swap",
+  weight: "400",
 });
 
-const space_grotesk = Space_Grotesk({
-  weight: ["300", "400", "500", "600", "700"],
-  style: "normal",
+const spaceGroteskLocal = localFont({
+  src: "./fonts/SpaceGrotesk-VariableFont_wght.ttf",
   variable: "--font-space-grotesk",
-  subsets: ["latin"],
-  display: "swap",
+  weight: "300 400 500 600 700",
 });
 
-const play = Play({
-  weight: ["400", "700"],
-  style: "normal",
+const playLocal = localFont({
+  src: "./fonts/Play-Regular.ttf",
   variable: "--font-play",
-  subsets: ["latin"],
-  display: "swap",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -43,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${protest.variable} ${space_grotesk.variable} ${play.variable} antialiased bg-transparent font-grotesk`}
+        className={`${protestLocal.variable} ${spaceGroteskLocal.variable} ${playLocal.variable} antialiased bg-transparent font-grotesk`}
       >
         <SimpleProvider>
           <Toaster />

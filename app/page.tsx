@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import Game from "../public/icons/game.json";
 import DisplayLottie from "@/components/lottie/lottie";
 import Background from "@/components/layout/background";
+import ToApp from "@/components/layout/toapp";
 
 export const metadata: Metadata = {
   title: "StreamFund",
@@ -61,6 +62,7 @@ export default function Home() {
         </div>
 
         <DisplayLottie animationData={Game} />
+        <ToApp />
 
         <div className="flex flex-col space-y-5 w-full h-full justify-start z-10 p-10">
           <p className="text-white font-play text-2xl text-center">

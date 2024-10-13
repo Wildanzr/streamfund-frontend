@@ -15,10 +15,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { HexColorPicker } from "react-colorful";
-import QR from "./QR";
+import QR from "./qr/QR";
 
 interface QRProps {
   value: string;
@@ -78,7 +84,9 @@ const QRForm = () => {
                   <FormControl>
                     <Input placeholder="wildanzrrr.base.eth" {...field} />
                   </FormControl>
-                  <FormDescription>Your Ethereum address or ENS name.</FormDescription>
+                  <FormDescription>
+                    Your Ethereum address or ENS name.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -92,7 +100,9 @@ const QRForm = () => {
                   <FormControl>
                     <Input placeholder="https://example.com" {...field} />
                   </FormControl>
-                  <FormDescription>The URL or text to encode in the QR code.</FormDescription>
+                  <FormDescription>
+                    The URL or text to encode in the QR code.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -125,7 +135,10 @@ const QRForm = () => {
                   <FormLabel>Background Color</FormLabel>
                   <FormControl>
                     <div className="flex items-center space-x-4">
-                      <HexColorPicker color={field.value} onChange={field.onChange} />
+                      <HexColorPicker
+                        color={field.value}
+                        onChange={field.onChange}
+                      />
                       <Input {...field} />
                     </div>
                   </FormControl>
@@ -141,7 +154,10 @@ const QRForm = () => {
                   <FormLabel>Foreground Color</FormLabel>
                   <FormControl>
                     <div className="flex items-center space-x-4">
-                      <HexColorPicker color={field.value} onChange={field.onChange} />
+                      <HexColorPicker
+                        color={field.value}
+                        onChange={field.onChange}
+                      />
                       <Input {...field} />
                     </div>
                   </FormControl>
@@ -155,7 +171,10 @@ const QRForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Error Correction Level</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select error correction level" />
@@ -168,7 +187,10 @@ const QRForm = () => {
                       <SelectItem value="H">High</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormDescription>Higher levels provide better error correction but increase QR code size.</FormDescription>
+                  <FormDescription>
+                    Higher levels provide better error correction but increase
+                    QR code size.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -179,7 +201,10 @@ const QRForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>QR Style</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select QR style" />
@@ -210,7 +235,9 @@ const QRForm = () => {
                       onValueChange={(value) => field.onChange(value[0])}
                     />
                   </FormControl>
-                  <FormDescription>Size of the quiet zone around the QR code.</FormDescription>
+                  <FormDescription>
+                    Size of the quiet zone around the QR code.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

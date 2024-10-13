@@ -384,7 +384,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
             onClick={handleCopy}
             className="w-full bg-vivid text-midnight text-lg font-bold"
           >
-            Copy QR URL
+            Copy Alert URL
           </Button>
           <Button
             type="button"

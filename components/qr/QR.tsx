@@ -2,6 +2,7 @@
 
 import React from "react";
 import { QRCode } from "react-qrcode-logo";
+import { Basenames } from "../shared/Basenames";
 
 export interface QRProps {
   value: string;
@@ -38,15 +39,7 @@ const QR = ({
       />
 
       <div className="flex flex-col items-center justify-center">
-        {/* <Basenames address={parsedAddress} color={fgColor} /> */}
-        <p
-          className="font-play text-2xl font-bold "
-          style={{
-            color: fgColor,
-          }}
-        >
-          {parsedAddress}
-        </p>
+        <Basenames address={parsedAddress} color={fgColor} />
         <p
           className="font-play text-base"
           style={{
