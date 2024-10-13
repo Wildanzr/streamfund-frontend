@@ -1,6 +1,6 @@
 import Background from "@/components/layout/background";
 import Header from "@/components/layout/header";
-import SupportForm from "@/components/support/SupportForm";
+import Support from "@/components/support/Support";
 import { generateServerSignature } from "@/lib/server";
 import { Metadata } from "next";
 import React from "react";
@@ -76,13 +76,12 @@ const SupportPage = async ({ params }: URLProps) => {
   const resTokens = await reqTokens.json();
   const tokens = (await resTokens.data.tokens) as Token[];
   console.log("tokens", tokens);
-
   return (
     <div className="flex relative flex-col items-start justify-start w-full h-full min-h-screen">
       <Background />
       <Header />
       <div className="flex flex-col space-y-10 items-center justify-start w-full h-full z-10 pt-10">
-        <SupportForm tokens={tokens} streamer={params.id} />
+        <Support tokens={tokens} streamer={params.id} />
       </div>
     </div>
   );

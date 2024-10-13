@@ -1,5 +1,6 @@
 export const STREAMFUND_ADDRESS = "0xe64557155c5c396648128b9BbF7D01883E14F428";
 export const BASENAMES_ADDRESS = "0x03c4738Ee98aE44591e1A4A4F3CaB6641d95DD9a";
+export const NATIVE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const AVAILABLE_FONTS = [
   {
     name: "Play",

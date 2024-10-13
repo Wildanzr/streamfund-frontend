@@ -92,3 +92,12 @@ export const getExplorer = () => {
 
   return explorer;
 };
+
+export const displayFormatter = (fraction: number, value: number) => {
+  return Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: fraction,
+    maximumFractionDigits: fraction,
+  }).format(value);
+};
