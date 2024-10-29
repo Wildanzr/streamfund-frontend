@@ -4,6 +4,7 @@ import SimpleProvider from "@/provider/SimpleProvider";
 import { Toaster } from "@/components/ui/toaster";
 import localFont from "next/font/local";
 import "./globals.css";
+import { ParticleConnectkit } from "@/provider/ConnectKit";
 
 const protestLocal = localFont({
   src: "./fonts/ProtestStrike-Regular.ttf",
@@ -38,10 +39,12 @@ export default function RootLayout({
       <body
         className={`${protestLocal.variable} ${spaceGroteskLocal.variable} ${playLocal.variable} antialiased bg-transparent font-grotesk`}
       >
-        <SimpleProvider>
-          <Toaster />
-          <SocketProvider>{children}</SocketProvider>
-        </SimpleProvider>
+        <ParticleConnectkit>
+          <SimpleProvider>
+            <Toaster />
+            <SocketProvider>{children}</SocketProvider>
+          </SimpleProvider>
+        </ParticleConnectkit>
       </body>
     </html>
   );

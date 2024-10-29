@@ -1,6 +1,7 @@
 import Image from "next/image";
-import WalletButton from "../shared/WalletButton";
+// import WalletButton from "../shared/WalletButton";
 import Link from "next/link";
+import { ConnectButton } from "@particle-network/connectkit";
 
 const Header = () => {
   return (
@@ -14,7 +15,8 @@ const Header = () => {
       <nav>
         <ul className="flex space-x-4">
           <li>
-            <WalletButton />
+            {/* <WalletButton /> */}
+            <ConnectButton />
           </li>
         </ul>
       </nav>
