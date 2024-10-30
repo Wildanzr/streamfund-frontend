@@ -124,7 +124,7 @@ const RunningForm = ({ config, streamkey }: RunningFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-8 overflow-hidden"
+        className="space-y-6 w-full h-full overflow-hidden"
       >
         {/* TEXT CONTENT */}
         <FormField
