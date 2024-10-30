@@ -76,12 +76,10 @@ const SupportPage = async ({ params }: URLProps) => {
   const resTokens = await reqTokens.json();
   const tokens = (await resTokens.data.tokens) as Token[];
   return (
-    <div className="flex relative flex-col items-start justify-start w-full h-full min-h-screen">
+    <div className="flex relative flex-col items-center justify-center w-full h-full min-h-screen">
       <Background />
       <Header />
-      <div className="flex flex-col space-y-10 items-center justify-start w-full h-full z-10 pt-10">
-        <Support tokens={tokens} streamer={params.id} />
-      </div>
+      <Support tokens={tokens} streamer={params.id} />
     </div>
   );
 };

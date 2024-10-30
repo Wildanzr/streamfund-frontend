@@ -48,7 +48,7 @@ export default function Home() {
     <div className="flex relative flex-col items-start justify-start w-full h-full min-h-screen">
       <Background />
       <Header />
-      <div className="flex flex-col space-y-10 items-center justify-start w-full h-full z-10 pt-10">
+      <div className="flex flex-col space-y-10 items-center justify-start w-full h-full z-10">
         <ManagementPlatformComponent />
       </div>
     </div>

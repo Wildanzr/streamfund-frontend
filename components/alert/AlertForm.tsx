@@ -176,7 +176,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6 w-full h-full overflow-auto"
       >
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="font"
@@ -243,7 +243,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
           control={form.control}
           name="sound"
           render={({ field }) => (
-            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-6 gap-4">
+            <div className="flex flex-row gap-x-8 gap-y-4 flex-wrap">
               {AVAILABLE_SOUNDS.map((item) => (
                 <div key={item.value}>
                   <Sound
@@ -282,7 +282,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
           )}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center">
+        <div className="flex flex-col md:flex-row items-center gap-5 justify-between px-6">
           <FormField
             control={form.control}
             name="backgroundColor"

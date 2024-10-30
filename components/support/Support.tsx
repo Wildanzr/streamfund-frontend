@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@particle-network/connectkit";
 import SupportForm from "./SupportForm";
 import Unauthenticated from "../layout/unauthenticated";
 import {
@@ -17,7 +17,7 @@ interface SupportProps {
 }
 
 export default function Support({ tokens, streamer }: SupportProps) {
-  const { isConnected } = useAccount();
+  const { status } = useAccount();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -27,8 +27,8 @@ export default function Support({ tokens, streamer }: SupportProps) {
   return (
     <div className="flex flex-col w-full h-full items-center justify-center">
       {isClient ? (
-        isConnected ? (
-          <Card className="w-full max-w-md mx-auto bg-transparent text-white">
+        status === "connected" ? (
+          <Card className="w-full max-w-md backdrop-blur-md mx-auto bg-black/10 text-white">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-center">
                 Support your favorite Streamer!

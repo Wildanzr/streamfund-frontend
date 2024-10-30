@@ -33,7 +33,7 @@ const ManagementApp = ({
     router.push(newUrl);
   };
   return (
-    <Card className="w-full max-w-6xl mx-auto bg-transparent text-white">
+    <Card className="w-full max-w-6xl mx-auto bg-transparent backdrop-blur-md text-white mt-24">
       <CardContent className="p-6">
         <Tabs
           value={activeTab}
