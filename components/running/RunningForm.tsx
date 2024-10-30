@@ -124,8 +124,9 @@ const RunningForm = ({ config, streamkey }: RunningFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 w-full h-full overflow-auto"
+        className="space-y-6 w-full h-full overflow-hidden"
       >
+        {/* TEXT CONTENT */}
         <FormField
           control={form.control}
           name="text"
@@ -142,6 +143,8 @@ const RunningForm = ({ config, streamkey }: RunningFormProps) => {
             </FormItem>
           )}
         />
+
+        {/* TEXT SIZE */}
         <FormField
           control={form.control}
           name="textSize"
@@ -164,6 +167,8 @@ const RunningForm = ({ config, streamkey }: RunningFormProps) => {
             </FormItem>
           )}
         />
+
+        {/* FONT STYLE */}
         <FormField
           control={form.control}
           name="font"
@@ -191,7 +196,9 @@ const RunningForm = ({ config, streamkey }: RunningFormProps) => {
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        {/* COLOR SELECTION */}
+        <div className="flex flex-col md:flex-row justify-evenly items-center px-6 gap-5">
           <FormField
             control={form.control}
             name="backgroundColor"
@@ -231,6 +238,7 @@ const RunningForm = ({ config, streamkey }: RunningFormProps) => {
           />
         </div>
 
+        {/* RUNNING TEXT */}
         {watchedValues && (
           <MQ
             backgroundColor={watchedValues.backgroundColor}
@@ -241,15 +249,16 @@ const RunningForm = ({ config, streamkey }: RunningFormProps) => {
           />
         )}
 
-        {/* display stream link */}
+        {/* STREAM LINK */}
         <div className="flex flex-col items-start justify-start w-full h-full">
-          <p className="font-play text-xl text-white pb-1">
+          <p className="font-play text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl text-white pb-1">
             {process.env.NEXT_PUBLIC_HOST_URL}
             /widgets/mq?streamkey={streamkey}
           </p>
           <div className="bg-white rounded-md w-full h-[1px]" />
         </div>
 
+        {/* BUTTON LIST */}
         <div className="flex flex-col w-full h-full space-y-2 md:flex-row md:space-y-0 md:space-x-2">
           <Button
             type="button"

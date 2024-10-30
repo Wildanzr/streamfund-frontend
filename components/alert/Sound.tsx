@@ -30,7 +30,11 @@ const Sound = ({ handleChange, name, src, value, selected }: SoundProps) => {
       onClick={handlePlay}
       variant="default"
       type="button"
-      className={`${cn(selected === value ? "border-2 border-aqua" : "")}`}
+      className={`${cn(
+        selected === value
+          ? "border-2 border-aqua"
+          : "border-2 border-transparent"
+      )}`}
     >
       {name}
     </Button>

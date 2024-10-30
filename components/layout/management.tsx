@@ -33,14 +33,14 @@ const ManagementApp = ({
     router.push(newUrl);
   };
   return (
-    <Card className="w-full max-w-6xl mx-auto bg-transparent backdrop-blur-md text-white mt-24">
+    <Card className="w-full max-w-6xl mx-auto bg-transparent backdrop-blur-md text-white mt-32">
       <CardContent className="p-6">
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
           className="w-full h-full"
         >
-          <TabsList className="grid w-full h-full grid-cols-4 mb-6 p-2 bg-transparent text-white">
+          <TabsList className="grid w-full h-full grid-cols-4 mb-6 py-2 bg-transparent text-white">
             <TabsTrigger
               value="alert"
               className="flex flex-col items-center gap-2 py-2"
