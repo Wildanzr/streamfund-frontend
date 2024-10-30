@@ -37,7 +37,7 @@ export function Basenames({ address, color }: DisplayBasenameProps) {
           },
           rpcUrls: base.rpcUrls,
         }}
-        className="font-play text-5xl"
+        className="font-play text-2xl md:text-3xl lg:text-4xl xl:text-5xl"
         style={color ? { color } : {}}
       />
     </Identity>

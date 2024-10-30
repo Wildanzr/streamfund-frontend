@@ -47,8 +47,37 @@ const ManagementApp = ({
               onClick={() => handleTabChange("alert")}
             >
               <AlertCircle className="h-5 w-5" />
-              Alert
+              <div className="hidden sm:block">Alert</div>
             </TabsTrigger>
+
+            <TabsTrigger
+              value="running-text"
+              className="flex flex-col items-center gap-2 py-2"
+              onClick={() => handleTabChange("running-text")}
+            >
+              <Type className="h-5 w-5" />
+              <div className="hidden sm:block">Running Text</div>
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="qr-code"
+              className="flex flex-col items-center gap-2 py-2"
+              onClick={() => handleTabChange("qr-code")}
+            >
+              <QrCode className="h-5 w-5" />
+              <div className="hidden sm:block">QR Code</div>
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="support-history"
+              className="flex flex-col items-center gap-2 py-2"
+              onClick={() => handleTabChange("support-history")}
+            >
+              <History className="h-5 w-5" />
+
+              <div className="hidden sm:block">Support History</div>
+            </TabsTrigger>
+
             {/* <TabsTrigger
               value="shiling"
               className="flex flex-col items-center gap-2 py-2"
@@ -57,30 +86,6 @@ const ManagementApp = ({
               <Shield className="h-5 w-5" />
               Shiling Crypto
             </TabsTrigger> */}
-            <TabsTrigger
-              value="running-text"
-              className="flex flex-col items-center gap-2 py-2"
-              onClick={() => handleTabChange("running-text")}
-            >
-              <Type className="h-5 w-5" />
-              Running Text
-            </TabsTrigger>
-            <TabsTrigger
-              value="qr-code"
-              className="flex flex-col items-center gap-2 py-2"
-              onClick={() => handleTabChange("qr-code")}
-            >
-              <QrCode className="h-5 w-5" />
-              QR Code
-            </TabsTrigger>
-            <TabsTrigger
-              value="support-history"
-              className="flex flex-col items-center gap-2 py-2"
-              onClick={() => handleTabChange("support-history")}
-            >
-              <History className="h-5 w-5" />
-              Support History
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="alert">
@@ -90,10 +95,6 @@ const ManagementApp = ({
             />
           </TabsContent>
 
-          {/* <TabsContent value="shiling">
-            <p>Shilling </p>
-          </TabsContent> */}
-
           <TabsContent value="running-text">
             <RunninngManagement
               address={streamer.address}
@@ -101,10 +102,7 @@ const ManagementApp = ({
             />
           </TabsContent>
 
-          <TabsContent
-            value="qr-code"
-            className="flex flex-col w-full h-full space-y-3"
-          >
+          <TabsContent value="qr-code">
             <QRManagement
               address={streamer.address}
               streamkey={streamer.streamkey}
@@ -114,6 +112,10 @@ const ManagementApp = ({
           <TabsContent value="support-history">
             <p>Support </p>
           </TabsContent>
+
+          {/* <TabsContent value="shiling">
+            <p>Shilling </p>
+          </TabsContent> */}
         </Tabs>
       </CardContent>
     </Card>

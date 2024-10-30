@@ -95,11 +95,11 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
   const [qrConfig, setQrConfig] = useState<QRProps>({
     address,
     bgColor: config?.bgColor || "#FFFFFF",
-    fgColor: config?.fgColor || "#000000",
+    fgColor: config?.fgColor || "#FFFFFF",
     ecLevel: config?.level || "H",
     qrStyle: config?.style || "squares",
     quietZone: config?.quietZone || 20,
-    size: 500,
+    size: 250,
     value: `${process.env.NEXT_PUBLIC_HOST_URL}/support/${address}`,
   });
 
@@ -131,7 +131,11 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6 w-full h-full overflow-hidden"
+      >
+        {/* QUITE ZONE */}
         <FormField
           control={form.control}
           name="quietZone"
@@ -154,43 +158,9 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <FormField
-            control={form.control}
-            name="bgColor"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Background Color</FormLabel>
-                <FormControl>
-                  <div className="flex items-center space-x-4">
-                    <HexColorPicker
-                      color={field.value}
-                      onChange={field.onChange}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="fgColor"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Foreground Color</FormLabel>
-                <FormControl>
-                  <div className="flex items-center space-x-4">
-                    <HexColorPicker
-                      color={field.value}
-                      onChange={field.onChange}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
+        {/* QR OPTION */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="ecLevel"
@@ -248,6 +218,47 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
           />
         </div>
 
+        {/* QR COLOR */}
+        <div className="px-6 gap-8 flex flex-col md:flex-row justify-evenly items-center">
+          <FormField
+            control={form.control}
+            name="bgColor"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Background Color</FormLabel>
+                <FormControl>
+                  <div className="flex items-center space-x-4">
+                    <HexColorPicker
+                      color={field.value}
+                      onChange={field.onChange}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="fgColor"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Foreground Color</FormLabel>
+                <FormControl>
+                  <div className="flex items-center space-x-4">
+                    <HexColorPicker
+                      color={field.value}
+                      onChange={field.onChange}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* QR CONTENT */}
         {watchedValues && (
           <QR
             address={watchedValues.address}
@@ -261,15 +272,16 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
           />
         )}
 
-        {/* display stream link */}
-        <div className="flex flex-col items-start justify-start w-full h-full">
-          <p className="font-play text-xl text-white pb-1">
+        {/* STREAM LINK */}
+        <div className="flex flex-col items-start justify-start w-fit h-full">
+          <p className="font-play text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl text-white pb-1">
             {process.env.NEXT_PUBLIC_HOST_URL}
             /widgets/qr?streamkey={streamkey}
           </p>
           <div className="bg-white rounded-md w-full h-[1px]" />
         </div>
 
+        {/* BUTTON LIST */}
         <div className="flex flex-col w-full h-full space-y-2 md:flex-row md:space-y-0 md:space-x-2">
           <Button
             type="button"
