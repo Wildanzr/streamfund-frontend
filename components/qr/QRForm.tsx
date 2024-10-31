@@ -219,7 +219,7 @@ const QRForm = ({ address, streamkey, config }: QRFormProps) => {
         </div>
 
         {/* QR COLOR */}
-        <div className="px-6 gap-8 flex flex-col md:flex-row justify-evenly items-center">
+        <div className="px-6 pb-4 gap-8 flex flex-col md:flex-row justify-evenly items-center">
           <FormField
             control={form.control}
             name="bgColor"
