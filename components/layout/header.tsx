@@ -27,7 +27,7 @@ const Header = () => {
     <header
       className={`w-full fixed top-0 z-20 bg-transparent ${
         isScrolled &&
-        "bg-white/5 ease-in-out duration-1000 shadow-lg backdrop-blur-md"
+        "bg-white/10 ease-in-out duration-1000 shadow-lg backdrop-blur-md"
       }`}
     >
       <div className="container mx-auto px-4 py-6 flex justify-between items-center p-10">

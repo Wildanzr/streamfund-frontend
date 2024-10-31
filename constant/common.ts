@@ -97,3 +97,30 @@ export const AVAILABLE_SOUNDS = [
     src: "https://storage.googleapis.com/sdq-charity/sounds/wow.mp3",
   },
 ] as const;
+
+export const AVAILABLE_STICKERS = [
+  {
+    name: "Candy",
+    value: 1,
+    thumbnail: "/videos/thumbnail/candy.jpg",
+    src: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  },
+  {
+    name: "Flower",
+    value: 5,
+    thumbnail: "/videos/thumbnail/flower.jpg",
+    src: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  },
+  {
+    name: "Present",
+    value: 10,
+    thumbnail: "/videos/thumbnail/present.jpg",
+    src: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  },
+  {
+    name: "Cat",
+    value: 25,
+    thumbnail: "/videos/thumbnail/cat.png",
+    src: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  },
+] as const;

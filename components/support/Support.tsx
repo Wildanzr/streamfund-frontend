@@ -13,6 +13,7 @@ import { CoinsIcon, VideoIcon } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import SupportFormToken from "./SupportFormToken";
 import Unauthenticated from "../layout/unauthenticated";
+import SupportFormSticker from "./SupportFormSticker";
 interface SupportProps {
   tokens: Token[];
   streamer: string;
@@ -31,7 +32,7 @@ export default function Support({ tokens, streamer }: SupportProps) {
     <div className="flex flex-col w-full h-full items-center justify-center">
       {isClient &&
         (status === "connected" ? (
-          <Card className="w-full max-w-md backdrop-blur-md mx-auto bg-black/10 text-white">
+          <Card className="w-full max-w-2xl backdrop-blur-md mx-auto bg-black/10 text-white">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-center">
                 Support your favorite Streamer!
@@ -71,7 +72,9 @@ export default function Support({ tokens, streamer }: SupportProps) {
 
               {activeTab === "tokens" ? (
                 <SupportFormToken tokens={tokens} streamer={streamer} />
-              ) : null}
+              ) : (
+                <SupportFormSticker tokens={tokens} streamer={streamer} />
+              )}
             </CardContent>
           </Card>
         ) : (
