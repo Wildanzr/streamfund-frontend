@@ -49,7 +49,7 @@ import ToastTx from "../shared/ToastTx";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
 
-interface SupportFormProps {
+interface SupportFormTokenProps {
   streamer: string;
   tokens: Token[];
 }
@@ -61,7 +61,7 @@ const formSchema = z.object({
   message: z.string(),
 });
 
-export default function SupportForm({ tokens, streamer }: SupportFormProps) {
+export default function SupportFormToken({ tokens, streamer }: SupportFormTokenProps) {
   const etherscan = getExplorer();
   const { toast } = useToast();
   const { address } = useAccount();
