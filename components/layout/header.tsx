@@ -3,8 +3,8 @@
 import Image from "next/image";
 // import WalletButton from "../shared/WalletButton";
 import Link from "next/link";
-import { ConnectButton } from "@particle-network/connectkit";
 import { useEffect, useState } from "react";
+import ConnectWallet from "../shared/ConnectWallet";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -45,8 +45,7 @@ const Header = () => {
         <nav>
           <ul className="flex space-x-4">
             <li>
-              {/* <WalletButton /> */}
-              <ConnectButton />
+              <ConnectWallet label={"Connect"} />
             </li>
           </ul>
         </nav>
