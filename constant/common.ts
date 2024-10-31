@@ -123,16 +123,4 @@ export const AVAILABLE_STICKERS = [
     thumbnail: "/videos/thumbnail/cat.png",
     src: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   },
-  {
-    name: "Dog",
-    value: 50,
-    thumbnail: "/videos/thumbnail/present.jpg",
-    src: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  },
-  {
-    name: "Lion",
-    value: 100,
-    thumbnail: "/videos/thumbnail/cat.png",
-    src: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  },
 ] as const;

@@ -45,7 +45,7 @@ const Header = () => {
         <nav>
           <ul className="flex space-x-4">
             <li>
-              <ConnectWallet label={"Connect"} />
+              <ConnectWallet />
             </li>
           </ul>
         </nav>
