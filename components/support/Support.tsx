@@ -29,7 +29,7 @@ export default function Support({ tokens, streamer }: SupportProps) {
   }, []);
 
   return (
-    <div className="flex flex-col w-full h-full items-center justify-center">
+    <div className="flex flex-col w-full h-full items-center justify-center pt-24 xl:pt-0">
       {isClient &&
         (status === "connected" ? (
           <Card className="w-full max-w-2xl backdrop-blur-md mx-auto bg-black/10 text-white">

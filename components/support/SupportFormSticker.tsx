@@ -348,9 +348,9 @@ export default function SupportFormSticker({
           )}
         />
 
-        <div className="space-y-2 h-full">
+        <div className="space-y-2 h-full w-full">
           <Label>Select sticker</Label>
-          <div className="flex flex-row flex-wrap gap-5 items-center justify-center">
+          <div className="flex flex-row gap-5 items-center pb-2 overflow-x-scroll">
             {AVAILABLE_STICKERS.map((option) => (
               <Button
                 key={option.value}
@@ -359,7 +359,7 @@ export default function SupportFormSticker({
                 disabled={
                   isFetchingBalance || isSubmitting || !tokenInfo.address
                 }
-                className={`flex flex-col h-50 border-2 items-center rounded-sm justify-center p-0 bg-transparent hover:bg-white/10 ${
+                className={`flex-none w-fit flex-col h-50 border-2 items-center rounded-sm justify-center p-0 bg-transparent hover:bg-white/10 ${
                   quickAmount === option.value && "border-aqua"
                 }`}
                 value={option.value}

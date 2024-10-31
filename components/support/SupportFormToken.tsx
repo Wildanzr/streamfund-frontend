@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useAccount, useBalance } from "wagmi";
+import { useBalance } from "wagmi";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,6 +48,7 @@ import useWaitForTxAction from "@/hooks/useWaitForTxAction";
 import ToastTx from "../shared/ToastTx";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
+import { useAccount } from "@particle-network/connectkit";
 
 interface SupportFormTokenProps {
   streamer: string;
@@ -61,10 +62,13 @@ const formSchema = z.object({
   message: z.string(),
 });
 
-export default function SupportFormToken({ tokens, streamer }: SupportFormTokenProps) {
+export default function SupportFormToken({
+  tokens,
+  streamer,
+}: SupportFormTokenProps) {
   const etherscan = getExplorer();
   const { toast } = useToast();
-  const { address } = useAccount();
+  const { address} = useAccount();
   const { data, refetch } = useBalance({
     address,
   });
