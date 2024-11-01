@@ -4,7 +4,6 @@ import { ConnectKitProvider, createConfig } from "@particle-network/connectkit";
 import { base, baseSepolia } from "@particle-network/connectkit/chains";
 import { authWalletConnectors } from "@particle-network/connectkit/auth";
 import { evmWalletConnectors } from "@particle-network/connectkit/evm";
-import { wallet, EntryPosition } from "@particle-network/connectkit/wallet";
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID as string;
 const clientKey = process.env.NEXT_PUBLIC_CLIENT_KEY as string;
@@ -38,7 +37,6 @@ const config = createConfig({
     language: "en-US", // Optional, also supported ja-JP, zh-CN, zh-TW, and ko-KR
     mode: "dark",
     filterCountryCallingCode: (countries) => {
-      // Optional, whitelist or blacklist phone numbers from specific countries
       return countries.filter((item) => item === "US");
     },
   },
@@ -60,16 +58,9 @@ const config = createConfig({
       authTypes: ["email", "google", "twitter", "github"], // Optional, restricts the types of social logins supported
     }),
   ],
-  plugins: [
-    wallet({
-      entryPosition: EntryPosition.BR, // Alters the position in which the modal button appears upon login
-      visible: true, // Dictates whether or not the wallet modal is included/visible or not
-    }),
-  ],
   chains: currentChain,
 });
 
-// Export ConnectKitProvider to be used within your index or layout file (or use createConfig directly within those files).
 export const ParticleConnectkit = ({ children }: React.PropsWithChildren) => {
   return <ConnectKitProvider config={config}>{children}</ConnectKitProvider>;
 };

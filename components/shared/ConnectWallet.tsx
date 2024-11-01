@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -6,6 +7,7 @@ import {
   usePublicClient,
   useDisconnect,
   useModal,
+  useWallets,
 } from "@particle-network/connectkit";
 import { CopyIcon, EllipsisVerticalIcon, LogOutIcon } from "lucide-react";
 import { Button } from "../ui/button";
@@ -15,8 +17,13 @@ import {
   initKlaster,
   klasterNodeHost,
   loadBiconomyV2Account,
+  buildMultichainReadonlyClient,
+  buildTokenMapping,
+  deployment,
+  BiconomyV2AccountInitData,
+  KlasterSDK,
 } from "klaster-sdk";
-import { arbitrumSepolia, baseSepolia, optimismSepolia } from "viem/chains";
+import { arbitrumSepolia, baseSepolia, sepolia } from "viem/chains";
 import {
   Dialog,
   DialogContent,
@@ -26,16 +33,46 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { useCopyToClipboard } from "usehooks-ts";
+import Link from "next/link";
+import Image from "next/image";
 
 const ConnectWallet = () => {
   const [, copy] = useCopyToClipboard();
   const [balance, setBalance] = useState<number>(0);
+  const [klasterAcc, setKlasterAcc] =
+    useState<KlasterSDK<BiconomyV2AccountInitData>>();
   const [klasterAddress, setKlasterAddress] = useState<Address>();
   const { status, address, chain, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { setOpen } = useModal();
   const publicClient = usePublicClient();
+  const wallet = useWallets();
   const truncatedAddress = address ? trimAddress(address as string) : "";
+
+  // MULTICHAIN CLIENT
+  const mcClient = buildMultichainReadonlyClient(
+    [baseSepolia, sepolia, arbitrumSepolia].map((x) => {
+      return {
+        chainId: x.id,
+        rpcUrl: x.rpcUrls.default.http[0],
+      };
+    })
+  );
+  const mcUSDT = buildTokenMapping([
+    deployment(baseSepolia.id, "0x4D658F958EB5572a9598B538f36D74B32982b10c"),
+  ]);
+
+  const getUnifiedToken = async () => {
+    if (!klasterAcc) return;
+
+    const test = await mcClient.getUnifiedErc20Balance({
+      tokenMapping: mcUSDT,
+      account: klasterAcc.account,
+    });
+
+    console.log(Number(test.balance) / 10 ** test.decimals);
+  };
+  getUnifiedToken();
 
   const fetchBalance = async () => {
     if (!address) return;
@@ -60,9 +97,7 @@ const ConnectWallet = () => {
 
   useEffect(() => {
     fetchBalance();
-  }, [address]); // Run effect when address changes
 
-  useEffect(() => {
     const initializeKlaster = async () => {
       const klaster = await initKlaster({
         accountInitData: loadBiconomyV2Account({
@@ -79,19 +114,19 @@ const ConnectWallet = () => {
             rpcUrl: arbitrumSepolia.rpcUrls.default.http[0],
           },
           {
-            chainId: optimismSepolia.id,
-            rpcUrl: optimismSepolia.rpcUrls.default.http[0],
+            chainId: sepolia.id,
+            rpcUrl: sepolia.rpcUrls.default.http[0],
           },
         ],
       });
+      setKlasterAcc(klaster);
       const aaAddress = klaster?.account?.getAddress(chain?.id as number);
       setKlasterAddress(aaAddress);
     };
-
     if (isConnected && address) {
       initializeKlaster();
     }
-  }, [address, isConnected]); // Run effect when address changes
+  }, [address, isConnected, chain]); // Run effect when address changes
 
   return status === "connected" ? (
     <Dialog>
@@ -113,13 +148,30 @@ const ConnectWallet = () => {
           <DialogTitle className="text-center">Wallet Info</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col text-sm">
+        <div className="flex flex-col gap-4 text-sm">
+          <div className="flex flex-row items-center gap-2 mb-2">
+            <img
+              alt="connector-icon"
+              src={wallet[0]?.connector?.icon as string}
+              width={25}
+              height={25}
+            />
+
+            <Link
+              target="_blank"
+              className="hover:underline font-bold text-aqua"
+              href={(chain?.blockExplorers?.default.url as string) || ""}
+            >
+              {chain?.name}
+            </Link>
+          </div>
+
           {/* ADDRESSES */}
           <div className="flex flex-col gap-3 mt-2">
             <div className="flex flex-row items-center gap-2 justify-between">
               <div>Primary Address: </div>
               <div className="flex flex-row gap-1 items-center">
-                <div>{trimAddress(address as string)}</div>
+                <div>{address && trimAddress(address as string)}</div>
                 <CopyIcon
                   onClick={() => handleCopyAddress(address as string)}
                   color="gray"
@@ -132,7 +184,9 @@ const ConnectWallet = () => {
             <div className="flex flex-row items-center gap-2 justify-between">
               <div>Klaster Address: </div>
               <div className="flex flex-row gap-1 items-center">
-                <div>{trimAddress(klasterAddress as string)}</div>
+                <div>
+                  {klasterAddress && trimAddress(klasterAddress as string)}
+                </div>
                 <CopyIcon
                   onClick={() => handleCopyAddress(klasterAddress as string)}
                   color="gray"
@@ -144,12 +198,53 @@ const ConnectWallet = () => {
           </div>
 
           {/* ASSETS */}
-          <div></div>
+          <hr className="border-white/70 mt-2" />
+          <div className="flex flex-row flex-wrap justify-between gap-5">
+            <div className="flex flex-row items-center gap-1">
+              <Image
+                alt="crypto-currency"
+                height={22}
+                width={22}
+                src={"/images/eth.png"}
+              />
+              <div>: 0.2</div>
+            </div>
+
+            <div className="flex flex-row items-center gap-1">
+              <Image
+                alt="crypto-currency"
+                height={22}
+                width={22}
+                src={"/images/usdt.png"}
+              />
+              <div>: 10</div>
+            </div>
+
+            <div className="flex flex-row items-center gap-1">
+              <Image
+                alt="crypto-currency"
+                height={22}
+                width={22}
+                src={"/images/usdc.png"}
+              />
+              <div>: 25</div>
+            </div>
+
+            <div className="flex flex-row items-center gap-1">
+              <Image
+                alt="crypto-currency"
+                height={22}
+                width={22}
+                src={"/images/dai.png"}
+              />
+              <div>: 30</div>
+            </div>
+          </div>
 
           {/* DISCONNECT */}
           <DialogClose
             onClick={disconnectWallet}
-            className="mt-8 w-fit self-end flex flex-row gap-1 items-center text-white/70 hover:text-white ease-in-out duration-300 text-xs"
+            className="mt-4 w-fit self-end flex flex-row gap-1 items-center text-white/70 hover:text-white ease-in-out duration-300 text-xs"
           >
             <LogOutIcon size={20} />
             <div>Disconnect</div>
