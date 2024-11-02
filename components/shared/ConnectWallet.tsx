@@ -2,12 +2,7 @@
 "use client";
 
 import React from "react";
-import {
-  useAccount,
-  useDisconnect,
-  useModal,
-  useWallets,
-} from "@particle-network/connectkit";
+import { useAccount, useModal, useWallets } from "@particle-network/connectkit";
 import { CopyIcon, EllipsisVerticalIcon, LogOutIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { trimAddress } from "@/lib/utils";
@@ -18,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { useCopyToClipboard } from "usehooks-ts";
 import Link from "next/link";
@@ -28,20 +24,18 @@ import { formatEther } from "viem";
 const ConnectWallet = () => {
   const [, copy] = useCopyToClipboard();
   const { status, address, chain, isConnected } = useAccount();
-  const { klaster, soc, isFullyConnected, nativeBalance } = useKlaster({
-    address,
-    status,
-    isConnected,
-    chain,
-  });
-  const { disconnect } = useDisconnect();
+  const { klaster, soc, isFullyConnected, nativeBalance, disconnect } =
+    useKlaster({
+      address,
+      status,
+      isConnected,
+      chain,
+    });
+
   const { setOpen } = useModal();
   const wallet = useWallets();
   const truncatedAddress = address ? trimAddress(address as string) : "";
 
-  const disconnectWallet = async () => {
-    disconnect();
-  };
   const handleCopyAddress = (address: string) => {
     copy(address);
     alert("Copied to clipboard");
@@ -62,7 +56,10 @@ const ConnectWallet = () => {
 
       <DialogContent className="text-white bg-primary border-primary shadow-md">
         <DialogHeader>
-          <DialogTitle className="text-center">Wallet Info</DialogTitle>
+          <DialogTitle className="">Wallet Info</DialogTitle>
+          <DialogDescription>
+            Information about your connected wallet
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 text-sm">
@@ -160,7 +157,7 @@ const ConnectWallet = () => {
 
           {/* DISCONNECT */}
           <DialogClose
-            onClick={disconnectWallet}
+            onClick={() => disconnect()}
             className="mt-4 w-fit self-end flex flex-row gap-1 items-center text-white/70 hover:text-white ease-in-out duration-300 text-xs"
           >
             <LogOutIcon size={20} />

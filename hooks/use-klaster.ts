@@ -28,7 +28,7 @@ export const useKlaster = ({
   isConnected,
   chain,
 }: UseKlasterProps) => {
-  const { nativeBalance } = useParticle({ address });
+  const { nativeBalance, disconnect } = useParticle({ address });
   const [isFullyConnected, setIsFullyConnected] = useState(false);
   const [soc, setSoc] = useState<Address>();
   const [klaster, setKlaster] =
@@ -97,17 +97,22 @@ export const useKlaster = ({
   useEffect(() => {
     if (isConnected && status === "connected" && address) {
       startKlaster();
+    } else {
+      setIsFullyConnected(false);
+      setKlaster(undefined);
+      setSoc(undefined);
     }
   }, [address, isConnected, startKlaster, status]);
 
   // Auto fetch unified balance every 60 seconds
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetchUnifiedBalance();
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, [fetchUnifiedBalance]);
+    if (isFullyConnected) {
+      const interval = setInterval(() => {
+        fetchUnifiedBalance();
+      }, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [fetchUnifiedBalance, isFullyConnected]);
 
   // Only once, fetch unified balance
   useEffect(() => {
@@ -116,5 +121,5 @@ export const useKlaster = ({
     }
   }, [address, fetchUnifiedBalance, klaster]);
 
-  return { klaster, isFullyConnected, soc, nativeBalance };
+  return { klaster, isFullyConnected, soc, nativeBalance, disconnect };
 };

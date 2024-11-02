@@ -1,6 +1,6 @@
 "use client";
 
-import { usePublicClient } from "@particle-network/connectkit";
+import { useDisconnect, usePublicClient } from "@particle-network/connectkit";
 import { useCallback, useEffect, useState } from "react";
 import { Address } from "viem";
 
@@ -10,6 +10,7 @@ interface UseParticleProps {
 
 export const useParticle = ({ address }: UseParticleProps) => {
   const publicClient = usePublicClient();
+  const { disconnect } = useDisconnect();
   const [nativeBalance, setNativeBalance] = useState<bigint>();
 
   const fetchBalance = useCallback(async () => {
@@ -26,5 +27,5 @@ export const useParticle = ({ address }: UseParticleProps) => {
     }
   });
 
-  return { nativeBalance };
+  return { nativeBalance, disconnect };
 };
