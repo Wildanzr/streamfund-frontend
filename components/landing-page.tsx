@@ -134,7 +134,7 @@ export function LandingPageComponent() {
                 <p className="text-gray-300 mb-6">
                   Your viewers are more than just fans; they&apos;re your
                   biggest supporters! Our platform makes it easy for them to
-                  donate and interact with you in real-time while you enjoy
+                  support and interact with you in real-time while you enjoy
                   instant payouts and transparent tracking — all powered by
                   blockchain technology.
                 </p>

@@ -91,7 +91,7 @@ export default function HomeAlert() {
             } rounded-t-[20px] shadow border`}
           >
             {/* <TextAnimation
-              text="wildanzrrr.base.eth just donated 0.1 ETH"
+              text="wildanzrrr.base.eth just support 0.1 ETH"
               type={animationType}
               duration={1.5}
               delay={0.1}

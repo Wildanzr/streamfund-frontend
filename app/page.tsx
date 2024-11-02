@@ -67,8 +67,8 @@ export default function Home() {
         <div className="flex flex-col space-y-5 w-full h-full justify-start z-10 p-10">
           <p className="text-white font-play text-2xl text-center">
             Your viewers are more than just fans; they’re your biggest
-            supporters! StreamFund makes it easy for them to donate and interact
-            with you in real-time, while you enjoy instant payouts and
+            supporters! StreamFund makes it easy for them to support and
+            interact with you in real-time, while you enjoy instant payouts and
             transparent tracking.
           </p>
         </div>

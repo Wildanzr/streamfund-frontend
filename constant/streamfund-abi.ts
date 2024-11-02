@@ -46,6 +46,48 @@ export const STREAMFUND_ABI = [
     type: "error",
   },
   {
+    inputs: [{ internalType: "string", name: "message", type: "string" }],
+    name: "VideoValidationError",
+    type: "error",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "streamer",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "from",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "message",
+        type: "string",
+      },
+    ],
+    name: "LiveAdsReceived",
+    type: "event",
+  },
+  {
     anonymous: false,
     inputs: [
       { indexed: true, internalType: "bytes32", name: "role", type: "bytes32" },
@@ -122,6 +164,25 @@ export const STREAMFUND_ABI = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "address",
+        name: "streamer",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "liveAdsPrice",
+        type: "uint256",
+      },
+    ],
+    name: "StreamerUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "streamer",
@@ -170,7 +231,12 @@ export const STREAMFUND_ABI = [
         name: "priceFeed",
         type: "address",
       },
-      { indexed: false, internalType: "uint8", name: "decimal", type: "uint8" },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "decimal",
+        type: "uint256",
+      },
       {
         indexed: false,
         internalType: "string",
@@ -195,6 +261,72 @@ export const STREAMFUND_ABI = [
     type: "event",
   },
   {
+    anonymous: false,
+    inputs: [
+      { indexed: false, internalType: "bytes32", name: "id", type: "bytes32" },
+      { indexed: false, internalType: "string", name: "link", type: "string" },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "thumbnail",
+        type: "string",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "price",
+        type: "uint256",
+      },
+    ],
+    name: "VideoAdded",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: false, internalType: "bytes32", name: "id", type: "bytes32" },
+    ],
+    name: "VideoRemoved",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "streamer",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "from",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "videoId",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "message",
+        type: "string",
+      },
+    ],
+    name: "VideoSupportReceived",
+    type: "event",
+  },
+  {
     inputs: [],
     name: "DEFAULT_ADMIN_ROLE",
     outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
@@ -205,10 +337,21 @@ export const STREAMFUND_ABI = [
     inputs: [
       { internalType: "address", name: "_tokenAddress", type: "address" },
       { internalType: "address", name: "_priceFeed", type: "address" },
-      { internalType: "uint8", name: "_decimal", type: "uint8" },
+      { internalType: "uint256", name: "_decimal", type: "uint256" },
       { internalType: "string", name: "_symbol", type: "string" },
     ],
     name: "addAllowedToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "string", name: "_link", type: "string" },
+      { internalType: "string", name: "_thumbnail", type: "string" },
+      { internalType: "uint256", name: "_price", type: "uint256" },
+    ],
+    name: "addVideo",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -225,9 +368,16 @@ export const STREAMFUND_ABI = [
         type: "address",
       },
       { internalType: "uint256", name: "index", type: "uint256" },
-      { internalType: "uint8", name: "decimal", type: "uint8" },
+      { internalType: "uint256", name: "decimal", type: "uint256" },
       { internalType: "string", name: "symbol", type: "string" },
     ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "bytes32", name: "id", type: "bytes32" }],
+    name: "allowedVideos",
+    outputs: [{ internalType: "uint256", name: "price", type: "uint256" }],
     stateMutability: "view",
     type: "function",
   },
@@ -235,8 +385,8 @@ export const STREAMFUND_ABI = [
     inputs: [{ internalType: "address", name: "_token", type: "address" }],
     name: "getAllowedTokenPrice",
     outputs: [
-      { internalType: "uint256", name: "", type: "uint256" },
-      { internalType: "uint8", name: "", type: "uint8" },
+      { internalType: "uint256", name: "price", type: "uint256" },
+      { internalType: "uint8", name: "decimal", type: "uint8" },
     ],
     stateMutability: "view",
     type: "function",
@@ -254,7 +404,7 @@ export const STREAMFUND_ABI = [
             type: "address",
           },
           { internalType: "uint256", name: "index", type: "uint256" },
-          { internalType: "uint8", name: "decimal", type: "uint8" },
+          { internalType: "uint256", name: "decimal", type: "uint256" },
           { internalType: "string", name: "symbol", type: "string" },
         ],
         internalType: "struct Tokens.AllowedToken[]",
@@ -277,6 +427,7 @@ export const STREAMFUND_ABI = [
     name: "getStreamerDetails",
     outputs: [
       { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
       {
         components: [
           { internalType: "address", name: "token", type: "address" },
@@ -287,6 +438,13 @@ export const STREAMFUND_ABI = [
         type: "tuple[]",
       },
     ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "bytes32", name: "id", type: "bytes32" }],
+    name: "getVideo",
+    outputs: [{ internalType: "uint256", name: "price", type: "uint256" }],
     stateMutability: "view",
     type: "function",
   },
@@ -311,6 +469,28 @@ export const STREAMFUND_ABI = [
     type: "function",
   },
   {
+    inputs: [
+      { internalType: "address", name: "_streamer", type: "address" },
+      { internalType: "string", name: "_message", type: "string" },
+    ],
+    name: "liveAdsWithETH",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "_streamer", type: "address" },
+      { internalType: "address", name: "_allowedToken", type: "address" },
+      { internalType: "uint256", name: "_amount", type: "uint256" },
+      { internalType: "string", name: "_message", type: "string" },
+    ],
+    name: "liveAdsWithToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "registerAsStreamer",
     outputs: [],
@@ -322,6 +502,13 @@ export const STREAMFUND_ABI = [
       { internalType: "address", name: "_tokenAddress", type: "address" },
     ],
     name: "removeAllowedToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "bytes32", name: "id", type: "bytes32" }],
+    name: "removeVideo",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -367,7 +554,7 @@ export const STREAMFUND_ABI = [
     inputs: [
       { internalType: "address", name: "_streamer", type: "address" },
       { internalType: "address", name: "_allowedToken", type: "address" },
-      { internalType: "uint256", name: "amount", type: "uint256" },
+      { internalType: "uint256", name: "_amount", type: "uint256" },
       { internalType: "string", name: "_message", type: "string" },
     ],
     name: "supportWithToken",
@@ -376,10 +563,41 @@ export const STREAMFUND_ABI = [
     type: "function",
   },
   {
+    inputs: [
+      { internalType: "address", name: "_streamer", type: "address" },
+      { internalType: "bytes32", name: "_videoId", type: "bytes32" },
+      { internalType: "address", name: "_allowedToken", type: "address" },
+      { internalType: "uint256", name: "_amount", type: "uint256" },
+      { internalType: "string", name: "_message", type: "string" },
+    ],
+    name: "supportWithVideo",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "_streamer", type: "address" },
+      { internalType: "bytes32", name: "_videoId", type: "bytes32" },
+      { internalType: "string", name: "_message", type: "string" },
+    ],
+    name: "supportWithVideoETH",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
     inputs: [{ internalType: "bytes4", name: "interfaceId", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "_price", type: "uint256" }],
+    name: "updateLiveAdsPrice",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
 ] as const;

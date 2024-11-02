@@ -3,16 +3,14 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { useAccount } from "wagmi";
-import { registerAsStreamer } from "@/web3/streamfund";
 import useWaitForTxAction from "@/hooks/useWaitForTxAction";
 import { Address } from "viem";
 import Loader from "../shared/Loader";
 import { useToast } from "@/hooks/use-toast";
-import ToastTx from "../shared/ToastTx";
-import { getExplorer } from "@/lib/utils";
+// import { getExplorer } from "@/lib/utils";
 
 const Register = () => {
-  const etherscan = getExplorer();
+  // const etherscan = getExplorer();
   const { address } = useAccount();
   const { toast } = useToast();
   const [isRegistering, setIsRegistering] = useState(false);
@@ -41,20 +39,21 @@ const Register = () => {
     if (!address) return;
     setIsRegistering(true);
     try {
-      const result = await registerAsStreamer(address);
-      console.log("Result", result);
-      if (result === false) return;
-      setTxHash(result);
-      toast({
-        title: "Transaction submitted",
-        action: (
-          <ToastTx
-            explorerLink={etherscan.url}
-            explorerName={etherscan.name}
-            txHash={txHash}
-          />
-        ),
-      });
+      console.log("Registering as streamer");
+      // const result = await registerAsStreamer(address);
+      // console.log("Result", result);
+      // if (result === false) return;
+      // setTxHash(result);
+      // toast({
+      //   title: "Transaction submitted",
+      //   action: (
+      //     <ToastTx
+      //       explorerLink={etherscan.url}
+      //       explorerName={etherscan.name}
+      //       txHash={txHash}
+      //     />
+      //   ),
+      // });
     } catch (error) {
       console.error(error);
       toast({
