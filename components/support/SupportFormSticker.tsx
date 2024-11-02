@@ -43,7 +43,7 @@ import { getExplorer, trimAddress } from "@/lib/utils";
 //   TooltipContent,
 // } from "@radix-ui/react-tooltip";
 import { useToast } from "@/hooks/use-toast";
-import useWaitForTxAction from "@/hooks/useWaitForTxAction";
+import useWaitForTxAction from "@/hooks/use-wait-for-tx";
 import ToastTx from "../shared/ToastTx";
 import { Separator } from "../ui/separator";
 import Link from "next/link";

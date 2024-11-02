@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { useAccount } from "wagmi";
-import useWaitForTxAction from "@/hooks/useWaitForTxAction";
+import useWaitForTxAction from "@/hooks/use-wait-for-tx";
 import { Address } from "viem";
 import Loader from "../shared/Loader";
 import { useToast } from "@/hooks/use-toast";

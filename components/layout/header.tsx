@@ -34,9 +34,10 @@ const Header = () => {
         <Link href="/" className="flex items-center space-x-2">
           <Image
             src="/icons/live.svg"
-            width={50}
-            height={50}
+            height={0}
+            width={0}
             alt="StreamFund"
+            style={{ width: "50px", height: "auto" }}
           />
           <span className="font-protest tracking-wider text-3xl font-bold text-white hidden sm:flex">
             StreamFund

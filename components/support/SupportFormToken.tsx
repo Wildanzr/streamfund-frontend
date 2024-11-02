@@ -44,7 +44,7 @@ import {
   TooltipContent,
 } from "@radix-ui/react-tooltip";
 import { useToast } from "@/hooks/use-toast";
-import useWaitForTxAction from "@/hooks/useWaitForTxAction";
+import useWaitForTxAction from "@/hooks/use-wait-for-tx";
 import ToastTx from "../shared/ToastTx";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
@@ -68,7 +68,7 @@ export default function SupportFormToken({
 }: SupportFormTokenProps) {
   const etherscan = getExplorer();
   const { toast } = useToast();
-  const { address} = useAccount();
+  const { address } = useAccount();
   const { data, refetch } = useBalance({
     address,
   });

@@ -1,10 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   useAccount,
-  usePublicClient,
   useDisconnect,
   useModal,
   useWallets,
@@ -12,18 +11,6 @@ import {
 import { CopyIcon, EllipsisVerticalIcon, LogOutIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { trimAddress } from "@/lib/utils";
-import { Address, formatUnits } from "viem";
-import {
-  initKlaster,
-  klasterNodeHost,
-  loadBiconomyV2Account,
-  buildMultichainReadonlyClient,
-  buildTokenMapping,
-  deployment,
-  BiconomyV2AccountInitData,
-  KlasterSDK,
-} from "klaster-sdk";
-import { arbitrumSepolia, baseSepolia, sepolia } from "viem/chains";
 import {
   Dialog,
   DialogContent,
@@ -35,112 +22,42 @@ import {
 import { useCopyToClipboard } from "usehooks-ts";
 import Link from "next/link";
 import Image from "next/image";
+import { useKlaster } from "@/hooks/use-klaster";
+import { formatEther } from "viem";
 
 const ConnectWallet = () => {
   const [, copy] = useCopyToClipboard();
-  const [balance, setBalance] = useState<number>(0);
-  const [klasterAcc, setKlasterAcc] =
-    useState<KlasterSDK<BiconomyV2AccountInitData>>();
-  const [klasterAddress, setKlasterAddress] = useState<Address>();
   const { status, address, chain, isConnected } = useAccount();
+  const { klaster, soc, isFullyConnected, nativeBalance } = useKlaster({
+    address,
+    status,
+    isConnected,
+    chain,
+  });
   const { disconnect } = useDisconnect();
   const { setOpen } = useModal();
-  const publicClient = usePublicClient();
   const wallet = useWallets();
   const truncatedAddress = address ? trimAddress(address as string) : "";
 
-  // MULTICHAIN CLIENT
-  const mcClient = buildMultichainReadonlyClient(
-    [baseSepolia, sepolia, arbitrumSepolia].map((x) => {
-      return {
-        chainId: x.id,
-        rpcUrl: x.rpcUrls.default.http[0],
-      };
-    })
-  );
-  const mcUSDT = buildTokenMapping([
-    deployment(baseSepolia.id, "0x4D658F958EB5572a9598B538f36D74B32982b10c"),
-  ]);
-
-  const getUnifiedToken = async () => {
-    if (!klasterAcc) return;
-
-    const test = await mcClient.getUnifiedErc20Balance({
-      tokenMapping: mcUSDT,
-      account: klasterAcc.account,
-    });
-
-    console.log(Number(test.balance) / 10 ** test.decimals);
-  };
-  getUnifiedToken();
-
-  const fetchBalance = async () => {
-    if (!address) return;
-
-    const formatedAddress = address as Address;
-    const balanceResponse = await publicClient?.getBalance({
-      address: formatedAddress,
-    });
-
-    setBalance(Number(formatUnits(balanceResponse as bigint, 18)));
-  };
-  const truncateToThreeDecimals = (num: number) => {
-    return parseFloat(num.toString().slice(0, num.toString().indexOf(".") + 4));
-  };
   const disconnectWallet = async () => {
-    await disconnect();
+    disconnect();
   };
   const handleCopyAddress = (address: string) => {
     copy(address);
     alert("Copied to clipboard");
   };
 
-  useEffect(() => {
-    fetchBalance();
-
-    const initializeKlaster = async () => {
-      const klaster = await initKlaster({
-        accountInitData: loadBiconomyV2Account({
-          owner: address as Address,
-        }),
-        nodeUrl: klasterNodeHost.default,
-        rpcs: [
-          {
-            chainId: baseSepolia.id,
-            rpcUrl: baseSepolia.rpcUrls.default.http[0],
-          },
-          {
-            chainId: arbitrumSepolia.id,
-            rpcUrl: arbitrumSepolia.rpcUrls.default.http[0],
-          },
-          {
-            chainId: sepolia.id,
-            rpcUrl: sepolia.rpcUrls.default.http[0],
-          },
-        ],
-      });
-      setKlasterAcc(klaster);
-      const aaAddress = klaster?.account?.getAddress(chain?.id as number);
-      setKlasterAddress(aaAddress);
-    };
-    if (isConnected && address) {
-      initializeKlaster();
-    }
-  }, [address, isConnected, chain]); // Run effect when address changes
-
   return status === "connected" ? (
     <Dialog>
       <DialogTrigger>
-        <Button
-          type="button"
-          className="flex w-full flex-row gap-3 py-5 items-center transition justify-center duration-300 ease-in-out bg-white text-primary hover:bg-white hover:scale-105"
-        >
+        <div className="flex w-full flex-row gap-3 p-2 rounded-xl items-center transition justify-center duration-300 ease-in-out bg-white text-primary hover:bg-white hover:scale-105">
           <div className="border-r-[1px] font-semibold border-black/60 pr-3">
-            {truncateToThreeDecimals(balance)} {chain?.nativeCurrency.symbol}
+            {nativeBalance && parseFloat(formatEther(nativeBalance)).toFixed(3)}{" "}
+            {chain?.nativeCurrency?.symbol}
           </div>
           <div className="text-sm">{truncatedAddress}</div>
           <EllipsisVerticalIcon size={13} color="black" />
-        </Button>
+        </div>
       </DialogTrigger>
 
       <DialogContent className="text-white bg-primary border-primary shadow-md">
@@ -181,20 +98,20 @@ const ConnectWallet = () => {
               </div>
             </div>
 
-            <div className="flex flex-row items-center gap-2 justify-between">
-              <div>Klaster Address: </div>
-              <div className="flex flex-row gap-1 items-center">
-                <div>
-                  {klasterAddress && trimAddress(klasterAddress as string)}
+            {isFullyConnected && klaster && soc && (
+              <div className="flex flex-row items-center gap-2 justify-between">
+                <div>Klaster Address: </div>
+                <div className="flex flex-row gap-1 items-center">
+                  <p>{trimAddress(soc)}</p>
+                  <CopyIcon
+                    onClick={() => handleCopyAddress(soc)}
+                    color="gray"
+                    size={14}
+                    className="cursor-pointer"
+                  />
                 </div>
-                <CopyIcon
-                  onClick={() => handleCopyAddress(klasterAddress as string)}
-                  color="gray"
-                  size={14}
-                  className="cursor-pointer"
-                />
               </div>
-            </div>
+            )}
           </div>
 
           {/* ASSETS */}
