@@ -9,8 +9,9 @@ import {
   buildMultichainReadonlyClient,
   buildTokenMapping,
   deployment,
+  UnifiedBalanceResult,
 } from "klaster-sdk";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Address, type Chain } from "viem";
 import { baseSepolia, arbitrumSepolia, sepolia } from "viem/chains";
 import { useParticle } from "./use-particle";
@@ -22,6 +23,12 @@ interface UseKlasterProps {
   chain: Chain | undefined;
 }
 
+interface TokenUBalance {
+  symbol: string;
+  logo: string;
+  unified: UnifiedBalanceResult;
+}
+
 export const useKlaster = ({
   address,
   status,
@@ -31,6 +38,7 @@ export const useKlaster = ({
   const { nativeBalance, disconnect } = useParticle({ address });
   const [isFullyConnected, setIsFullyConnected] = useState(false);
   const [soc, setSoc] = useState<Address>();
+  const [unifiedBalances, setUnifiedBalances] = useState<TokenUBalance[]>([]);
   const [klaster, setKlaster] =
     useState<KlasterSDK<BiconomyV2AccountInitData>>();
 
@@ -43,7 +51,6 @@ export const useKlaster = ({
     })
   );
 
-  // TODO: use available token via API, for now, we are using hardcoded token
   const mcUSDC = buildTokenMapping([
     deployment(sepolia.id, "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"),
     deployment(baseSepolia.id, "0x036CbD53842c5426634e7929541eC2318f3dCF7e"),
@@ -53,17 +60,23 @@ export const useKlaster = ({
     ),
   ]);
 
-  const fetchUnifiedBalance = useCallback(async () => {
+  const fetchUnifiedBalanceRef = useRef<() => Promise<void>>();
+
+  fetchUnifiedBalanceRef.current = async () => {
     if (!klaster || !mcClient || !mcUSDC) return;
-    console.time();
     const uBalance = await mcClient.getUnifiedErc20Balance({
       tokenMapping: mcUSDC,
       account: klaster.account,
     });
 
     console.log("Unified Balance: ", uBalance);
-    console.timeEnd();
-  }, [klaster, mcClient, mcUSDC]);
+    const usdc: TokenUBalance = {
+      logo: "/images/usdc.png",
+      symbol: "USDC",
+      unified: uBalance,
+    };
+    setUnifiedBalances([usdc]);
+  };
 
   const startKlaster = useCallback(async () => {
     if (isConnected && status === "connected" && address && chain) {
@@ -93,7 +106,6 @@ export const useKlaster = ({
     }
   }, [address, chain, isConnected, status]);
 
-  // Monitor the address, isConnected, and status to start klaster
   useEffect(() => {
     if (isConnected && status === "connected" && address) {
       startKlaster();
@@ -104,22 +116,27 @@ export const useKlaster = ({
     }
   }, [address, isConnected, startKlaster, status]);
 
-  // Auto fetch unified balance every 60 seconds
   useEffect(() => {
     if (isFullyConnected) {
       const interval = setInterval(() => {
-        fetchUnifiedBalance();
+        fetchUnifiedBalanceRef.current?.();
       }, 60000);
       return () => clearInterval(interval);
     }
-  }, [fetchUnifiedBalance, isFullyConnected]);
+  }, [isFullyConnected]);
 
-  // Only once, fetch unified balance
   useEffect(() => {
     if (address && klaster) {
-      fetchUnifiedBalance();
+      fetchUnifiedBalanceRef.current?.();
     }
-  }, [address, fetchUnifiedBalance, klaster]);
+  }, [address, klaster]);
 
-  return { klaster, isFullyConnected, soc, nativeBalance, disconnect };
+  return {
+    klaster,
+    isFullyConnected,
+    soc,
+    nativeBalance,
+    disconnect,
+    unifiedBalances,
+  };
 };

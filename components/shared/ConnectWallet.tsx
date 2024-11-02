@@ -19,18 +19,24 @@ import { useCopyToClipboard } from "usehooks-ts";
 import Link from "next/link";
 import Image from "next/image";
 import { useKlaster } from "@/hooks/use-klaster";
-import { formatEther } from "viem";
+import { formatEther, formatUnits } from "viem";
 
 const ConnectWallet = () => {
   const [, copy] = useCopyToClipboard();
   const { status, address, chain, isConnected } = useAccount();
-  const { klaster, soc, isFullyConnected, nativeBalance, disconnect } =
-    useKlaster({
-      address,
-      status,
-      isConnected,
-      chain,
-    });
+  const {
+    klaster,
+    soc,
+    isFullyConnected,
+    nativeBalance,
+    disconnect,
+    unifiedBalances,
+  } = useKlaster({
+    address,
+    status,
+    isConnected,
+    chain,
+  });
 
   const { setOpen } = useModal();
   const wallet = useWallets();
@@ -114,45 +120,22 @@ const ConnectWallet = () => {
           {/* ASSETS */}
           <hr className="border-white/70 mt-2" />
           <div className="flex flex-row flex-wrap justify-between gap-5">
-            <div className="flex flex-row items-center gap-1">
-              <Image
-                alt="crypto-currency"
-                height={22}
-                width={22}
-                src={"/images/eth.png"}
-              />
-              <div>: 0.2</div>
-            </div>
-
-            <div className="flex flex-row items-center gap-1">
-              <Image
-                alt="crypto-currency"
-                height={22}
-                width={22}
-                src={"/images/usdt.png"}
-              />
-              <div>: 10</div>
-            </div>
-
-            <div className="flex flex-row items-center gap-1">
-              <Image
-                alt="crypto-currency"
-                height={22}
-                width={22}
-                src={"/images/usdc.png"}
-              />
-              <div>: 25</div>
-            </div>
-
-            <div className="flex flex-row items-center gap-1">
-              <Image
-                alt="crypto-currency"
-                height={22}
-                width={22}
-                src={"/images/dai.png"}
-              />
-              <div>: 30</div>
-            </div>
+            {unifiedBalances.map((item, idx) => (
+              <div className="flex flex-row items-center gap-1" key={idx}>
+                <Image
+                  alt={item.symbol}
+                  height={22}
+                  width={22}
+                  src={item.logo}
+                />
+                <p>
+                  {Number(
+                    formatUnits(item.unified.balance, item.unified.decimals)
+                  )}{" "}
+                  {item.symbol}
+                </p>
+              </div>
+            ))}
           </div>
 
           {/* DISCONNECT */}
