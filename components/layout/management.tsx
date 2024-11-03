@@ -2,13 +2,14 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, Type, QrCode, History } from "lucide-react";
+import { AlertCircle, Type, QrCode, History, Video } from "lucide-react";
 import QRManagement from "../qr/QRManagement";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formUrlQuery } from "@/lib/utils";
 import RunninngManagement from "../running/RunningManagement";
 import AlertManagement from "../alert/AlertManagement";
 import SupportTable from "../support/SupportTable";
+import VideoManagement from "../video/VideoManagement";
 
 interface ManagementAppProps {
   activeTab: string;
@@ -42,7 +43,7 @@ const ManagementApp = ({
           onValueChange={setActiveTab}
           className="w-full h-full"
         >
-          <TabsList className="grid w-full h-full grid-cols-4 gap-5 mb-6 py-2 bg-transparent text-white">
+          <TabsList className="grid w-full h-full grid-cols-5 gap-5 mb-6 py-2 bg-transparent text-white">
             <TabsTrigger
               value="alert"
               className="flex flex-col items-center gap-2 py-2"
@@ -59,6 +60,15 @@ const ManagementApp = ({
             >
               <Type className="h-5 w-5" />
               <div className="hidden sm:block">Running Text</div>
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="video"
+              className="flex flex-col items-center gap-2 py-2"
+              onClick={() => handleTabChange("video")}
+            >
+              <Video className="h-5 w-5" />
+              <div className="hidden sm:block">Video</div>
             </TabsTrigger>
 
             <TabsTrigger
@@ -90,6 +100,13 @@ const ManagementApp = ({
 
           <TabsContent value="running-text">
             <RunninngManagement
+              address={streamer.address}
+              streamkey={streamer.streamkey}
+            />
+          </TabsContent>
+
+          <TabsContent value="video">
+            <VideoManagement
               address={streamer.address}
               streamkey={streamer.streamkey}
             />

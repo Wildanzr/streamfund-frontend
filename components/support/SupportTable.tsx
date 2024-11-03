@@ -37,7 +37,7 @@ export default function SupportTable({
       <TableBody>
         {supports.map((support: SupportResponse) => (
           <TableRow key={support._id}>
-            <TableCell>{formatDate(support.creted_at)}</TableCell>
+            <TableCell className="whitespace-nowrap">{formatDate(support.creted_at)}</TableCell>
             <TableCell>
               <div className="flex flex-row gap-2 items-center">
                 <p>{trimAddress(support.from)}</p>
@@ -50,7 +50,7 @@ export default function SupportTable({
               </div>
             </TableCell>
             <TableCell>{support.message}</TableCell>
-            <TableCell>
+            <TableCell className="whitespace-nowrap">
               {formatUnits(BigInt(support.amount), support?.token?.decimal)}{" "}
               {support?.token?.symbol}
             </TableCell>

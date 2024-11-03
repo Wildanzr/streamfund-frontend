@@ -13,7 +13,6 @@ import { useSearchParams } from "next/navigation";
 
 const validPath = [
   "alert",
-  // "shilling",
   "running-text",
   "qr-code",
   "support-history",
@@ -46,8 +45,6 @@ export function ManagementPlatformComponent() {
     enabled: !!address,
     retry: false,
   });
-
-  console.log(streamer);
 
   return (
     <div className="flex flex-col w-full h-full items-center justify-center mx-auto bg-transparent text-white">
