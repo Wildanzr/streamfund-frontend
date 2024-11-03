@@ -42,11 +42,16 @@ export const useKlaster = ({
   const [klaster, setKlaster] =
     useState<KlasterSDK<BiconomyV2AccountInitData>>();
 
+  const testnetRPCS = [
+    `https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+    `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+    `https://arb-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+  ];
   const mcClient = buildMultichainReadonlyClient(
-    [baseSepolia, sepolia, arbitrumSepolia].map((item) => {
+    [baseSepolia, sepolia, arbitrumSepolia].map((item, idx) => {
       return {
         chainId: item.id,
-        rpcUrl: item.rpcUrls.default.http[0],
+        rpcUrl: testnetRPCS[idx],
       };
     })
   );

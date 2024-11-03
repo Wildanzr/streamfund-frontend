@@ -49,6 +49,7 @@ import ToastTx from "../shared/ToastTx";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
 import { useAccount } from "@particle-network/connectkit";
+import { useInterchain } from "@/hooks/use-interchain";
 
 interface SupportFormTokenProps {
   streamer: string;
@@ -66,6 +67,7 @@ export default function SupportFormToken({
   tokens,
   streamer,
 }: SupportFormTokenProps) {
+  const { testKlaster } = useInterchain();
   const etherscan = getExplorer();
   const { toast } = useToast();
   const { address } = useAccount();
@@ -470,6 +472,10 @@ export default function SupportFormToken({
               {supportState === "approve" ? "Approve" : "Support Now"}
             </p>
           )}
+        </Button>
+
+        <Button type="button" onClick={() => testKlaster()}>
+          TEST KLASTER
         </Button>
 
         <div className="flex flex-col space-y-2 w-full h-full items-center justify-center">
