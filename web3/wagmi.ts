@@ -1,5 +1,5 @@
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import { baseSepolia } from "wagmi/chains";
+import { sepolia } from "wagmi/chains";
 import {
   walletConnectWallet,
   rainbowWallet,
@@ -31,12 +31,12 @@ const connectors = connectorsForWallets(
 
 export const config = createConfig({
   connectors,
-  chains: [baseSepolia],
+  chains: [sepolia],
   storage: createStorage({
     storage: cookieStorage,
   }),
   ssr: true,
   transports: {
-    [baseSepolia.id]: http(),
+    [sepolia.id]: http(),
   },
 });

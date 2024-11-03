@@ -25,7 +25,7 @@ const NODE_ENV = process.env.NEXT_PUBLIC_NODE_ENV as
 //   NODE_ENV === "production" ? [base] : [baseSepolia];
 
 export const getExplorer = () => {
-  const chain = NODE_ENV === "production" ? base : baseSepolia;
+  const chain = NODE_ENV === "production" ? base : sepolia;
 
   return {
     explorer: chain.blockExplorers.default.url,
@@ -63,7 +63,7 @@ const config = createConfig({
       authTypes: ["email", "google", "twitter", "github"], // Optional, restricts the types of social logins supported
     }),
   ],
-  chains: [baseSepolia, sepolia, arbitrumSepolia],
+  chains: [sepolia, baseSepolia, arbitrumSepolia],
 });
 
 export const ParticleConnectkit = ({ children }: React.PropsWithChildren) => {

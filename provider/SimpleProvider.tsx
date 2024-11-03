@@ -6,7 +6,7 @@ import {
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import { WagmiProvider, createConfig, http } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { baseSepolia, sepolia } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import {
   coinbaseWallet,
@@ -48,9 +48,10 @@ const connectors = connectorsForWallets(
 
 export const config = createConfig({
   connectors,
-  chains: [baseSepolia],
+  chains: [sepolia, baseSepolia],
   ssr: true,
   transports: {
+    [sepolia.id]: http(),
     [baseSepolia.id]: http(),
   },
 });

@@ -67,7 +67,7 @@ export default function SupportFormToken({
   tokens,
   streamer,
 }: SupportFormTokenProps) {
-  const { testKlaster } = useInterchain();
+  const { registerAsStremer } = useInterchain();
   const etherscan = getExplorer();
   const { toast } = useToast();
   const { address } = useAccount();
@@ -474,7 +474,7 @@ export default function SupportFormToken({
           )}
         </Button>
 
-        <Button type="button" onClick={() => testKlaster()}>
+        <Button type="button" onClick={() => registerAsStremer()}>
           TEST KLASTER
         </Button>
 
