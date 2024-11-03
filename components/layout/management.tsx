@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { formUrlQuery } from "@/lib/utils";
 import RunninngManagement from "../running/RunningManagement";
 import AlertManagement from "../alert/AlertManagement";
+import SupportTable from "../support/SupportTable";
 
 interface ManagementAppProps {
   activeTab: string;
@@ -32,6 +33,7 @@ const ManagementApp = ({
     });
     router.push(newUrl);
   };
+
   return (
     <Card className="w-full max-w-6xl mx-auto bg-transparent backdrop-blur-md text-white mt-32">
       <CardContent className="p-6">
@@ -100,8 +102,8 @@ const ManagementApp = ({
             />
           </TabsContent>
 
-          <TabsContent value="support-history">
-            <p>Support </p>
+          <TabsContent value="support-history" className="overflow-x-auto">
+            <SupportTable supports={streamer.supports} />
           </TabsContent>
         </Tabs>
       </CardContent>

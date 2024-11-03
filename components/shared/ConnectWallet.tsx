@@ -50,7 +50,7 @@ const ConnectWallet = () => {
   return status === "connected" ? (
     <Dialog>
       <DialogTrigger>
-        <div className="flex w-full flex-row gap-3 p-2 rounded-xl items-center transition justify-center duration-300 ease-in-out bg-white text-primary hover:bg-white hover:scale-105">
+        <div className="flex w-full flex-row gap-3 p-2 px-3 rounded-xl items-center transition justify-center duration-300 ease-in-out bg-white text-primary hover:bg-white hover:scale-105">
           <div className="border-r-[1px] font-semibold border-black/60 pr-3">
             {nativeBalance && parseFloat(formatEther(nativeBalance)).toFixed(3)}{" "}
             {chain?.nativeCurrency?.symbol}
@@ -152,7 +152,7 @@ const ConnectWallet = () => {
   ) : (
     <Button
       type="button"
-      className="flex w-full flex-row gap-3 py-5 items-center transition justify-center duration-300 ease-in-out bg-white text-primary hover:bg-white hover:scale-105"
+      className="flex w-full flex-row gap-3 py-5 px-3 rounded-xl items-center transition justify-center duration-300 ease-in-out bg-white text-primary hover:bg-white hover:scale-105"
       onClick={() => setOpen(true)}
     >
       <p className="font-spaceMono w-full">Connect Wallet</p>

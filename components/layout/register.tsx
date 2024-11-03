@@ -7,10 +7,12 @@ import useWaitForTxAction from "@/hooks/use-wait-for-tx";
 import { Address } from "viem";
 import Loader from "../shared/Loader";
 import { useToast } from "@/hooks/use-toast";
-// import { getExplorer } from "@/lib/utils";
+import ToastTx from "../shared/ToastTx";
+import { registerAsStreamer } from "@/web3/streamfund";
+import { getExplorer } from "@/lib/utils";
 
 const Register = () => {
-  // const etherscan = getExplorer();
+  const etherscan = getExplorer();
   const { address } = useAccount();
   const { toast } = useToast();
   const [isRegistering, setIsRegistering] = useState(false);
@@ -40,20 +42,20 @@ const Register = () => {
     setIsRegistering(true);
     try {
       console.log("Registering as streamer");
-      // const result = await registerAsStreamer(address);
-      // console.log("Result", result);
-      // if (result === false) return;
-      // setTxHash(result);
-      // toast({
-      //   title: "Transaction submitted",
-      //   action: (
-      //     <ToastTx
-      //       explorerLink={etherscan.url}
-      //       explorerName={etherscan.name}
-      //       txHash={txHash}
-      //     />
-      //   ),
-      // });
+      const result = await registerAsStreamer(address);
+      console.log("Result", result);
+      if (result === false) return;
+      setTxHash(result);
+      toast({
+        title: "Transaction submitted",
+        action: (
+          <ToastTx
+            explorerLink={etherscan.url}
+            explorerName={etherscan.name}
+            txHash={txHash}
+          />
+        ),
+      });
     } catch (error) {
       console.error(error);
       toast({
@@ -74,7 +76,7 @@ const Register = () => {
       <Button
         onClick={handleRegister}
         disabled={isRegistering}
-        className="flex bg-aqua font-play font-bold text-2xl text-midnight hover:bg-aqua/80"
+        className="flex bg-aqua font-play font-bold text-xl p-6 text-midnight hover:bg-aqua/80"
       >
         {isRegistering ? <Loader /> : "Register Now"}
       </Button>

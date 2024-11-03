@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { HmacSHA256, enc } from "crypto-js";
 import qs from "query-string";
 import { base, baseSepolia } from "viem/chains";
+import { format } from "date-fns";
 
 interface UrlQueryProps {
   params: string;
@@ -100,4 +101,9 @@ export const displayFormatter = (fraction: number, value: number) => {
     minimumFractionDigits: fraction,
     maximumFractionDigits: fraction,
   }).format(value);
+};
+
+export const formatDate = (date: Date) => {
+  date = new Date(date);
+  return format(date, "d MMMM yyyy, h:mm a");
 };

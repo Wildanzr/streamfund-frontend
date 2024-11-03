@@ -82,6 +82,7 @@ declare global {
       logo: string;
     };
     hash: string;
+    creted_at: Date;
   }
 
   interface QueryStreamerResponse {

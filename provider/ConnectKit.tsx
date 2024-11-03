@@ -1,7 +1,12 @@
 "use client";
 
 import { ConnectKitProvider, createConfig } from "@particle-network/connectkit";
-import { base, baseSepolia } from "@particle-network/connectkit/chains";
+import {
+  base,
+  baseSepolia,
+  sepolia,
+  arbitrumSepolia,
+} from "@particle-network/connectkit/chains";
 import { authWalletConnectors } from "@particle-network/connectkit/auth";
 import { evmWalletConnectors } from "@particle-network/connectkit/evm";
 
@@ -16,8 +21,8 @@ if (!projectId || !clientKey || !appId) {
 const NODE_ENV = process.env.NEXT_PUBLIC_NODE_ENV as
   | "development"
   | "production";
-const currentChain: readonly [typeof base] | readonly [typeof baseSepolia] =
-  NODE_ENV === "production" ? [base] : [baseSepolia];
+// const currentChain: readonly [typeof base] | readonly [typeof baseSepolia] =
+//   NODE_ENV === "production" ? [base] : [baseSepolia];
 
 export const getExplorer = () => {
   const chain = NODE_ENV === "production" ? base : baseSepolia;
@@ -58,7 +63,7 @@ const config = createConfig({
       authTypes: ["email", "google", "twitter", "github"], // Optional, restricts the types of social logins supported
     }),
   ],
-  chains: currentChain,
+  chains: [baseSepolia, sepolia, arbitrumSepolia],
 });
 
 export const ParticleConnectkit = ({ children }: React.PropsWithChildren) => {
