@@ -70,7 +70,7 @@ export default function SupportFormToken({
   const { toast } = useToast();
   const { address } = useAccount();
   const { data, refetch } = useBalance({
-    address,
+    address: address as Address,
   });
   const [quickAmount, setQuickAmount] = useState(0);
   const [isFetchingBalance, setIsFetchingBalance] = useState(false);
@@ -154,8 +154,8 @@ export default function SupportFormToken({
         } else {
           const tokenDetail = getTokenInfo(token);
           const [balance, allowance] = await Promise.all([
-            readTokenBalance(address, parsedToken),
-            readAllowance(address, parsedToken),
+            readTokenBalance(address as Address, parsedToken),
+            readAllowance(address as Address, parsedToken),
           ]);
           setTokenInfo({
             address: parsedToken,
@@ -198,7 +198,7 @@ export default function SupportFormToken({
     setIsApproving(true);
     try {
       const token = tokenInfo.address as Address;
-      const result = await giveAllowance(address, token);
+      const result = await giveAllowance(address as Address, token);
       if (result === false) return;
       setTxHash(result);
       toast({

@@ -1,23 +1,14 @@
 import { STREAMFUND_ABI } from "@/constant/streamfund-abi";
 import { STREAMFUND_ADDRESS } from "@/constant/common";
 import { Address } from "viem";
-import { writeContract } from "@wagmi/core";
-import { config } from "@/provider/SimpleProvider";
 import { publicClient } from "./client";
 import { TOKEN_ABI } from "@/constant/token-abi";
 
 // WRITE FUNCTIONS
 export const registerAsStreamer = async (address: Address) => {
   try {
-    console.log("Address", address);
-    const result = await writeContract(config, {
-      abi: STREAMFUND_ABI,
-      address: STREAMFUND_ADDRESS,
-      functionName: "registerAsStreamer",
-      account: address,
-    });
-
-    return result;
+    console.log("Registering as a streamer...", address);
+    return "0x0";
   } catch (error) {
     console.error("Error registering as a streamer:", error);
     return false;
@@ -25,19 +16,9 @@ export const registerAsStreamer = async (address: Address) => {
 };
 
 export const giveAllowance = async (user: Address, token: Address) => {
-  const maxAmount = BigInt(
-    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-  );
   try {
-    const result = await writeContract(config, {
-      abi: TOKEN_ABI,
-      address: token,
-      functionName: "approve",
-      args: [STREAMFUND_ADDRESS, maxAmount],
-      account: user,
-    });
-
-    return result;
+    console.log("Giving allowance...", user, token);
+    return "0x0";
   } catch (error) {
     console.error("Error giving allowance:", error);
     return false;
@@ -50,15 +31,8 @@ export const supportWithETH = async (
   message: string
 ) => {
   try {
-    const result = await writeContract(config, {
-      abi: STREAMFUND_ABI,
-      address: STREAMFUND_ADDRESS,
-      functionName: "supportWithETH",
-      args: [streamer, message],
-      value: BigInt(amount),
-    });
-
-    return result;
+    console.log("Supporting with ETH...", amount, streamer, message);
+    return "0x0";
   } catch (error) {
     console.error("Error supporting with ETH:", error);
     return false;
@@ -72,14 +46,8 @@ export const supportWithToken = async (
   message: string
 ) => {
   try {
-    const result = await writeContract(config, {
-      abi: STREAMFUND_ABI,
-      address: STREAMFUND_ADDRESS,
-      functionName: "supportWithToken",
-      args: [streamer, token, BigInt(amount), message],
-    });
-
-    return result;
+    console.log("Supporting with token...", amount, streamer, token, message);
+    return "0x0";
   } catch (error) {
     console.error("Error supporting with token:", error);
     return false;
