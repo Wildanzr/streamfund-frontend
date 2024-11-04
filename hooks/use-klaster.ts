@@ -15,6 +15,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Address, type Chain } from "viem";
 import { baseSepolia, arbitrumSepolia, sepolia } from "viem/chains";
 import { useParticle } from "./use-particle";
+import { UNIFIED_USDC } from "@/constant/common";
 
 interface UseKlasterProps {
   address: string | undefined;
@@ -26,7 +27,7 @@ interface UseKlasterProps {
 interface TokenUBalance {
   symbol: string;
   logo: string;
-  unified: UnifiedBalanceResult | bigint;
+  unified: UnifiedBalanceResult;
 }
 
 export const useKlaster = ({
@@ -42,27 +43,19 @@ export const useKlaster = ({
   const [klaster, setKlaster] =
     useState<KlasterSDK<BiconomyV2AccountInitData>>();
 
-  const testnetRPCS = [
-    `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-    `https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-    `https://arb-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-  ];
   const mcClient = buildMultichainReadonlyClient(
     [sepolia, baseSepolia, arbitrumSepolia].map((item, idx) => {
       return {
         chainId: item.id,
-        rpcUrl: testnetRPCS[idx],
+        rpcUrl: UNIFIED_USDC[idx].rpc,
       };
     })
   );
 
   const mcUSDC = buildTokenMapping([
-    deployment(sepolia.id, "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"),
-    deployment(baseSepolia.id, "0x036CbD53842c5426634e7929541eC2318f3dCF7e"),
-    deployment(
-      arbitrumSepolia.id,
-      "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d"
-    ),
+    deployment(sepolia.id, UNIFIED_USDC[0].address as Address),
+    deployment(baseSepolia.id, UNIFIED_USDC[1].address as Address),
+    deployment(arbitrumSepolia.id, UNIFIED_USDC[2].address as Address),
   ]);
 
   const fetchUnifiedBalanceRef = useRef<() => Promise<void>>();
@@ -70,20 +63,10 @@ export const useKlaster = ({
   fetchUnifiedBalanceRef.current = async () => {
     if (!klaster || !mcClient || !mcUSDC) return;
 
-    // const ethBalance = await mcClient.getUnifiedNativeBalance({
-    //   account: klaster.account,
-    // });
-
     const uBalance = await mcClient.getUnifiedErc20Balance({
       tokenMapping: mcUSDC,
       account: klaster.account,
     });
-
-    // const eth: TokenUBalance = {
-    //   logo: "/images/eth.png",
-    //   symbol: "ETH",
-    //   unified: ethBalance,
-    // };
 
     const usdc: TokenUBalance = {
       logo: "/images/usdc.png",

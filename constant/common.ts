@@ -1,3 +1,9 @@
+import {
+  baseSepolia,
+  arbitrumSepolia,
+  sepolia as ethSepolia,
+} from "@particle-network/connectkit/chains";
+
 import { defineChain } from "@particle-network/connectkit/chains";
 
 export const STREAMFUND_ADDRESS = "0xcaFcAF4Aa0949dA2d3D3b303291c951301B75821";
@@ -5,7 +11,28 @@ export const BASENAMES_ADDRESS = "0x03c4738Ee98aE44591e1A4A4F3CaB6641d95DD9a";
 export const NATIVE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const SUPPORT_OPTIONS = [1, 1.5, 3, 5, 10];
 
-export const USDC_ADDRESS = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+export const USDC_ADDRESS = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+
+export const UNIFIED_USDC = [
+  {
+    chainId: ethSepolia.id,
+    logo: "/icons/ethereum.svg",
+    rpc: `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+    address: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  },
+  {
+    chainId: baseSepolia.id,
+    logo: "/icons/base.svg",
+    rpc: `https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+    address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+  },
+  {
+    chainId: arbitrumSepolia.id,
+    logo: "/icons/arbitrum.svg",
+    rpc: `https://arb-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+    address: "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
+  },
+];
 
 export const AVAILABLE_FONTS = [
   {

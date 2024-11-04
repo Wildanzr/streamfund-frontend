@@ -20,6 +20,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useKlaster } from "@/hooks/use-klaster";
 import { formatEther, formatUnits } from "viem";
+import { UNIFIED_USDC } from "@/constant/common";
 
 const ConnectWallet = () => {
   const [, copy] = useCopyToClipboard();
@@ -121,19 +122,44 @@ const ConnectWallet = () => {
           <hr className="border-white/70 mt-2" />
           <div className="flex flex-row flex-wrap justify-between gap-5">
             {unifiedBalances.map((item, idx) => (
-              <div className="flex flex-row items-center gap-1" key={idx}>
-                <Image
-                  alt={item.symbol}
-                  height={22}
-                  width={22}
-                  src={item.logo}
-                />
-                <p>
-                  {Number(
-                    formatUnits(item.unified.balance, item.unified.decimals)
-                  )}{" "}
-                  {item.symbol}
-                </p>
+              <div className="flex flex-col items-start gap-5 w-full" key={idx}>
+                <div className="flex flex-row items-center justify-center space-x-2">
+                  <Image
+                    alt={item.symbol}
+                    height={25}
+                    width={25}
+                    src={item.logo}
+                  />
+                  <p className="font-bold text-2xl">
+                    {Number(
+                      formatUnits(item.unified.balance, item.unified.decimals)
+                    )}{" "}
+                    {item.symbol}{" "}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-3 gap-5 w-full">
+                  {UNIFIED_USDC.map((chain, idx) => (
+                    <div key={idx} className="flex flex-col items-center gap-1">
+                      <Image
+                        src={chain.logo}
+                        alt={item.symbol}
+                        height={25}
+                        width={25}
+                        className="rounded-full w-8 h-8"
+                      />
+                      <p className="text-xs">
+                        {Number(
+                          formatUnits(
+                            item.unified.breakdown[idx].amount,
+                            item.unified.decimals
+                          )
+                        )}{" "}
+                        {item.symbol}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
