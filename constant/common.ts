@@ -6,7 +6,7 @@ import {
 
 import { defineChain } from "@particle-network/connectkit/chains";
 
-export const STREAMFUND_ADDRESS = "0xcaFcAF4Aa0949dA2d3D3b303291c951301B75821";
+export const STREAMFUND_ADDRESS = "0x90865f4AB3eebc65F0A00845A9d8eb92E23366FE";
 export const BASENAMES_ADDRESS = "0x03c4738Ee98aE44591e1A4A4F3CaB6641d95DD9a";
 export const NATIVE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const SUPPORT_OPTIONS = [1, 1.5, 3, 5, 10];
