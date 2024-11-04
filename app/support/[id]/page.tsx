@@ -75,6 +75,7 @@ const SupportPage = async ({ params }: URLProps) => {
   });
   const resTokens = await reqTokens.json();
   const tokens = (await resTokens.data.tokens) as Token[];
+
   return (
     <div className="flex relative flex-col items-center justify-center w-full h-full min-h-screen">
       <Background />

@@ -1,9 +1,11 @@
 import { defineChain } from "@particle-network/connectkit/chains";
 
-export const STREAMFUND_ADDRESS = "0x71657eD011C7A3C1c36D6F33F08eA3Cb5e6fa8Ae";
+export const STREAMFUND_ADDRESS = "0xcaFcAF4Aa0949dA2d3D3b303291c951301B75821";
 export const BASENAMES_ADDRESS = "0x03c4738Ee98aE44591e1A4A4F3CaB6641d95DD9a";
 export const NATIVE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const SUPPORT_OPTIONS = [1, 1.5, 3, 5, 10];
+
+export const USDC_ADDRESS = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
 
 export const AVAILABLE_FONTS = [
   {

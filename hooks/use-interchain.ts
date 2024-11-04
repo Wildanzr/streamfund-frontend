@@ -9,10 +9,9 @@ import { STREAMFUND_ABI } from "@/constant/streamfund-abi";
 import { useWallets, useAccount } from "@particle-network/connectkit";
 import { type Address } from "viem";
 import { Transaction } from "klaster-sdk";
-// import { STREAMFUND_ADDRESS } from "@/constant/common";
+import { TOKEN_ABI } from "@/constant/token-abi";
 
 export const useInterchain = () => {
-  // const { signMessage } = useSignMessage();
   const [primaryWallet] = useWallets();
   const { status, address, chain, isConnected } = useAccount();
   const { klaster } = useKlaster({
@@ -24,7 +23,7 @@ export const useInterchain = () => {
 
   const signItxMessage = async (acc: Address, hash: Address) => {
     if (!address) return;
-    // Get the wallet client and send the transaction
+
     const walletClient = primaryWallet.getWalletClient();
     const transactionResponse = await walletClient.signMessage({
       account: address as Address,
@@ -36,7 +35,7 @@ export const useInterchain = () => {
     return transactionResponse;
   };
 
-  const registerAsStremer = async () => {
+  const registerAsStreamer = async () => {
     if (!klaster) return;
 
     // ENCODE ABI DATA -> REGISTER STREAMER
@@ -63,10 +62,8 @@ export const useInterchain = () => {
           },
         ],
       });
-      console.log("Tx", tx);
 
       const signature = (await signItxMessage(acc, tx.itxHash)) as string;
-      console.log("Signature: ", signature);
       const result = await klaster.execute(tx, signature);
       console.log("Result: ", result);
     } catch (error) {
@@ -106,6 +103,56 @@ export const useInterchain = () => {
           },
         ],
       });
+
+      const signature = (await signItxMessage(acc, tx.itxHash)) as string;
+      const result = await klaster.execute(tx, signature);
+      console.log("Result: ", result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const supportWithToken = async (
+    destination: Address,
+    tokenAddress: Address,
+    message: string,
+    amount: bigint
+  ) => {
+    if (!klaster) return;
+
+    const tokenApproval: Transaction = {
+      gasLimit: BigInt(1000000),
+      to: tokenAddress,
+      data: encodeFunctionData({
+        abi: TOKEN_ABI,
+        functionName: "approve",
+        args: [STREAMFUND_ADDRESS, amount],
+      }),
+    };
+    const supportToken: Transaction = {
+      gasLimit: BigInt(1000000),
+      to: STREAMFUND_ADDRESS,
+      data: encodeFunctionData({
+        abi: STREAMFUND_ABI,
+        functionName: "supportWithToken",
+        args: [destination, tokenAddress, amount, message],
+      }),
+    };
+
+    try {
+      const acc = klaster.account.getAddress(sepolia.id) as Address;
+      const tx = await klaster.getQuote({
+        nodeFeeOperation: {
+          chainId: sepolia.id,
+          token: "0x0000000000000000000000000000000000000000",
+        },
+        operations: [
+          {
+            chainId: sepolia.id,
+            txs: [tokenApproval, supportToken],
+          },
+        ],
+      });
       console.log("Tx", tx);
 
       const signature = (await signItxMessage(acc, tx.itxHash)) as string;
@@ -118,7 +165,8 @@ export const useInterchain = () => {
   };
 
   return {
-    registerAsStremer,
+    registerAsStreamer,
     supportWithEth,
+    supportWithToken,
   };
 };

@@ -26,7 +26,7 @@ interface UseKlasterProps {
 interface TokenUBalance {
   symbol: string;
   logo: string;
-  unified: UnifiedBalanceResult;
+  unified: UnifiedBalanceResult | bigint;
 }
 
 export const useKlaster = ({
@@ -69,17 +69,28 @@ export const useKlaster = ({
 
   fetchUnifiedBalanceRef.current = async () => {
     if (!klaster || !mcClient || !mcUSDC) return;
+
+    // const ethBalance = await mcClient.getUnifiedNativeBalance({
+    //   account: klaster.account,
+    // });
+
     const uBalance = await mcClient.getUnifiedErc20Balance({
       tokenMapping: mcUSDC,
       account: klaster.account,
     });
 
-    console.log("Unified Balance: ", uBalance);
+    // const eth: TokenUBalance = {
+    //   logo: "/images/eth.png",
+    //   symbol: "ETH",
+    //   unified: ethBalance,
+    // };
+
     const usdc: TokenUBalance = {
       logo: "/images/usdc.png",
       symbol: "USDC",
       unified: uBalance,
     };
+
     setUnifiedBalances([usdc]);
   };
 

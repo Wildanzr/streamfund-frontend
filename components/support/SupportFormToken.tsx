@@ -26,14 +26,13 @@ import {
 } from "../ui/form";
 import Loader from "../shared/Loader";
 import { NATIVE_ADDRESS, SUPPORT_OPTIONS } from "@/constant/common";
-import { Address, formatUnits, parseEther } from "viem";
+import { Address, formatUnits, parseUnits } from "viem";
 import {
-  giveAllowance,
+  // giveAllowance,
   readAllowance,
   readAllowedTokenPrice,
   readTokenBalance,
-  supportWithETH,
-  supportWithToken,
+  // supportWithETH,
 } from "@/web3/streamfund";
 import { displayFormatter, getExplorer, trimAddress } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
@@ -45,7 +44,7 @@ import {
 } from "@radix-ui/react-tooltip";
 import { useToast } from "@/hooks/use-toast";
 import useWaitForTxAction from "@/hooks/use-wait-for-tx";
-import ToastTx from "../shared/ToastTx";
+// import ToastTx from "../shared/ToastTx";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
 import { useAccount } from "@particle-network/connectkit";
@@ -67,7 +66,7 @@ export default function SupportFormToken({
   tokens,
   streamer,
 }: SupportFormTokenProps) {
-  const { supportWithEth } = useInterchain();
+  const { supportWithToken } = useInterchain();
   const etherscan = getExplorer();
   const { toast } = useToast();
   const { address } = useAccount();
@@ -195,33 +194,33 @@ export default function SupportFormToken({
     [form, tokenInfo.currentPrice, tokenInfo.decimals]
   );
 
-  const handleApprove = async (): Promise<void> => {
-    if (!address) return;
-    setIsApproving(true);
-    try {
-      const token = tokenInfo.address as Address;
-      const result = await giveAllowance(address as Address, token);
-      if (result === false) return;
-      setTxHash(result);
-      toast({
-        title: "Transaction submitted",
-        action: (
-          <ToastTx
-            explorerLink={etherscan.url}
-            explorerName={etherscan.name}
-            txHash={result}
-          />
-        ),
-      });
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Transaction failed",
-        description: "Failed to give allowance",
-        variant: "destructive",
-      });
-    }
-  };
+  // const handleApprove = async (): Promise<void> => {
+  //   if (!address) return;
+  //   setIsApproving(true);
+  //   try {
+  //     const token = tokenInfo.address as Address;
+  //     const result = await giveAllowance(address as Address, token);
+  //     if (result === false) return;
+  //     setTxHash(result);
+  //     toast({
+  //       title: "Transaction submitted",
+  //       action: (
+  //         <ToastTx
+  //           explorerLink={etherscan.url}
+  //           explorerName={etherscan.name}
+  //           txHash={result}
+  //         />
+  //       ),
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast({
+  //       title: "Transaction failed",
+  //       description: "Failed to give allowance",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!address) return;
@@ -235,66 +234,69 @@ export default function SupportFormToken({
       });
       return;
     }
-    const tokenDetail = getTokenInfo(values.token);
 
-    try {
-      setIsSubmitting(true);
-      // Implement your submission logic here
-      const streamer = values.streamer as Address;
-      const token = values.token as Address;
-      let result: boolean | Address = false;
+    setIsSubmitting(true) // => REMOVE THIS< ONLY FOR PREVENT DEPLOY ERROR
 
-      const isNeedApprove =
-        tokenInfo.allowance === 0
-          ? true
-          : tokenInfo.allowance <
-            Number(form.watch("amount")) * 10 ** tokenInfo.decimals
-          ? true
-          : false;
+    // const tokenDetail = getTokenInfo(values.token);
 
-      if (
-        isNeedApprove &&
-        tokenDetail.address !== NATIVE_ADDRESS &&
-        supportState !== "support"
-      ) {
-        await handleApprove();
-        return;
-      }
-      if (tokenDetail.address === NATIVE_ADDRESS) {
-        result = await supportWithETH(amoutParsed, streamer, values.message);
-      } else {
-        result = await supportWithToken(
-          amoutParsed,
-          streamer,
-          token,
-          values.message
-        );
-      }
-      if (result === false) return;
-      setTxHash(result);
-      toast({
-        title: "Transaction submitted",
-        action: (
-          <ToastTx
-            explorerLink={etherscan.url}
-            explorerName={etherscan.name}
-            txHash={txHash}
-          />
-        ),
-      });
+    // try {
+    //   setIsSubmitting(true);
+    //   // Implement your submission logic here
+    //   const streamer = values.streamer as Address;
+    //   const token = values.token as Address;
+    //   let result: boolean | Address = false;
 
-      form.reset();
-      setQuickAmount(0);
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Transaction failed",
-        description: "Failed to support the streamer",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    //   const isNeedApprove =
+    //     tokenInfo.allowance === 0
+    //       ? true
+    //       : tokenInfo.allowance <
+    //         Number(form.watch("amount")) * 10 ** tokenInfo.decimals
+    //       ? true
+    //       : false;
+
+    //   if (
+    //     isNeedApprove &&
+    //     tokenDetail.address !== NATIVE_ADDRESS &&
+    //     supportState !== "support"
+    //   ) {
+    //     await handleApprove();
+    //     return;
+    //   }
+    //   if (tokenDetail.address === NATIVE_ADDRESS) {
+    //     result = await supportWithETH(amoutParsed, streamer, values.message);
+    //   } else {
+    //     result = await supportWithToken(
+    //       amoutParsed,
+    //       streamer,
+    //       token,
+    //       values.message
+    //     );
+    //   }
+    //   if (result === false) return;
+    //   setTxHash(result);
+    //   toast({
+    //     title: "Transaction submitted",
+    //     action: (
+    //       <ToastTx
+    //         explorerLink={etherscan.url}
+    //         explorerName={etherscan.name}
+    //         txHash={txHash}
+    //       />
+    //     ),
+    //   });
+
+    //   form.reset();
+    //   setQuickAmount(0);
+    // } catch (error) {
+    //   console.error(error);
+    //   toast({
+    //     title: "Transaction failed",
+    //     description: "Failed to support the streamer",
+    //     variant: "destructive",
+    //   });
+    // } finally {
+    //   setIsSubmitting(false);
+    // }
   };
 
   return (
@@ -477,10 +479,11 @@ export default function SupportFormToken({
         <Button
           type="button"
           onClick={() =>
-            supportWithEth(
+            supportWithToken(
               "0x09AAd1e42D324fbD9a72F27593fE08164F35ACFb",
+              "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
               "Hello",
-              parseEther("0.005")
+              parseUnits("5", 6)
             )
           }
         >
