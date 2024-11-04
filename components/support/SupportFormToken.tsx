@@ -26,7 +26,7 @@ import {
 } from "../ui/form";
 import Loader from "../shared/Loader";
 import { NATIVE_ADDRESS, SUPPORT_OPTIONS } from "@/constant/common";
-import { Address, formatUnits } from "viem";
+import { Address, formatUnits, parseEther } from "viem";
 import {
   giveAllowance,
   readAllowance,
@@ -67,7 +67,7 @@ export default function SupportFormToken({
   tokens,
   streamer,
 }: SupportFormTokenProps) {
-  const { registerAsStremer } = useInterchain();
+  const { supportWithEth } = useInterchain();
   const etherscan = getExplorer();
   const { toast } = useToast();
   const { address } = useAccount();
@@ -474,7 +474,16 @@ export default function SupportFormToken({
           )}
         </Button>
 
-        <Button type="button" onClick={() => registerAsStremer()}>
+        <Button
+          type="button"
+          onClick={() =>
+            supportWithEth(
+              "0x09AAd1e42D324fbD9a72F27593fE08164F35ACFb",
+              "Hello",
+              parseEther("0.005")
+            )
+          }
+        >
           TEST KLASTER
         </Button>
 

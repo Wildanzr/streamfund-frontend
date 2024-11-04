@@ -1,7 +1,10 @@
+import { defineChain } from "@particle-network/connectkit/chains";
+
 export const STREAMFUND_ADDRESS = "0x71657eD011C7A3C1c36D6F33F08eA3Cb5e6fa8Ae";
 export const BASENAMES_ADDRESS = "0x03c4738Ee98aE44591e1A4A4F3CaB6641d95DD9a";
 export const NATIVE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const SUPPORT_OPTIONS = [1, 1.5, 3, 5, 10];
+
 export const AVAILABLE_FONTS = [
   {
     name: "Play",
@@ -98,7 +101,6 @@ export const AVAILABLE_SOUNDS = [
   },
 ] as const;
 
-
 export const AVAILABLE_VIDEO = [
   {
     name: "Bird Pack",
@@ -116,3 +118,35 @@ export const AVAILABLE_VIDEO = [
     src: "/videos/video-3.mp4",
   },
 ] as Video[];
+
+export const sepolia = defineChain({
+  id: 11_155_111,
+  name: "Sepolia",
+  nativeCurrency: { name: "Sepolia Ether", symbol: "ETH", decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: [
+        `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+      ],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Etherscan",
+      url: "https://sepolia.etherscan.io",
+      apiUrl: "https://api-sepolia.etherscan.io/api",
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: "0xca11bde05977b3631167028862be2a173976ca11",
+      blockCreated: 751532,
+    },
+    ensRegistry: { address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e" },
+    ensUniversalResolver: {
+      address: "0xc8Af999e38273D658BE1b921b88A9Ddf005769cC",
+      blockCreated: 5_317_080,
+    },
+  },
+  testnet: true,
+});

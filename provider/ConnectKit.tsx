@@ -4,11 +4,11 @@ import { ConnectKitProvider, createConfig } from "@particle-network/connectkit";
 import {
   base,
   baseSepolia,
-  sepolia,
   arbitrumSepolia,
 } from "@particle-network/connectkit/chains";
 import { authWalletConnectors } from "@particle-network/connectkit/auth";
 import { evmWalletConnectors } from "@particle-network/connectkit/evm";
+import { sepolia } from "@/constant/common";
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID as string;
 const clientKey = process.env.NEXT_PUBLIC_CLIENT_KEY as string;
