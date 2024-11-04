@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { z } from "zod";
-import { AVAILABLE_ANIMATIONS, AVAILABLE_FONTS } from "@/constant/common";
+import { AVAILABLE_ANIMATIONS, AVAILABLE_FONTS, AVAILABLE_VIDEO } from "@/constant/common";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import { useCopyToClipboard } from "usehooks-ts";
@@ -246,7 +246,8 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
               textSize={watchedValues.textSize.toString()}
               font={watchedValues.font}
               sender="0xxx"
-              videoName="Lion Roar"
+              videoName={AVAILABLE_VIDEO[0].name}
+              src={AVAILABLE_VIDEO[0].src}
             />
           </div>
         )}

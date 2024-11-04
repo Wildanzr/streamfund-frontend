@@ -13,7 +13,7 @@ import { CoinsIcon, VideoIcon } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import SupportFormToken from "./SupportFormToken";
 import Unauthenticated from "../layout/unauthenticated";
-import SupportFormSticker from "./SupportFormSticker";
+import SupportFormVideo from "./SupportFormVideo";
 interface SupportProps {
   tokens: Token[];
   streamer: string;
@@ -60,12 +60,12 @@ export default function Support({ tokens, streamer }: SupportProps) {
                   </TabsTrigger>
 
                   <TabsTrigger
-                    value="stickers"
+                    value="videos"
                     className="flex flex-col items-center py-2"
-                    onClick={() => setActiveTab("stickers")}
+                    onClick={() => setActiveTab("videos")}
                   >
                     <VideoIcon className="h-5 w-5" />
-                    <div className="hidden sm:block">Stickers</div>
+                    <div className="hidden sm:block">Videos</div>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -73,7 +73,7 @@ export default function Support({ tokens, streamer }: SupportProps) {
               {activeTab === "tokens" ? (
                 <SupportFormToken tokens={tokens} streamer={streamer} />
               ) : (
-                <SupportFormSticker tokens={tokens} streamer={streamer} />
+                <SupportFormVideo tokens={tokens} streamer={streamer} />
               )}
             </CardContent>
           </Card>

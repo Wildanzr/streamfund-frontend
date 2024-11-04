@@ -11,4 +11,10 @@ declare global {
   interface ChildrenProps {
     children: React.ReactNode;
   }
+
+  interface Video {
+    value: number;
+    src: string;
+    name: string;
+  }
 }

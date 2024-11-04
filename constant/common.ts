@@ -98,29 +98,21 @@ export const AVAILABLE_SOUNDS = [
   },
 ] as const;
 
-export const AVAILABLE_STICKERS = [
+
+export const AVAILABLE_VIDEO = [
   {
-    name: "Candy",
-    value: 1,
-    thumbnail: "/videos/thumbnail/candy.jpg",
-    src: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  },
-  {
-    name: "Flower",
+    name: "Bird Pack",
     value: 5,
-    thumbnail: "/videos/thumbnail/flower.jpg",
-    src: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    src: "/videos/video-1.mp4",
   },
   {
-    name: "Present",
+    name: "Dripping Coin",
     value: 10,
-    thumbnail: "/videos/thumbnail/present.jpg",
-    src: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    src: "/videos/video-2.mp4",
   },
   {
-    name: "Cat",
+    name: "Fireworks",
     value: 25,
-    thumbnail: "/videos/thumbnail/cat.png",
-    src: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    src: "/videos/video-3.mp4",
   },
-] as const;
+] as Video[];
