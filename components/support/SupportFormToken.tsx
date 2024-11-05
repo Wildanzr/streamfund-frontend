@@ -25,16 +25,13 @@ import {
   FormMessage,
 } from "../ui/form";
 import Loader from "../shared/Loader";
-import { NATIVE_ADDRESS, SUPPORT_OPTIONS } from "@/constant/common";
-import { Address, formatUnits, parseUnits } from "viem";
 import {
-  // giveAllowance,
-  readAllowance,
-  readAllowedTokenPrice,
-  readTokenBalance,
-  // supportWithETH,
-} from "@/web3/streamfund";
-import { displayFormatter, getExplorer, trimAddress } from "@/lib/utils";
+  NATIVE_ADDRESS,
+  STREAMFUND_ADDRESS,
+  SUPPORT_OPTIONS,
+} from "@/constant/common";
+import { Address, formatEther, parseEther } from "viem";
+import { displayFormatter } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
 import {
   TooltipProvider,
@@ -43,12 +40,11 @@ import {
   TooltipContent,
 } from "@radix-ui/react-tooltip";
 import { useToast } from "@/hooks/use-toast";
-import useWaitForTxAction from "@/hooks/use-wait-for-tx";
-// import ToastTx from "../shared/ToastTx";
-import { Separator } from "../ui/separator";
-import Link from "next/link";
-import { useAccount } from "@particle-network/connectkit";
+import { useAccount, usePublicClient } from "@particle-network/connectkit";
 import { useInterchain } from "@/hooks/use-interchain";
+import { useKlaster } from "@/hooks/use-klaster";
+import ToastTx from "../shared/ToastTx";
+import { STREAMFUND_ABI } from "@/constant/streamfund-abi";
 
 interface SupportFormTokenProps {
   streamer: string;
@@ -66,10 +62,16 @@ export default function SupportFormToken({
   tokens,
   streamer,
 }: SupportFormTokenProps) {
-  const { supportWithToken } = useInterchain();
-  const etherscan = getExplorer();
+  const publicClient = usePublicClient();
+  const { status, address, chain, isConnected } = useAccount();
+  const { unifiedNative } = useKlaster({
+    address,
+    status,
+    isConnected,
+    chain,
+  });
   const { toast } = useToast();
-  const { address } = useAccount();
+  const { supportWithEth } = useInterchain();
   const { data, refetch } = useBalance({
     address: address as Address,
   });
@@ -79,8 +81,6 @@ export default function SupportFormToken({
   const [supportState, setSupportState] = useState<"approve" | "support">(
     "approve"
   );
-  const [isApproving, setIsApproving] = useState(false);
-  const [txHash, setTxHash] = useState<Address | undefined>();
   const [tokenInfo, setTokenInfo] = useState({
     address: "",
     balance: 0,
@@ -99,29 +99,6 @@ export default function SupportFormToken({
     },
   });
 
-  const handlePostAction = async () => {
-    if (isApproving) {
-      toast({
-        title: "Allowance has been approved",
-        variant: "success",
-      });
-      setIsApproving(false);
-      setSupportState("support");
-    } else {
-      toast({
-        title: "Your support has been received to the streamer.",
-        variant: "success",
-      });
-    }
-
-    setTxHash(undefined);
-  };
-
-  useWaitForTxAction({
-    txHash,
-    action: handlePostAction,
-  });
-
   const getTokenInfo = useCallback(
     (token: string) => {
       const result = tokens.find((t) => t.address === token);
@@ -130,6 +107,17 @@ export default function SupportFormToken({
     },
     [tokens]
   );
+
+  const readAllowedTokenPrice = async (token: Address) => {
+    const result = await publicClient?.readContract({
+      abi: STREAMFUND_ABI,
+      address: STREAMFUND_ADDRESS,
+      functionName: "getAllowedTokenPrice",
+      args: [token],
+    });
+
+    return result ? Number(result[0]) / 10 ** (Number(result[1]) ?? 18) : 0;
+  };
 
   const handleFetchingBalance = useCallback(
     async (token: string) => {
@@ -142,7 +130,6 @@ export default function SupportFormToken({
         const price = await readAllowedTokenPrice(parsedToken);
 
         if (token === NATIVE_ADDRESS) {
-          await refetch();
           setTokenInfo({
             address: NATIVE_ADDRESS,
             balance: Number(data?.value) ?? 0,
@@ -152,26 +139,28 @@ export default function SupportFormToken({
             currentPrice: price,
           });
           setSupportState("support");
-        } else {
-          const tokenDetail = getTokenInfo(token);
-          const [balance, allowance] = await Promise.all([
-            readTokenBalance(address as Address, parsedToken),
-            readAllowance(address as Address, parsedToken),
-          ]);
-          setTokenInfo({
-            address: parsedToken,
-            balance: Number(balance) ?? 0,
-            decimals: tokenDetail.decimal,
-            symbol: tokenDetail.symbol,
-            allowance: Number(allowance) ?? 0,
-            currentPrice: price,
-          });
-          if (Number(allowance) === 0) {
-            setSupportState("approve");
-          } else {
-            setSupportState("support");
-          }
         }
+
+        // else {
+        //   const tokenDetail = getTokenInfo(token);
+        //   const [balance, allowance] = await Promise.all([
+        //     readTokenBalance(address as Address, parsedToken),
+        //     readAllowance(address as Address, parsedToken),
+        //   ]);
+        //   setTokenInfo({
+        //     address: parsedToken,
+        //     balance: Number(balance) ?? 0,
+        //     decimals: tokenDetail.decimal,
+        //     symbol: tokenDetail.symbol,
+        //     allowance: Number(allowance) ?? 0,
+        //     currentPrice: price,
+        //   });
+        //   if (Number(allowance) === 0) {
+        //     setSupportState("approve");
+        //   } else {
+        //     setSupportState("support");
+        //   }
+        // }
       } catch (error) {
         console.error(error);
       } finally {
@@ -194,109 +183,57 @@ export default function SupportFormToken({
     [form, tokenInfo.currentPrice, tokenInfo.decimals]
   );
 
-  // const handleApprove = async (): Promise<void> => {
-  //   if (!address) return;
-  //   setIsApproving(true);
-  //   try {
-  //     const token = tokenInfo.address as Address;
-  //     const result = await giveAllowance(address as Address, token);
-  //     if (result === false) return;
-  //     setTxHash(result);
-  //     toast({
-  //       title: "Transaction submitted",
-  //       action: (
-  //         <ToastTx
-  //           explorerLink={etherscan.url}
-  //           explorerName={etherscan.name}
-  //           txHash={result}
-  //         />
-  //       ),
-  //     });
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast({
-  //       title: "Transaction failed",
-  //       description: "Failed to give allowance",
-  //       variant: "destructive",
-  //     });
-  //   }
-  // };
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!address) return;
-    const amoutParsed = Number(values.amount) * 10 ** tokenInfo.decimals;
+    if (!address || !unifiedNative[0]) return;
+    const amountParsed = Number(values.amount);
 
-    if (amoutParsed > tokenInfo.balance) {
-      toast({
-        title: "Insufficient balance",
-        description: "You don't have enough balance to support",
-        variant: "destructive",
-      });
-      return;
+    // // SUPPORT WITH NATIVE TOKEN
+    if (tokenInfo.symbol === "ETH") {
+      if (amountParsed > Number(formatEther(unifiedNative[0].unified))) {
+        toast({
+          title: "Insufficient balance",
+          description: "You don't have enough balance to support",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      try {
+        setIsSubmitting(true);
+        const itxHash = await supportWithEth(
+          streamer as Address,
+          form.getValues("message"),
+          parseEther(form.getValues("amount"))
+        );
+
+        toast({
+          title: "Interchain transaction submitted!",
+          action: (
+            <ToastTx
+              explorerLink={`https://explorer.klaster.io/details`}
+              explorerName="Klaster Explorer"
+              txHash={itxHash as Address}
+            />
+          ),
+        });
+        form.reset();
+        setQuickAmount(0);
+        setTokenInfo({
+          address: "",
+          balance: 0,
+          decimals: 0,
+          symbol: "",
+          allowance: 0,
+          currentPrice: 0,
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
 
-    setIsSubmitting(true) // => REMOVE THIS< ONLY FOR PREVENT DEPLOY ERROR
-
-    // const tokenDetail = getTokenInfo(values.token);
-
-    // try {
-    //   setIsSubmitting(true);
-    //   // Implement your submission logic here
-    //   const streamer = values.streamer as Address;
-    //   const token = values.token as Address;
-    //   let result: boolean | Address = false;
-
-    //   const isNeedApprove =
-    //     tokenInfo.allowance === 0
-    //       ? true
-    //       : tokenInfo.allowance <
-    //         Number(form.watch("amount")) * 10 ** tokenInfo.decimals
-    //       ? true
-    //       : false;
-
-    //   if (
-    //     isNeedApprove &&
-    //     tokenDetail.address !== NATIVE_ADDRESS &&
-    //     supportState !== "support"
-    //   ) {
-    //     await handleApprove();
-    //     return;
-    //   }
-    //   if (tokenDetail.address === NATIVE_ADDRESS) {
-    //     result = await supportWithETH(amoutParsed, streamer, values.message);
-    //   } else {
-    //     result = await supportWithToken(
-    //       amoutParsed,
-    //       streamer,
-    //       token,
-    //       values.message
-    //     );
-    //   }
-    //   if (result === false) return;
-    //   setTxHash(result);
-    //   toast({
-    //     title: "Transaction submitted",
-    //     action: (
-    //       <ToastTx
-    //         explorerLink={etherscan.url}
-    //         explorerName={etherscan.name}
-    //         txHash={txHash}
-    //       />
-    //     ),
-    //   });
-
-    //   form.reset();
-    //   setQuickAmount(0);
-    // } catch (error) {
-    //   console.error(error);
-    //   toast({
-    //     title: "Transaction failed",
-    //     description: "Failed to support the streamer",
-    //     variant: "destructive",
-    //   });
-    // } finally {
-    //   setIsSubmitting(false);
-    // }
+    // SUPORT WITH ERC20 TOKEN
   };
 
   return (
@@ -331,20 +268,18 @@ export default function SupportFormToken({
               {field.value && (
                 <div className="flex flex-row space-x-2">
                   <p className="text-sm text-white/80">Available:</p>
-                  {isFetchingBalance ? (
-                    <Loader size="20" />
+
+                  {tokenInfo.symbol === "ETH" ? (
+                    unifiedNative[0] && (
+                      <div>
+                        {parseFloat(
+                          formatEther(unifiedNative[0].unified)
+                        ).toFixed(3)}{" "}
+                        {unifiedNative[0].symbol}
+                      </div>
+                    )
                   ) : (
-                    <div className="flex flex-row space-x-2 text-sm text-white/80">
-                      <p>
-                        {tokenInfo.balance === 0
-                          ? 0
-                          : formatUnits(
-                              BigInt(tokenInfo.balance),
-                              tokenInfo.decimals
-                            )}{" "}
-                        ${tokenInfo.symbol}
-                      </p>
-                    </div>
+                    <Loader size="20" />
                   )}
                 </div>
               )}
@@ -467,7 +402,7 @@ export default function SupportFormToken({
             form.watch("amount") === ""
           }
         >
-          {isApproving || isSubmitting ? (
+          {isSubmitting ? (
             <Loader size="20" />
           ) : (
             <p className="mx-2">
@@ -475,35 +410,6 @@ export default function SupportFormToken({
             </p>
           )}
         </Button>
-
-        <Button
-          type="button"
-          onClick={() =>
-            supportWithToken(
-              "0x09AAd1e42D324fbD9a72F27593fE08164F35ACFb",
-              "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
-              "Hello",
-              parseUnits("5", 6)
-            )
-          }
-        >
-          TEST KLASTER
-        </Button>
-
-        <div className="flex flex-col space-y-2 w-full h-full items-center justify-center">
-          <Separator />
-          <h3 className="text-white/80 text-base text-center">
-            Need token? Mint here!
-          </h3>
-          {tokens.slice(1).map((token) => (
-            <Link
-              href={`${etherscan.url}/address/${token.address}`}
-              key={token._id}
-            >
-              {token.symbol} - {trimAddress(token.address)}
-            </Link>
-          ))}
-        </div>
       </form>
     </Form>
   );

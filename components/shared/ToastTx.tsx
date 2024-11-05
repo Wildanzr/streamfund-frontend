@@ -20,13 +20,13 @@ const ToastTx = ({
       className="bg-transparent border border-aqua"
     >
       <Link
-        href={`${explorerLink}/tx/${txHash}`}
+        href={`${explorerLink}/${txHash}`}
         passHref
-        className="underline"
+        className="hover:underline"
         target="_blank"
       >
         {" "}
-        View on {explorerName}{" "}
+        Monitor at {explorerName}{" "}
       </Link>
     </ToastAction>
   );

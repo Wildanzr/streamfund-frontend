@@ -160,7 +160,7 @@ const ConnectWallet = () => {
           </div>
 
           {/* TOTAL & DISCONNECT */}
-          <div className="flex flex-row justify-between items-center mt-5">
+          <div className="flex flex-row justify-between items-center mt-3">
             {unifiedBalances.map((item, idx) => (
               <div
                 key={idx}
@@ -172,7 +172,7 @@ const ConnectWallet = () => {
                   width={25}
                   src={item.logo}
                 />
-                <p className="font-bold text-xl">
+                <p className="font-bold text-lg">
                   {Number(
                     formatUnits(item.unified.balance, item.unified.decimals)
                   )}{" "}

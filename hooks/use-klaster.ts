@@ -49,6 +49,11 @@ export const useKlaster = ({
   const [unifiedNative, setUnifiedNative] = useState<TokenNativeBalance[]>([]);
   const [klaster, setKlaster] =
     useState<KlasterSDK<BiconomyV2AccountInitData>>();
+  const [refetch, setRefetch] = useState<boolean>(false);
+
+  const refetchUnified = () => {
+    setRefetch(!refetch);
+  };
 
   const mcClient = buildMultichainReadonlyClient(
     [sepolia, baseSepolia, arbitrumSepolia].map((item, idx) => {
@@ -142,7 +147,7 @@ export const useKlaster = ({
     if (address && klaster) {
       fetchUnifiedBalanceRef.current?.();
     }
-  }, [address, klaster]);
+  }, [address, klaster, refetch]);
 
   return {
     klaster,
@@ -150,6 +155,7 @@ export const useKlaster = ({
     soc,
     unifiedNative,
     unifiedBalances,
+    refetchUnified,
     disconnect,
   };
 };

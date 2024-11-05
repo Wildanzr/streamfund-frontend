@@ -65,7 +65,6 @@ export const useInterchain = () => {
 
       const signature = (await signItxMessage(acc, tx.itxHash)) as string;
       const result = await klaster.execute(tx, signature);
-      console.log("Result: ", result);
 
       return result.itxHash;
     } catch (error) {
@@ -109,7 +108,8 @@ export const useInterchain = () => {
 
       const signature = (await signItxMessage(acc, tx.itxHash)) as string;
       const result = await klaster.execute(tx, signature);
-      console.log("Result: ", result);
+
+      return result.itxHash;
     } catch (error) {
       console.log(error);
     }
@@ -156,12 +156,11 @@ export const useInterchain = () => {
           },
         ],
       });
-      console.log("Tx", tx);
 
       const signature = (await signItxMessage(acc, tx.itxHash)) as string;
-      console.log("Signature: ", signature);
       const result = await klaster.execute(tx, signature);
-      console.log("Result: ", result);
+
+      return result.itxHash;
     } catch (error) {
       console.log(error);
     }

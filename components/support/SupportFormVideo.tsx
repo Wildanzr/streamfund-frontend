@@ -34,12 +34,10 @@ import {
   supportWithETH,
   supportWithToken,
 } from "@/web3/streamfund";
-import { getExplorer, trimAddress } from "@/lib/utils";
+import { getExplorer } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import useWaitForTxAction from "@/hooks/use-wait-for-tx";
 import ToastTx from "../shared/ToastTx";
-import { Separator } from "../ui/separator";
-import Link from "next/link";
 import VideoOption from "../video/VideoOption";
 
 interface SupportFormVideoProps {
@@ -397,7 +395,7 @@ export default function SupportFormVideo({
           )}
         </Button>
 
-        <div className="flex flex-col space-y-2 w-full h-full items-center justify-center">
+        {/* <div className="flex flex-col space-y-2 w-full h-full items-center justify-center">
           <Separator />
           <h3 className="text-white/80 text-base text-center">
             Need token? Mint here!
@@ -410,7 +408,7 @@ export default function SupportFormVideo({
               {token.symbol} - {trimAddress(token.address)}
             </Link>
           ))}
-        </div>
+        </div> */}
       </form>
     </Form>
   );
