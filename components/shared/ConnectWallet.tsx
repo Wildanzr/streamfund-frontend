@@ -15,6 +15,7 @@ import {
   DialogClose,
   DialogDescription,
 } from "@/components/ui/dialog";
+import Loader from "@/components/shared/Loader";
 import { useCopyToClipboard } from "usehooks-ts";
 import Link from "next/link";
 import Image from "next/image";
@@ -29,19 +30,18 @@ const ConnectWallet = () => {
     klaster,
     soc,
     isFullyConnected,
-    nativeBalance,
     disconnect,
     unifiedBalances,
+    unifiedNative,
   } = useKlaster({
     address,
     status,
     isConnected,
     chain,
   });
-
   const { setOpen } = useModal();
   const wallet = useWallets();
-  const truncatedAddress = address ? trimAddress(address as string) : "";
+  const truncatedAddress = klaster ? trimAddress(soc as string) : "";
 
   const handleCopyAddress = (address: string) => {
     copy(address);
@@ -53,8 +53,17 @@ const ConnectWallet = () => {
       <DialogTrigger>
         <div className="flex w-full flex-row gap-3 p-2 px-3 rounded-xl items-center transition justify-center duration-300 ease-in-out bg-white text-primary hover:bg-white hover:scale-105">
           <div className="border-r-[1px] font-semibold border-black/60 pr-3">
-            {nativeBalance && parseFloat(formatEther(nativeBalance)).toFixed(3)}{" "}
-            {chain?.nativeCurrency?.symbol}
+            {unifiedNative.length > 0 ? (
+              <div>
+                {unifiedNative[0] &&
+                  parseFloat(formatEther(unifiedNative[0].unified)).toFixed(
+                    3
+                  )}{" "}
+                {unifiedNative[0] && unifiedNative[0].symbol}{" "}
+              </div>
+            ) : (
+              <Loader color="black" size="20" />
+            )}
           </div>
           <div className="text-sm">{truncatedAddress}</div>
           <EllipsisVerticalIcon size={13} color="black" />
@@ -88,9 +97,9 @@ const ConnectWallet = () => {
           </div>
 
           {/* ADDRESSES */}
-          <div className="flex flex-col gap-3 mt-2">
+          <div className="flex flex-col gap-3">
             <div className="flex flex-row items-center gap-2 justify-between">
-              <div>Primary Address: </div>
+              <div>Owner Address: </div>
               <div className="flex flex-row gap-1 items-center">
                 <div>{address && trimAddress(address as string)}</div>
                 <CopyIcon
@@ -122,56 +131,64 @@ const ConnectWallet = () => {
           <hr className="border-white/70 mt-2" />
           <div className="flex flex-row flex-wrap justify-between gap-5">
             {unifiedBalances.map((item, idx) => (
-              <div className="flex flex-col items-start gap-5 w-full" key={idx}>
-                <div className="flex flex-row items-center justify-center space-x-2">
-                  <Image
-                    alt={item.symbol}
-                    height={25}
-                    width={25}
-                    src={item.logo}
-                  />
-                  <p className="font-bold text-2xl">
-                    {Number(
-                      formatUnits(item.unified.balance, item.unified.decimals)
-                    )}{" "}
-                    {item.symbol}{" "}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-5 w-full">
-                  {UNIFIED_USDC.map((chain, idx) => (
-                    <div key={idx} className="flex flex-col items-center gap-1">
-                      <Image
-                        src={chain.logo}
-                        alt={item.symbol}
-                        height={25}
-                        width={25}
-                        className="rounded-full w-8 h-8"
-                      />
-                      <p className="text-xs">
-                        {Number(
-                          formatUnits(
-                            item.unified.breakdown[idx].amount,
-                            item.unified.decimals
-                          )
-                        )}{" "}
-                        {item.symbol}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+              <div
+                key={idx}
+                className="flex flex-row justify-between gap-5 w-full"
+              >
+                {UNIFIED_USDC.map((chain, idx) => (
+                  <div key={idx} className="flex flex-col items-center gap-1">
+                    <Image
+                      src={chain.logo}
+                      alt={item.symbol}
+                      height={25}
+                      width={25}
+                      className="rounded-full w-6 h-6"
+                    />
+                    <p className="text-xs">
+                      {Number(
+                        formatUnits(
+                          item.unified.breakdown[idx].amount,
+                          item.unified.decimals
+                        )
+                      )}{" "}
+                      {item.symbol}
+                    </p>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
 
-          {/* DISCONNECT */}
-          <DialogClose
-            onClick={() => disconnect()}
-            className="mt-4 w-fit self-end flex flex-row gap-1 items-center text-white/70 hover:text-white ease-in-out duration-300 text-xs"
-          >
-            <LogOutIcon size={20} />
-            <div>Disconnect</div>
-          </DialogClose>
+          {/* TOTAL & DISCONNECT */}
+          <div className="flex flex-row justify-between items-center mt-5">
+            {unifiedBalances.map((item, idx) => (
+              <div
+                key={idx}
+                className="flex flex-row items-center pt-3 justify-center space-x-2"
+              >
+                <Image
+                  alt={item.symbol}
+                  height={25}
+                  width={25}
+                  src={item.logo}
+                />
+                <p className="font-bold text-xl">
+                  {Number(
+                    formatUnits(item.unified.balance, item.unified.decimals)
+                  )}{" "}
+                  {item.symbol}{" "}
+                </p>
+              </div>
+            ))}
+
+            <DialogClose
+              onClick={() => disconnect()}
+              className="mt-4 w-fit flex flex-row gap-1 items-center text-white/70 hover:text-white ease-in-out duration-300 text-xs"
+            >
+              <LogOutIcon size={20} />
+              <div>Disconnect</div>
+            </DialogClose>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

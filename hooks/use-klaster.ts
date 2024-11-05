@@ -30,16 +30,23 @@ interface TokenUBalance {
   unified: UnifiedBalanceResult;
 }
 
+interface TokenNativeBalance {
+  symbol: string;
+  logo: string;
+  unified: bigint;
+}
+
 export const useKlaster = ({
   address,
   status,
   isConnected,
   chain,
 }: UseKlasterProps) => {
-  const { nativeBalance, disconnect } = useParticle({ address });
+  const { disconnect } = useParticle({ address });
   const [isFullyConnected, setIsFullyConnected] = useState(false);
   const [soc, setSoc] = useState<Address>();
   const [unifiedBalances, setUnifiedBalances] = useState<TokenUBalance[]>([]);
+  const [unifiedNative, setUnifiedNative] = useState<TokenNativeBalance[]>([]);
   const [klaster, setKlaster] =
     useState<KlasterSDK<BiconomyV2AccountInitData>>();
 
@@ -51,7 +58,6 @@ export const useKlaster = ({
       };
     })
   );
-
   const mcUSDC = buildTokenMapping([
     deployment(sepolia.id, UNIFIED_USDC[0].address as Address),
     deployment(baseSepolia.id, UNIFIED_USDC[1].address as Address),
@@ -59,21 +65,29 @@ export const useKlaster = ({
   ]);
 
   const fetchUnifiedBalanceRef = useRef<() => Promise<void>>();
-
   fetchUnifiedBalanceRef.current = async () => {
     if (!klaster || !mcClient || !mcUSDC) return;
 
+    const uNative = await mcClient.getUnifiedNativeBalance({
+      account: klaster.account,
+    });
     const uBalance = await mcClient.getUnifiedErc20Balance({
       tokenMapping: mcUSDC,
       account: klaster.account,
     });
 
+    const eth: TokenNativeBalance = {
+      logo: "/icons/ethereum.svg",
+      symbol: "ETH",
+      unified: uNative,
+    };
     const usdc: TokenUBalance = {
       logo: "/images/usdc.png",
       symbol: "USDC",
       unified: uBalance,
     };
 
+    setUnifiedNative([eth]);
     setUnifiedBalances([usdc]);
   };
 
@@ -134,8 +148,8 @@ export const useKlaster = ({
     klaster,
     isFullyConnected,
     soc,
-    nativeBalance,
-    disconnect,
+    unifiedNative,
     unifiedBalances,
+    disconnect,
   };
 };
