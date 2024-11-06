@@ -25,15 +25,20 @@ import {
   FormMessage,
 } from "../ui/form";
 import Loader from "../shared/Loader";
-import { Address, formatEther, parseEther, parseUnits } from "viem";
+import {
+  Address,
+  formatEther,
+  formatUnits,
+  parseEther,
+  parseUnits,
+} from "viem";
 import {
   NATIVE_ADDRESS,
   STREAMFUND_ADDRESS,
   SUPPORT_OPTIONS,
-  UNIFIED_USDC,
 } from "@/constant/common";
-import { displayFormatter, getExplorer, trimAddress } from "@/lib/utils";
-import { InfoIcon, Link } from "lucide-react";
+import { displayFormatter } from "@/lib/utils";
+import { InfoIcon } from "lucide-react";
 import {
   TooltipProvider,
   Tooltip,
@@ -46,7 +51,7 @@ import { useInterchain } from "@/hooks/use-interchain";
 import { useKlaster } from "@/hooks/use-klaster";
 import ToastTx from "../shared/ToastTx";
 import { STREAMFUND_ABI } from "@/constant/streamfund-abi";
-import { Separator } from "../ui/separator";
+// import { Separator } from "../ui/separator";
 
 interface SupportFormTokenProps {
   streamer: string;
@@ -64,10 +69,9 @@ export default function SupportFormToken({
   tokens,
   streamer,
 }: SupportFormTokenProps) {
-  const etherscan = getExplorer();
   const publicClient = usePublicClient();
   const { status, address, chain, isConnected } = useAccount();
-  const { unifiedBalances, unifiedNative } = useKlaster({
+  const { unifiedBalances, unifiedNative, soc } = useKlaster({
     address,
     status,
     isConnected,
@@ -141,29 +145,19 @@ export default function SupportFormToken({
             allowance: 999999999,
             currentPrice: price,
           });
-          setSupportState("support");
+        } else {
+          // NEED TO CHECK ALLOWANCE ON ERC-20?
+          setTokenInfo({
+            address: tokenDetail.address,
+            balance: Number(data?.value) ?? 0,
+            decimals: tokenDetail.decimal ?? 6,
+            symbol: tokenDetail.symbol ?? "USDC",
+            allowance: 999999999,
+            currentPrice: price,
+          });
         }
 
-        // else {
-        //   const tokenDetail = getTokenInfo(token);
-        //   const [balance, allowance] = await Promise.all([
-        //     readTokenBalance(address as Address, parsedToken),
-        //     readAllowance(address as Address, parsedToken),
-        //   ]);
-        //   setTokenInfo({
-        //     address: parsedToken,
-        //     balance: Number(balance) ?? 0,
-        //     decimals: tokenDetail.decimal,
-        //     symbol: tokenDetail.symbol,
-        //     allowance: Number(allowance) ?? 0,
-        //     currentPrice: price,
-        //   });
-        //   if (Number(allowance) === 0) {
-        //     setSupportState("approve");
-        //   } else {
-        //     setSupportState("support");
-        //   }
-        // }
+        setSupportState("support");
       } catch (error) {
         console.error(error);
       } finally {
@@ -187,7 +181,7 @@ export default function SupportFormToken({
   );
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!address || !unifiedNative[0]) return;
+    if (!soc) return;
     const amountParsed = Number(values.amount);
 
     // // SUPPORT WITH NATIVE TOKEN
@@ -237,6 +231,60 @@ export default function SupportFormToken({
     }
 
     // SUPORT WITH ERC20 TOKEN
+    else {
+      if (
+        amountParsed >
+        Number(
+          formatUnits(
+            unifiedBalances[0].unified.balance,
+            unifiedBalances[0].unified.decimals
+          )
+        )
+      ) {
+        toast({
+          title: "Insufficient balance",
+          description: "You don't have enough balance to support",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      try {
+        setIsSubmitting(true);
+        const itxHash = await supportWithToken(
+          unifiedBalances[0],
+          streamer as Address,
+          tokenInfo.address as Address,
+          form.getValues("message"),
+          parseUnits(form.getValues("amount"), tokenInfo.decimals)
+        );
+
+        toast({
+          title: "Interchain transaction submitted!",
+          action: (
+            <ToastTx
+              explorerLink={`https://explorer.klaster.io/details`}
+              explorerName="Klaster Explorer"
+              txHash={itxHash as Address}
+            />
+          ),
+        });
+        form.reset();
+        setQuickAmount(0);
+        setTokenInfo({
+          address: "",
+          balance: 0,
+          decimals: 0,
+          symbol: "",
+          allowance: 0,
+          currentPrice: 0,
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
   };
 
   return (
@@ -273,16 +321,28 @@ export default function SupportFormToken({
                   <p className="text-sm text-white/80">Available:</p>
 
                   {tokenInfo.symbol === "ETH" ? (
-                    unifiedNative[0] && (
+                    unifiedNative[0] ? (
                       <div>
                         {parseFloat(
                           formatEther(unifiedNative[0].unified)
                         ).toFixed(3)}{" "}
                         {unifiedNative[0].symbol}
                       </div>
+                    ) : (
+                      <Loader />
                     )
+                  ) : unifiedBalances[0] ? (
+                    <div>
+                      {parseFloat(
+                        formatUnits(
+                          unifiedBalances[0].unified.balance,
+                          unifiedBalances[0].unified.decimals
+                        )
+                      ).toFixed(3)}{" "}
+                      {unifiedBalances[0].symbol}
+                    </div>
                   ) : (
-                    <Loader size="20" />
+                    <Loader />
                   )}
                 </div>
               )}
@@ -414,22 +474,7 @@ export default function SupportFormToken({
           )}
         </Button>
 
-        <Button
-          type="button"
-          onClick={() =>
-            supportWithToken(
-              unifiedBalances[0],
-              streamer as Address,
-              UNIFIED_USDC[0].address as Address,
-              "GMMM Mann",
-              parseUnits("150", UNIFIED_USDC[0].decimal)
-            )
-          }
-        >
-          TEST KLASTER
-        </Button>
-
-        <div className="flex flex-col space-y-2 w-full h-full items-center justify-center">
+        {/* <div className="flex flex-col space-y-2 w-full h-full items-center justify-center">
           <Separator />
           <h3 className="text-white/80 text-base text-center">
             Need token? Mint here!
@@ -442,7 +487,7 @@ export default function SupportFormToken({
               {token.symbol} - {trimAddress(token.address)}
             </Link>
           ))}
-        </div>
+        </div> */}
       </form>
     </Form>
   );
