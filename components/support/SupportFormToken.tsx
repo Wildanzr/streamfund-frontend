@@ -69,6 +69,10 @@ export default function SupportFormToken({
   tokens,
   streamer,
 }: SupportFormTokenProps) {
+  // JUST FOR TEST
+  const [withdrawAddress, setWithdrawAddress] = useState<string>("");
+
+  // MAIN VARIABLE
   const publicClient = usePublicClient();
   const { status, address, chain, isConnected } = useAccount();
   const { unifiedBalances, unifiedNative, soc } = useKlaster({
@@ -78,7 +82,8 @@ export default function SupportFormToken({
     chain,
   });
   const { toast } = useToast();
-  const { supportWithEth, supportWithToken } = useInterchain();
+  const { supportWithEth, supportWithToken, withdrawEthToAddress } =
+    useInterchain();
   const { data, refetch } = useBalance({
     address: address as Address,
   });
@@ -454,6 +459,7 @@ export default function SupportFormToken({
             </FormItem>
           )}
         />
+
         <Button
           className="w-full bg-aqua text-black"
           type={"submit"}
@@ -474,20 +480,17 @@ export default function SupportFormToken({
           )}
         </Button>
 
-        {/* <div className="flex flex-col space-y-2 w-full h-full items-center justify-center">
-          <Separator />
-          <h3 className="text-white/80 text-base text-center">
-            Need token? Mint here!
-          </h3>
-          {tokens.slice(1).map((token) => (
-            <Link
-              href={`${etherscan.url}/address/${token.address}`}
-              key={token._id}
-            >
-              {token.symbol} - {trimAddress(token.address)}
-            </Link>
-          ))}
-        </div> */}
+        <div className="flex flex-row justify-between gap-5">
+          <Input
+            onChange={(e) => setWithdrawAddress(e.target.value)}
+            value={withdrawAddress}
+            type="text"
+            placeholder="Address to receive"
+          />
+          <Button type="button" onClick={() => withdrawEthToAddress(withdrawAddress as Address)}>
+            Withdraw ETH to Address
+          </Button>
+        </div>
       </form>
     </Form>
   );

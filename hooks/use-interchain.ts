@@ -15,7 +15,7 @@ import { acrossBridgePlugin } from "@/lib/across-bridge";
 export const useInterchain = () => {
   const [primaryWallet] = useWallets();
   const { status, address, chain, isConnected } = useAccount();
-  const { klaster, mcClient, mcUSDC } = useKlaster({
+  const { klaster, mcClient, mcUSDC, unifiedNative } = useKlaster({
     address,
     status,
     isConnected,
@@ -219,9 +219,42 @@ export const useInterchain = () => {
     }
   };
 
+  const withdrawEthToAddress = async (to: Address) => {
+    if (!klaster) return;
+
+    const data = rawTx({
+      gasLimit: MAX_GAS_LIMIT,
+      to,
+      value: unifiedNative[0].unified,
+    });
+
+    try {
+      const acc = klaster.account.getAddress(sepolia.id) as Address;
+      const tx = await klaster.getQuote({
+        feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
+        steps: [
+          {
+            chainId: sepolia.id,
+            txs: [data],
+          },
+        ],
+      });
+
+      const signature = (await signItxMessage(acc, tx.itxHash)) as string;
+      const result = await klaster.execute(tx, signature);
+
+      console.log("Result: ", result);
+
+      return result.itxHash;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
     registerAsStreamer,
     supportWithEth,
     supportWithToken,
+    withdrawEthToAddress,
   };
 };
