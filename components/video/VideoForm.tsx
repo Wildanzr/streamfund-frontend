@@ -20,7 +20,11 @@ import {
   SelectValue,
 } from "../ui/select";
 import { z } from "zod";
-import { AVAILABLE_ANIMATIONS, AVAILABLE_FONTS, AVAILABLE_VIDEO } from "@/constant/common";
+import {
+  AVAILABLE_ANIMATIONS,
+  AVAILABLE_FONTS,
+  AVAILABLE_VIDEO,
+} from "@/constant/common";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import { useCopyToClipboard } from "usehooks-ts";
@@ -55,7 +59,7 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
   const [isTesting, setIsTesting] = useState(false);
   const [videoKey, setVideoKey] = useState(0);
 
-  const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamkey=${streamkey}`;
+  const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamKey=${streamkey}`;
   const { socket } = useSocket(HOST);
   const { sendMessage: sendTesting } = useSocketEvent<string>(socket, "test");
   const { sendMessage: sendReload } = useSocketEvent<string>(socket, "reload");

@@ -21,7 +21,7 @@ interface SupportAlert {
 }
 
 const SupportAlert = (props: SupportAlert) => {
-  const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamkey=${props.streamkey}`;
+  const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamKey=${props.streamkey}`;
   const { socket, connected } = useSocket(HOST);
   const [renderKey, setRenderKey] = useState(0);
   const [isVisible, setIsVisible] = useState(false);

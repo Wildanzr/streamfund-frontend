@@ -73,7 +73,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
   const [isTesting, setIsTesting] = useState(false);
   const [alertKey, setAlertKey] = useState(0);
 
-  const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamkey=${streamkey}`;
+  const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamKey=${streamkey}`;
   const { socket } = useSocket(HOST);
   const { sendMessage: sendTesting } = useSocketEvent<string>(socket, "test");
   const { sendMessage: sendReload } = useSocketEvent<string>(socket, "reload");

@@ -39,7 +39,7 @@ export default function HomeAlert() {
     "bg-white",
   ];
 
-  const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamkey=${streamkey}`;
+  const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamKey=${streamkey}`;
   const { socket, connected } = useSocket(HOST);
   const [isVisible, setIsVisible] = useState(true);
   const { sendMessage } = useSocketEvent<string>(socket, "listen-support");
