@@ -1,6 +1,6 @@
 import { TOKEN_ABI } from "@/constant/token-abi";
 import axios from "axios";
-import { BridgePlugin, BridgePluginParams, Transaction } from "klaster-sdk";
+import { BridgePlugin, BridgePluginParams, rawTx } from "klaster-sdk";
 import { Address, encodeFunctionData, parseAbi } from "viem";
 
 interface FeeObject {
@@ -39,10 +39,12 @@ interface RelayFeeResponse {
 }
 
 const getSuggestedFee = async (data: BridgePluginParams) => {
+  console.log("Data", data);
   const client = axios.create({
-    baseURL: "https://app.across.to/api/",
+    baseURL: "https://testnet.across.to/api/",
   });
 
+  console.log("Data", data);
   const res = await client.get<RelayFeeResponse>(
     `suggested-fees?inputToken=${data.sourceToken}&outputToken=${data.destinationToken}&
     originChainId=${data.sourceChainId}&destinationChainId=${data.destinationChainId}&amount=${data.amount}`
@@ -56,7 +58,7 @@ const encodeApproveTx = (
   amount: bigint,
   recipient: Address
 ) => {
-  const tx: Transaction = {
+  const tx = rawTx({
     gasLimit: BigInt(100000),
     to: tokenAddress,
     data: encodeFunctionData({
@@ -64,7 +66,7 @@ const encodeApproveTx = (
       functionName: "approve",
       args: [recipient, amount],
     }),
-  };
+  });
 
   return tx;
 };
@@ -117,11 +119,11 @@ export const acrossBridgePlugin: BridgePlugin = async (data) => {
   );
 
   // Call across pool to initiate bridging
-  const acrossCallTx: Transaction = {
+  const acrossCallTx = rawTx({
     to: feesResponse.spokePoolAddress,
     data: encodeCallData(data, feesResponse),
     gasLimit: BigInt(250000),
-  };
+  });
 
   return {
     receivedOnDestination: outputAmount,

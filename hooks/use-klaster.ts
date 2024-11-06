@@ -5,7 +5,7 @@ import {
   BiconomyV2AccountInitData,
   initKlaster,
   klasterNodeHost,
-  loadBiconomyV2Account,
+  loadBicoV2Account,
   buildMultichainReadonlyClient,
   buildTokenMapping,
   deployment,
@@ -99,24 +99,10 @@ export const useKlaster = ({
   const startKlaster = useCallback(async () => {
     if (isConnected && status === "connected" && address && chain) {
       const klaster = await initKlaster({
-        accountInitData: loadBiconomyV2Account({
+        accountInitData: loadBicoV2Account({
           owner: address as Address,
         }),
         nodeUrl: klasterNodeHost.default,
-        rpcs: [
-          {
-            chainId: baseSepolia.id,
-            rpcUrl: baseSepolia.rpcUrls.default.http[0],
-          },
-          {
-            chainId: arbitrumSepolia.id,
-            rpcUrl: arbitrumSepolia.rpcUrls.default.http[0],
-          },
-          {
-            chainId: sepolia.id,
-            rpcUrl: sepolia.rpcUrls.default.http[0],
-          },
-        ],
       });
       setKlaster(klaster);
       setIsFullyConnected(true);
@@ -157,5 +143,7 @@ export const useKlaster = ({
     unifiedBalances,
     refetchUnified,
     disconnect,
+    mcClient,
+    mcUSDC,
   };
 };

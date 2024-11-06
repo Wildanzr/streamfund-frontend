@@ -25,14 +25,15 @@ import {
   FormMessage,
 } from "../ui/form";
 import Loader from "../shared/Loader";
+import { Address, formatEther, parseEther, parseUnits } from "viem";
 import {
   NATIVE_ADDRESS,
   STREAMFUND_ADDRESS,
   SUPPORT_OPTIONS,
+  UNIFIED_USDC,
 } from "@/constant/common";
-import { Address, formatEther, parseEther } from "viem";
-import { displayFormatter } from "@/lib/utils";
-import { InfoIcon } from "lucide-react";
+import { displayFormatter, getExplorer, trimAddress } from "@/lib/utils";
+import { InfoIcon, Link } from "lucide-react";
 import {
   TooltipProvider,
   Tooltip,
@@ -45,6 +46,7 @@ import { useInterchain } from "@/hooks/use-interchain";
 import { useKlaster } from "@/hooks/use-klaster";
 import ToastTx from "../shared/ToastTx";
 import { STREAMFUND_ABI } from "@/constant/streamfund-abi";
+import { Separator } from "../ui/separator";
 
 interface SupportFormTokenProps {
   streamer: string;
@@ -62,16 +64,17 @@ export default function SupportFormToken({
   tokens,
   streamer,
 }: SupportFormTokenProps) {
+  const etherscan = getExplorer();
   const publicClient = usePublicClient();
   const { status, address, chain, isConnected } = useAccount();
-  const { unifiedNative } = useKlaster({
+  const { unifiedBalances, unifiedNative } = useKlaster({
     address,
     status,
     isConnected,
     chain,
   });
   const { toast } = useToast();
-  const { supportWithEth } = useInterchain();
+  const { supportWithEth, supportWithToken } = useInterchain();
   const { data, refetch } = useBalance({
     address: address as Address,
   });
@@ -410,6 +413,36 @@ export default function SupportFormToken({
             </p>
           )}
         </Button>
+
+        <Button
+          type="button"
+          onClick={() =>
+            supportWithToken(
+              unifiedBalances[0],
+              streamer as Address,
+              UNIFIED_USDC[0].address as Address,
+              "GMMM Mann",
+              parseUnits("10", UNIFIED_USDC[0].decimal)
+            )
+          }
+        >
+          TEST KLASTER
+        </Button>
+
+        <div className="flex flex-col space-y-2 w-full h-full items-center justify-center">
+          <Separator />
+          <h3 className="text-white/80 text-base text-center">
+            Need token? Mint here!
+          </h3>
+          {tokens.slice(1).map((token) => (
+            <Link
+              href={`${etherscan.url}/address/${token.address}`}
+              key={token._id}
+            >
+              {token.symbol} - {trimAddress(token.address)}
+            </Link>
+          ))}
+        </div>
       </form>
     </Form>
   );

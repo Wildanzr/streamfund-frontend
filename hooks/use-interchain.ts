@@ -3,18 +3,19 @@
 import { sepolia } from "viem/chains";
 // import { buildTransaction, Transaction, TransactionBuilder } from "klaster-sdk";
 import { useKlaster } from "./use-klaster";
-import { STREAMFUND_ADDRESS } from "@/constant/common";
+import { NATIVE_FEE_ADDRESS, STREAMFUND_ADDRESS } from "@/constant/common";
 import { encodeFunctionData } from "viem";
 import { STREAMFUND_ABI } from "@/constant/streamfund-abi";
 import { useWallets, useAccount } from "@particle-network/connectkit";
 import { type Address } from "viem";
-import { Transaction } from "klaster-sdk";
+import { buildItx, encodeBridgingOps, QuoteResponse, rawTx } from "klaster-sdk";
 import { TOKEN_ABI } from "@/constant/token-abi";
+import { acrossBridgePlugin } from "@/lib/across-bridge";
 
 export const useInterchain = () => {
   const [primaryWallet] = useWallets();
   const { status, address, chain, isConnected } = useAccount();
-  const { klaster } = useKlaster({
+  const { klaster, mcClient, mcUSDC } = useKlaster({
     address,
     status,
     isConnected,
@@ -39,23 +40,23 @@ export const useInterchain = () => {
     if (!klaster) return;
 
     // ENCODE ABI DATA -> REGISTER STREAMER
-    const data: Transaction = {
+    const data = rawTx({
       gasLimit: BigInt(1000000),
       to: STREAMFUND_ADDRESS,
       data: encodeFunctionData({
         abi: STREAMFUND_ABI,
         functionName: "registerAsStreamer",
       }),
-    };
+    });
 
     try {
       const acc = klaster.account.getAddress(sepolia.id) as Address;
       const tx = await klaster.getQuote({
-        nodeFeeOperation: {
+        feeTx: {
           chainId: sepolia.id,
           token: "0x0000000000000000000000000000000000000000",
         },
-        operations: [
+        steps: [
           {
             chainId: sepolia.id,
             txs: [data],
@@ -80,7 +81,7 @@ export const useInterchain = () => {
   ) => {
     if (!klaster) return;
 
-    const data: Transaction = {
+    const data = rawTx({
       gasLimit: BigInt(1000000),
       to: STREAMFUND_ADDRESS,
       value: value,
@@ -89,16 +90,16 @@ export const useInterchain = () => {
         functionName: "supportWithETH",
         args: [destination, message],
       }),
-    };
+    });
 
     try {
       const acc = klaster.account.getAddress(sepolia.id) as Address;
       const tx = await klaster.getQuote({
-        nodeFeeOperation: {
+        feeTx: {
           chainId: sepolia.id,
           token: "0x0000000000000000000000000000000000000000",
         },
-        operations: [
+        steps: [
           {
             chainId: sepolia.id,
             txs: [data],
@@ -116,6 +117,7 @@ export const useInterchain = () => {
   };
 
   const supportWithToken = async (
+    tokenUnified: TokenUBalance,
     destination: Address,
     tokenAddress: Address,
     message: string,
@@ -123,44 +125,94 @@ export const useInterchain = () => {
   ) => {
     if (!klaster) return;
 
-    const tokenApproval: Transaction = {
+    /**
+     * Flow:
+     * 1. Check if balance in current chain ID is sufficient
+     * 2. If not, bridge the token to the destination chain ID
+     * 3. Support with token
+     */
+
+    // create a variable adjustedAmount, this value is amount + 1% of amount
+    const adjustedAmount = amount + BigInt((Number(amount) * 1.5) / 100);
+
+    console.log("Klaster", klaster);
+    const bridging = await encodeBridgingOps({
+      account: klaster.account,
+      amount: adjustedAmount,
+      bridgePlugin: acrossBridgePlugin,
+      client: mcClient,
+      tokenMapping: mcUSDC,
+      destinationChainId: sepolia.id,
+      unifiedBalance: tokenUnified.unified,
+    });
+    console.log("Bridging", bridging);
+
+    const tokenApproval = rawTx({
       gasLimit: BigInt(1000000),
       to: tokenAddress,
       data: encodeFunctionData({
         abi: TOKEN_ABI,
         functionName: "approve",
-        args: [STREAMFUND_ADDRESS, amount],
+        args: [STREAMFUND_ADDRESS, adjustedAmount],
       }),
-    };
-    const supportToken: Transaction = {
+    });
+
+    const supportToken = rawTx({
       gasLimit: BigInt(1000000),
       to: STREAMFUND_ADDRESS,
       data: encodeFunctionData({
         abi: STREAMFUND_ABI,
         functionName: "supportWithToken",
-        args: [destination, tokenAddress, amount, message],
+        args: [destination, tokenAddress, adjustedAmount, message],
       }),
-    };
+    });
 
     try {
+      const sepoliaBalance = tokenUnified.unified.breakdown.find(
+        (item) => item.chainId === sepolia.id
+      )!;
+      const isAmountSufficient = sepoliaBalance.amount > amount;
+      console.log("Sepolia Balance", sepoliaBalance.amount);
+      console.log("Requested Amount", amount);
+      console.log("isAmountSufficient", isAmountSufficient);
       const acc = klaster.account.getAddress(sepolia.id) as Address;
-      const tx = await klaster.getQuote({
-        nodeFeeOperation: {
-          chainId: sepolia.id,
-          token: "0x0000000000000000000000000000000000000000",
-        },
-        operations: [
-          {
+      let tx: QuoteResponse | undefined;
+      if (isAmountSufficient) {
+        console.log("Direct support with token");
+        tx = await klaster.getQuote({
+          feeTx: {
             chainId: sepolia.id,
-            txs: [tokenApproval, supportToken],
+            token: NATIVE_FEE_ADDRESS,
           },
-        ],
-      });
+          steps: [
+            {
+              chainId: sepolia.id,
+              txs: [supportToken],
+            },
+          ],
+        });
+      } else {
+        console.log("Support with bridging");
+        const iTX = buildItx({
+          feeTx: {
+            chainId: sepolia.id,
+            token: NATIVE_FEE_ADDRESS,
+          },
+          steps: bridging.steps.concat([
+            {
+              chainId: sepolia.id,
+              txs: [tokenApproval, supportToken],
+            },
+          ]),
+        });
+
+        tx = await klaster.getQuote(iTX);
+      }
 
       const signature = (await signItxMessage(acc, tx.itxHash)) as string;
       const result = await klaster.execute(tx, signature);
 
-      return result.itxHash;
+      console.log("Result: ", result);
     } catch (error) {
       console.log(error);
     }

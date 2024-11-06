@@ -1,5 +1,7 @@
 // Global.d.ts for global type declaration
 
+import { UnifiedBalanceResult } from "klaster-sdk";
+
 export {};
 
 declare global {
@@ -16,5 +18,11 @@ declare global {
     value: number;
     src: string;
     name: string;
+  }
+
+  interface TokenUBalance {
+    symbol: string;
+    logo: string;
+    unified: UnifiedBalanceResult;
   }
 }
