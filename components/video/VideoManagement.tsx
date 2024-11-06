@@ -14,7 +14,7 @@ interface VideoManagementProps {
 
 const VideoManagement = ({ address, streamkey }: VideoManagementProps) => {
   const { data: config, isLoading } = useQuery<VideoConfigResponse>({
-    queryKey: ["alert-config", streamkey],
+    queryKey: ["video-config", streamkey],
     queryFn: async () => {
       const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/video?streamkey=${streamkey}`;
       const timestamp = Math.floor(Date.now() / 1000);
