@@ -2,13 +2,13 @@
 
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { useAccount } from "wagmi";
 import { Address } from "viem";
 import Loader from "../shared/Loader";
 import { useToast } from "@/hooks/use-toast";
 import ToastTx from "../shared/ToastTx";
 import { getExplorer } from "@/lib/utils";
 import { useInterchain } from "@/hooks/use-interchain";
+import { useAccount } from "@particle-network/connectkit";
 
 const Register = () => {
   const etherscan = getExplorer();

@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useAccount, useBalance } from "wagmi";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +38,8 @@ import { useToast } from "@/hooks/use-toast";
 import useWaitForTxAction from "@/hooks/use-wait-for-tx";
 import ToastTx from "../shared/ToastTx";
 import VideoOption from "../video/VideoOption";
+import { useAccount } from "@particle-network/connectkit";
+import { useBalance } from "wagmi";
 
 interface SupportFormVideoProps {
   streamer: string;
@@ -60,7 +61,7 @@ export default function SupportFormVideo({
   const { toast } = useToast();
   const { address } = useAccount();
   const { data, refetch } = useBalance({
-    address,
+    address: address as Address,
   });
   const [quickAmount, setQuickAmount] = useState(0);
   const [isFetchingBalance, setIsFetchingBalance] = useState(false);
@@ -144,8 +145,8 @@ export default function SupportFormVideo({
         } else {
           const tokenDetail = getTokenInfo(token);
           const [balance, allowance] = await Promise.all([
-            readTokenBalance(address, parsedToken),
-            readAllowance(address, parsedToken),
+            readTokenBalance(address as Address, parsedToken),
+            readAllowance(address as Address, parsedToken),
           ]);
           setTokenInfo({
             address: parsedToken,
@@ -188,7 +189,7 @@ export default function SupportFormVideo({
     setIsApproving(true);
     try {
       const token = tokenInfo.address as Address;
-      const result = await giveAllowance(address, token);
+      const result = await giveAllowance(address as Address, token);
       if (result === false) return;
       setTxHash(result);
       toast({

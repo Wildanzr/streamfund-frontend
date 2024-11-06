@@ -28,23 +28,29 @@ export function ManagementPlatformComponent() {
   const [activeTab, setActiveTab] = useState(currentPath);
 
   const { data: streamer, isLoading } = useQuery({
-    queryKey: ["streamer", address],
+    queryKey: ["streamer", soc],
     queryFn: async () => {
-      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/contracts/streamers?q=${soc}&limit=10&page=1`;
-      const timestamp = Math.floor(Date.now() / 1000);
-      const headers = await generateClientSignature({
-        method: "GET",
-        timestamp,
-        url,
-      });
-      const { data } = await axios.get(url, {
-        headers,
-      });
-      const streamkey = data?.data?.streamer[0] as QueryStreamerResponse;
-      return streamkey;
+      try {
+        console.log("getting streamer", soc);
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/contracts/streamers?q=${soc}&limit=10&page=1`;
+        const timestamp = Math.floor(Date.now() / 1000);
+        const headers = await generateClientSignature({
+          method: "GET",
+          timestamp,
+          url,
+        });
+        const { data } = await axios.get(url, {
+          headers,
+        });
+        const streamkey = data?.data?.streamer[0] as QueryStreamerResponse;
+        return streamkey;
+      } catch (error) {
+        console.error(error);
+        return undefined;
+      }
     },
     enabled: !!soc,
-    retry: true,
+    retry: false,
   });
 
   console.log("SOC", soc);

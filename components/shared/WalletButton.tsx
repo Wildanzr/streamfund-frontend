@@ -1,9 +1,9 @@
 "use client";
 
+import { useAccount } from "@particle-network/connectkit";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import { useAccount } from "wagmi";
 
 interface WalletButtonProps {
   label?: string;
