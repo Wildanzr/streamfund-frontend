@@ -39,18 +39,26 @@ interface RelayFeeResponse {
 }
 
 const getSuggestedFee = async (data: BridgePluginParams) => {
-  console.log("Data", data);
-  const client = axios.create({
-    baseURL: "https://testnet.across.to/api/",
-  });
+  // console.log("InputToken", data.sourceToken);
+  // console.log("OutputToken", data.destinationToken);
+  // console.log("OriginChainId", data.sourceChainId);
+  // console.log("DestinationChainId", data.destinationChainId);
+  // console.log("Amount", data.amount);
+  try {
+    const client = axios.create({
+      baseURL: "https://testnet.across.to/api/",
+    });
 
-  console.log("Data", data);
-  const res = await client.get<RelayFeeResponse>(
-    `suggested-fees?inputToken=${data.sourceToken}&outputToken=${data.destinationToken}&
-    originChainId=${data.sourceChainId}&destinationChainId=${data.destinationChainId}&amount=${data.amount}`
-  );
-
-  return res.data;
+    console.log("Querying suggested fees");
+    const res = await client.get<RelayFeeResponse>(
+      `suggested-fees?inputToken=${data.sourceToken}&outputToken=${data.destinationToken}&
+      originChainId=${data.sourceChainId}&destinationChainId=${data.destinationChainId}&amount=${data.amount}`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return {} as RelayFeeResponse;
+  }
 };
 
 const encodeApproveTx = (
@@ -58,13 +66,16 @@ const encodeApproveTx = (
   amount: bigint,
   recipient: Address
 ) => {
+  const maxAmount = BigInt(
+    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+  );
   const tx = rawTx({
     gasLimit: BigInt(100000),
     to: tokenAddress,
     data: encodeFunctionData({
       abi: TOKEN_ABI,
       functionName: "approve",
-      args: [recipient, amount],
+      args: [recipient, maxAmount],
     }),
   });
 

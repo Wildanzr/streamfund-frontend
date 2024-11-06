@@ -422,7 +422,7 @@ export default function SupportFormToken({
               streamer as Address,
               UNIFIED_USDC[0].address as Address,
               "GMMM Mann",
-              parseUnits("10", UNIFIED_USDC[0].decimal)
+              parseUnits("150", UNIFIED_USDC[0].decimal)
             )
           }
         >
@@ -447,3 +447,9 @@ export default function SupportFormToken({
     </Form>
   );
 }
+
+/**
+ * 1. Request transfer
+ * 2. Check balance, if not sufficient bride to swap
+ * 3. Get
+ */

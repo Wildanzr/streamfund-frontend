@@ -3,7 +3,7 @@
 import { sepolia } from "viem/chains";
 // import { buildTransaction, Transaction, TransactionBuilder } from "klaster-sdk";
 import { useKlaster } from "./use-klaster";
-import { NATIVE_FEE_ADDRESS, STREAMFUND_ADDRESS } from "@/constant/common";
+import { MAX_GAS_LIMIT, STREAMFUND_ADDRESS } from "@/constant/common";
 import { encodeFunctionData } from "viem";
 import { STREAMFUND_ABI } from "@/constant/streamfund-abi";
 import { useWallets, useAccount } from "@particle-network/connectkit";
@@ -41,7 +41,7 @@ export const useInterchain = () => {
 
     // ENCODE ABI DATA -> REGISTER STREAMER
     const data = rawTx({
-      gasLimit: BigInt(1000000),
+      gasLimit: MAX_GAS_LIMIT,
       to: STREAMFUND_ADDRESS,
       data: encodeFunctionData({
         abi: STREAMFUND_ABI,
@@ -82,7 +82,7 @@ export const useInterchain = () => {
     if (!klaster) return;
 
     const data = rawTx({
-      gasLimit: BigInt(1000000),
+      gasLimit: MAX_GAS_LIMIT,
       to: STREAMFUND_ADDRESS,
       value: value,
       data: encodeFunctionData({
@@ -95,10 +95,7 @@ export const useInterchain = () => {
     try {
       const acc = klaster.account.getAddress(sepolia.id) as Address;
       const tx = await klaster.getQuote({
-        feeTx: {
-          chainId: sepolia.id,
-          token: "0x0000000000000000000000000000000000000000",
-        },
+        feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
         steps: [
           {
             chainId: sepolia.id,
@@ -148,7 +145,7 @@ export const useInterchain = () => {
     console.log("Bridging", bridging);
 
     const tokenApproval = rawTx({
-      gasLimit: BigInt(1000000),
+      gasLimit: MAX_GAS_LIMIT,
       to: tokenAddress,
       data: encodeFunctionData({
         abi: TOKEN_ABI,
@@ -158,7 +155,7 @@ export const useInterchain = () => {
     });
 
     const supportToken = rawTx({
-      gasLimit: BigInt(1000000),
+      gasLimit: MAX_GAS_LIMIT,
       to: STREAMFUND_ADDRESS,
       data: encodeFunctionData({
         abi: STREAMFUND_ABI,
@@ -180,24 +177,26 @@ export const useInterchain = () => {
       if (isAmountSufficient) {
         console.log("Direct support with token");
         tx = await klaster.getQuote({
-          feeTx: {
-            chainId: sepolia.id,
-            token: NATIVE_FEE_ADDRESS,
-          },
+          feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
           steps: [
             {
               chainId: sepolia.id,
-              txs: [supportToken],
+              txs: [tokenApproval, supportToken],
             },
           ],
         });
       } else {
         console.log("Support with bridging");
-        const iTX = buildItx({
-          feeTx: {
+
+        const teee = bridging.steps.concat([
+          {
             chainId: sepolia.id,
-            token: NATIVE_FEE_ADDRESS,
+            txs: [tokenApproval, supportToken],
           },
+        ]);
+        console.log("bridging", teee);
+        const iTX = buildItx({
+          feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
           steps: bridging.steps.concat([
             {
               chainId: sepolia.id,
@@ -205,11 +204,12 @@ export const useInterchain = () => {
             },
           ]),
         });
-
+        console.log("Quote iTX", iTX);
         tx = await klaster.getQuote(iTX);
       }
 
       const signature = (await signItxMessage(acc, tx.itxHash)) as string;
+      console.log("Signature", signature);
       const result = await klaster.execute(tx, signature);
 
       console.log("Result: ", result);
