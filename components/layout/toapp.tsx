@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import React from "react";
-import { useAccount } from "wagmi";
 import { Button } from "../ui/button";
+import { useAccount } from "@particle-network/connectkit";
 
 const ToApp = () => {
   const { isConnected } = useAccount();

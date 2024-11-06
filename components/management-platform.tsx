@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { generateClientSignature } from "@/lib/client";
@@ -11,6 +10,7 @@ import Register from "./layout/register";
 import Loader from "./shared/Loader";
 import { useSearchParams } from "next/navigation";
 import { useKlaster } from "@/hooks/use-klaster";
+import { useAccount } from "@particle-network/connectkit";
 
 const validPath = ["alert", "running-text", "qr-code", "support-history"];
 
@@ -46,6 +46,8 @@ export function ManagementPlatformComponent() {
     enabled: !!soc,
     retry: true,
   });
+
+  console.log("SOC", soc);
 
   return (
     <div className="flex flex-col w-full h-full items-center justify-center mx-auto bg-transparent text-white">
