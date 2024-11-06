@@ -14,12 +14,6 @@ declare global {
     children: React.ReactNode;
   }
 
-  interface Video {
-    value: number;
-    src: string;
-    name: string;
-  }
-
   interface TokenUBalance {
     symbol: string;
     logo: string;

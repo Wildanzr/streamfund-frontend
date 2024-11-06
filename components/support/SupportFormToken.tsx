@@ -70,7 +70,7 @@ export default function SupportFormToken({
   streamer,
 }: SupportFormTokenProps) {
   // JUST FOR TEST
-  const [withdrawAddress, setWithdrawAddress] = useState<string>("");
+  // const [withdrawAddress, setWithdrawAddress] = useState<string>("");
 
   // MAIN VARIABLE
   const publicClient = usePublicClient();
@@ -82,7 +82,7 @@ export default function SupportFormToken({
     chain,
   });
   const { toast } = useToast();
-  const { supportWithEth, supportWithToken, withdrawEthToAddress } =
+  const { supportWithEth, supportWithToken } =
     useInterchain();
   const { data, refetch } = useBalance({
     address: address as Address,
@@ -480,7 +480,7 @@ export default function SupportFormToken({
           )}
         </Button>
 
-        <div className="flex flex-row justify-between gap-5">
+        {/* <div className="flex flex-row justify-between gap-5">
           <Input
             onChange={(e) => setWithdrawAddress(e.target.value)}
             value={withdrawAddress}
@@ -490,7 +490,7 @@ export default function SupportFormToken({
           <Button type="button" onClick={() => withdrawEthToAddress(withdrawAddress as Address)}>
             Withdraw ETH to Address
           </Button>
-        </div>
+        </div> */}
       </form>
     </Form>
   );

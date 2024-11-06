@@ -17,9 +17,10 @@ import SupportFormVideo from "./SupportFormVideo";
 interface SupportProps {
   tokens: Token[];
   streamer: string;
+  videos: Video[];
 }
 
-export default function Support({ tokens, streamer }: SupportProps) {
+export default function Support({ tokens, streamer, videos }: SupportProps) {
   const { status } = useAccount();
   const [isClient, setIsClient] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("tokens");
@@ -73,7 +74,7 @@ export default function Support({ tokens, streamer }: SupportProps) {
               {activeTab === "tokens" ? (
                 <SupportFormToken tokens={tokens} streamer={streamer} />
               ) : (
-                <SupportFormVideo tokens={tokens} streamer={streamer} />
+                <SupportFormVideo videos={videos} tokens={tokens} streamer={streamer} />
               )}
             </CardContent>
           </Card>

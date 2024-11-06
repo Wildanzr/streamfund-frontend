@@ -76,11 +76,23 @@ const SupportPage = async ({ params }: URLProps) => {
   const resTokens = await reqTokens.json();
   const tokens = (await resTokens.data.tokens) as Token[];
 
+  // VIDEOS
+  const videoUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/videos`;
+  const reqVideos = await fetch(videoUrl, {
+    method: "GET",
+    headers,
+    next: {
+      tags: ["videos"],
+    },
+  });
+  const resVideos = await reqVideos.json();
+  const videos = (await resVideos.data) as Video[];
+
   return (
     <div className="flex relative flex-col items-center justify-center w-full h-full min-h-screen">
       <Background />
       <Header />
-      <Support tokens={tokens} streamer={params.id} />
+      <Support tokens={tokens} videos={videos} streamer={params.id} />
     </div>
   );
 };

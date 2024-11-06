@@ -6,6 +6,14 @@ interface VideoButtonProps {
   isFetchingBalance: boolean;
   isSubmitting: boolean;
   quickAmount: number;
+  tokenInfo: {
+    address: string;
+    balance: number;
+    decimals: number;
+    symbol: string;
+    allowance: number;
+    currentPrice: number;
+  };
   handleQuickSupport: (value: number) => void;
 }
 
@@ -14,12 +22,13 @@ const VideoOption = ({
   isFetchingBalance,
   isSubmitting,
   quickAmount,
+  tokenInfo,
   handleQuickSupport,
 }: VideoButtonProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const handleClick = () => {
-    handleQuickSupport(video.value);
+    handleQuickSupport(video.price);
     if (videoRef.current) {
       videoRef.current.play();
     }
@@ -27,22 +36,20 @@ const VideoOption = ({
 
   return (
     <Button
-      key={video.value}
+      key={video.video_id}
       variant="outline"
       type="button"
-      disabled={isFetchingBalance || isSubmitting}
+      disabled={isFetchingBalance || isSubmitting || !tokenInfo.address}
       className={`flex-none flex-col h-fit border-2 items-center rounded-sm justify-center p-0 bg-transparent hover:bg-white/10 ${
-        quickAmount === video.value ? "border-aqua" : ""
+        quickAmount === video.price ? "border-aqua" : ""
       }`}
-      value={video.value}
+      value={video.price}
       onClick={handleClick}
     >
       <video ref={videoRef} className="h-[100px] w-fit">
-        <source src={video.src} type="video/mp4" />
+        <source src={video.link} type="video/mp4" />
       </video>
-      <div className="text-white text-xs py-2">
-        {video.name} (${video.value})
-      </div>
+      <div className="text-white text-xs py-2">Video (${video.price})</div>
     </Button>
   );
 };

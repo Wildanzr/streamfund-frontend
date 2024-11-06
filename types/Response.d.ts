@@ -15,6 +15,13 @@ declare global {
     logo: string;
   }
 
+  interface Video {
+    video_id: string;
+    price: number;
+    link: string;
+    thumbnail: string;
+  }
+
   interface TokenResponse {
     tokens: Token[];
   }
