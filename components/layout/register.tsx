@@ -6,17 +6,14 @@ import { Address } from "viem";
 import Loader from "../shared/Loader";
 import { useToast } from "@/hooks/use-toast";
 import ToastTx from "../shared/ToastTx";
-import { getExplorer } from "@/lib/utils";
 import { useInterchain } from "@/hooks/use-interchain";
 import { useAccount } from "@particle-network/connectkit";
 
 const Register = () => {
-  const etherscan = getExplorer();
   const { address } = useAccount();
   const { toast } = useToast();
   const { registerAsStreamer } = useInterchain();
   const [isRegistering, setIsRegistering] = useState(false);
-  const [txHash, setTxHash] = useState<Address | undefined>();
   const RELOAD_TIME = 10 * 1000; // 10 seconds
 
   const handlePostAction = () => {
@@ -26,7 +23,6 @@ const Register = () => {
       variant: "success",
     });
 
-    setTxHash(undefined);
     setTimeout(() => {
       window.location.reload();
     }, RELOAD_TIME);
@@ -48,14 +44,13 @@ const Register = () => {
         });
         return;
       }
-      setTxHash(result as Address);
       toast({
-        title: "Transaction submitted",
+        title: "Interchain transaction submitted!",
         action: (
           <ToastTx
-            explorerLink={etherscan.url}
-            explorerName={etherscan.name}
-            txHash={txHash}
+            explorerLink={`https://explorer.klaster.io/details`}
+            explorerName="Klaster Explorer"
+            txHash={result as Address}
           />
         ),
       });

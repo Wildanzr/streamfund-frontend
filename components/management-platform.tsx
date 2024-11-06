@@ -31,7 +31,6 @@ export function ManagementPlatformComponent() {
     queryKey: ["streamer", soc],
     queryFn: async () => {
       try {
-        console.log("getting streamer", soc);
         const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/contracts/streamers?q=${soc}&limit=10&page=1`;
         const timestamp = Math.floor(Date.now() / 1000);
         const headers = await generateClientSignature({
@@ -52,8 +51,6 @@ export function ManagementPlatformComponent() {
     enabled: !!soc,
     retry: false,
   });
-
-  console.log("SOC", soc);
 
   return (
     <div className="flex flex-col w-full h-full items-center justify-center mx-auto bg-transparent text-white">
