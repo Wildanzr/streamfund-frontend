@@ -12,7 +12,13 @@ import { useSearchParams } from "next/navigation";
 import { useKlaster } from "@/hooks/use-klaster";
 import { useAccount } from "@particle-network/connectkit";
 
-const validPath = ["alert", "running-text", "qr-code", "support-history"];
+const validPath = [
+  "alert",
+  "running-text",
+  "qr-code",
+  "support-history",
+  "video",
+];
 
 export function ManagementPlatformComponent() {
   const searchParams = useSearchParams();

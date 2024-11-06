@@ -34,23 +34,30 @@ import { generateClientSignature } from "@/lib/client";
 import axios from "axios";
 import { useSocket, useSocketEvent } from "socket.io-react-hook";
 import Video from "./Video";
+import { HexColorPicker } from "react-colorful";
 
 interface VideoFormProps {
   address: string;
   streamkey: string;
-  config: AlertConfigResponse;
+  config: VideoConfigResponse;
 }
 
 interface VideoProps {
   textSize: number;
   font: string;
   effect: string;
+  backgroundColor: string;
+  mainColor: string;
+  secondColor: string;
 }
 
 const formSchema = z.object({
   textSize: z.number(),
   font: z.string(),
   effect: z.string(),
+  backgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  mainColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  secondColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
 });
 
 const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
@@ -74,6 +81,9 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
         textSize: values.textSize.toString(),
         font: values.font,
         effect: values.effect,
+        backgroundColor: values.backgroundColor,
+        mainColor: values.mainColor,
+        secondColor: values.secondColor,
       };
       const headers = await generateClientSignature({
         method: "PUT",
@@ -95,6 +105,9 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
     textSize: config.textSize,
     font: config.font,
     effect: config.effect,
+    backgroundColor: config.backgroundColor,
+    mainColor: config.mainColor,
+    secondColor: config.secondColor,
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -241,6 +254,63 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
           )}
         />
 
+        <div className="flex flex-col md:flex-row items-center gap-5 justify-between px-6">
+          <FormField
+            control={form.control}
+            name="backgroundColor"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Background Color</FormLabel>
+                <FormControl>
+                  <div className="flex items-center space-x-4">
+                    <HexColorPicker
+                      color={field.value}
+                      onChange={field.onChange}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="mainColor"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Main Text Color</FormLabel>
+                <FormControl>
+                  <div className="flex items-center space-x-4">
+                    <HexColorPicker
+                      color={field.value}
+                      onChange={field.onChange}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="secondColor"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Secondary Text Color</FormLabel>
+                <FormControl>
+                  <div className="flex items-center space-x-4">
+                    <HexColorPicker
+                      color={field.value}
+                      onChange={field.onChange}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         {/* VIDEO COMPONENT */}
         {watchedValues && (
           <div className="flex w-full h-full items-center justify-center">
@@ -250,8 +320,11 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
               textSize={watchedValues.textSize.toString()}
               font={watchedValues.font}
               sender="0xxx"
-              videoName={AVAILABLE_VIDEO[0].name}
-              src={AVAILABLE_VIDEO[0].src}
+              videoName={"MeoW"}
+              src={AVAILABLE_VIDEO[0].link}
+              mainColor={watchedValues.mainColor}
+              secondColor={watchedValues.secondColor}
+              backgroundColor={watchedValues.backgroundColor}
             />
           </div>
         )}

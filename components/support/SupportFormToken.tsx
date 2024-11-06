@@ -82,8 +82,7 @@ export default function SupportFormToken({
     chain,
   });
   const { toast } = useToast();
-  const { supportWithEth, supportWithToken } =
-    useInterchain();
+  const { supportWithEth, supportWithToken } = useInterchain();
   const { data, refetch } = useBalance({
     address: address as Address,
   });

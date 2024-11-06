@@ -8,6 +8,9 @@ interface VideoProps {
   effect: string;
   videoName: string;
   src: string;
+  mainColor: string;
+  secondColor: string;
+  backgroundColor: string;
 }
 
 const Video = ({
@@ -17,6 +20,9 @@ const Video = ({
   font,
   videoName,
   src,
+  mainColor,
+  secondColor,
+  backgroundColor,
 }: VideoProps) => {
   return (
     <div
@@ -25,12 +31,21 @@ const Video = ({
       <div
         className={`flex flex-col items-center justify-center w-full max-w-5xl min-h-40 h-full space-y-3 rounded-t-[20px] shadow border`}
       >
-        <video className="w-[400px] h-fit" autoPlay loop>
+        <video
+          className="w-full min-w-[400px] max-w-[800px] h-full"
+          autoPlay
+          loop
+        >
           <source src={src} type="video/mp4" />
         </video>
       </div>
 
-      <div className="flex flex-col items-center justify-center min-h-10 py-2 bg-white rounded-b-[20px] shadow border px-4">
+      <div
+        className="flex flex-col items-center justify-center min-h-10 py-2 rounded-b-[20px] shadow border px-4"
+        style={{
+          backgroundColor: backgroundColor,
+        }}
+      >
         <TextAnimation
           segments={[
             { text: sender, isMain: true },
@@ -44,6 +59,8 @@ const Video = ({
           fontWeight={700}
           mainFontWeight={800}
           delay={0.5}
+          mainColor={mainColor}
+          color={secondColor}
         />
       </div>
     </div>

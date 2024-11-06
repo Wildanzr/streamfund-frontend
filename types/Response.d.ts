@@ -77,6 +77,16 @@ declare global {
     streamer: StreamerResponse;
   }
 
+  interface VideoConfigResponse {
+    backgroundColor: string;
+    mainColor: string;
+    secondColor: string;
+    font: string;
+    textSize: number;
+    effect: string;
+    streamer: StreamerResponse;
+  }
+
   interface SupportResponse {
     _id: string;
     from: string;
