@@ -291,11 +291,46 @@ export const useInterchain = () => {
     }
   };
 
+  const updateLiveAdsPrice = async (amount: number) => {
+    if (!klaster) return;
+
+    const data = rawTx({
+      gasLimit: MAX_GAS_LIMIT,
+      to: STREAMFUND_ADDRESS,
+      data: encodeFunctionData({
+        abi: STREAMFUND_ABI,
+        functionName: "updateLiveAdsPrice",
+        args: [BigInt(amount)],
+      }),
+    });
+
+    try {
+      const acc = klaster.account.getAddress(sepolia.id) as Address;
+      const tx = await klaster.getQuote({
+        feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
+        steps: [
+          {
+            chainId: sepolia.id,
+            txs: [data],
+          },
+        ],
+      });
+
+      const signature = (await signItxMessage(acc, tx.itxHash)) as string;
+      const result = await klaster.execute(tx, signature);
+
+      return result.itxHash;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
     registerAsStreamer,
     supportWithEth,
     supportWithToken,
     withdrawEthToAddress,
     videoSupportEth,
+    updateLiveAdsPrice
   };
 };
