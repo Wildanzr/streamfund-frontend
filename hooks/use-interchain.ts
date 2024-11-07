@@ -252,10 +252,50 @@ export const useInterchain = () => {
     }
   };
 
+  const videoSupportEth = async (
+    destination: Address,
+    videoId: Address,
+    message: string,
+    value: bigint
+  ) => {
+    if (!klaster) return;
+
+    const data = rawTx({
+      gasLimit: MAX_GAS_LIMIT,
+      to: STREAMFUND_ADDRESS,
+      value: value,
+      data: encodeFunctionData({
+        abi: STREAMFUND_ABI,
+        functionName: "supportWithVideoETH",
+        args: [destination, videoId, message],
+      }),
+    });
+
+    try {
+      const acc = klaster.account.getAddress(sepolia.id) as Address;
+      const tx = await klaster.getQuote({
+        feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
+        steps: [
+          {
+            chainId: sepolia.id,
+            txs: [data],
+          },
+        ],
+      });
+
+      const signature = (await signItxMessage(acc, tx.itxHash)) as string;
+      const result = await klaster.execute(tx, signature);
+      return result.itxHash;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
     registerAsStreamer,
     supportWithEth,
     supportWithToken,
     withdrawEthToAddress,
+    videoSupportEth,
   };
 };

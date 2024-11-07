@@ -37,6 +37,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { useInterchain } from "@/hooks/use-interchain";
+import { stringToNumber } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import ToastTx from "../shared/ToastTx";
 
 interface SupportFormVideoProps {
   streamer: string;
@@ -48,6 +52,7 @@ const formSchema = z.object({
   streamer: z.string(),
   token: z.string(),
   amount: z.string(),
+  videoId: z.string(),
   message: z.string(),
 });
 
@@ -56,16 +61,17 @@ export default function SupportFormVideo({
   streamer,
   videos,
 }: SupportFormVideoProps) {
-  // const { toast } = useToast();
   const publicClient = usePublicClient();
+  const { toast } = useToast();
+  const { videoSupportEth } = useInterchain();
   const { status, address, chain, isConnected } = useAccount();
-  const { unifiedBalances, unifiedNative } = useKlaster({
+  const { unifiedBalances, unifiedNative, soc } = useKlaster({
     address,
     status,
     isConnected,
     chain,
   });
-  const { data, refetch } = useBalance({
+  const { data } = useBalance({
     address: address as Address,
   });
   const [quickAmount, setQuickAmount] = useState(0);
@@ -89,6 +95,7 @@ export default function SupportFormVideo({
       token: "",
       amount: "",
       message: "",
+      videoId: "",
     },
   });
 
@@ -101,16 +108,19 @@ export default function SupportFormVideo({
     [tokens]
   );
 
-  const readAllowedTokenPrice = async (token: Address) => {
-    const result = await publicClient?.readContract({
-      abi: STREAMFUND_ABI,
-      address: STREAMFUND_ADDRESS,
-      functionName: "getAllowedTokenPrice",
-      args: [token],
-    });
+  const readAllowedTokenPrice = useCallback(
+    async (token: Address) => {
+      const result = await publicClient?.readContract({
+        abi: STREAMFUND_ABI,
+        address: STREAMFUND_ADDRESS,
+        functionName: "getAllowedTokenPrice",
+        args: [token],
+      });
 
-    return result ? Number(result[0]) / 10 ** (Number(result[1]) ?? 18) : 0;
-  };
+      return result ? Number(result[0]) / 10 ** (Number(result[1]) ?? 18) : 0;
+    },
+    [publicClient]
+  );
 
   const handleFetchingBalance = useCallback(
     async (token: string) => {
@@ -152,25 +162,83 @@ export default function SupportFormVideo({
         setQuickAmount(0);
       }
     },
-    [address, data?.value, form, getTokenInfo, refetch]
+    [address, data?.value, form, getTokenInfo, readAllowedTokenPrice]
   );
 
   const handleQuickSupport = useCallback(
-    (value: number) => {
+    (value: number, videoId: string) => {
       setQuickAmount(value);
       const amountToBe = (value / tokenInfo.currentPrice).toFixed(
         tokenInfo.decimals
       );
       form.setValue("amount", amountToBe, { shouldValidate: true });
+      form.setValue("videoId", videoId, { shouldValidate: true });
     },
     [form, tokenInfo.currentPrice, tokenInfo.decimals]
   );
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!address) return;
-    const amoutParsed = Number(values.amount) * 10 ** tokenInfo.decimals;
-    console.log(amoutParsed);
-    setIsSubmitting(false);
+    if (!soc) return;
+    const amountParsed =
+      stringToNumber(values.amount) * 10 ** tokenInfo.decimals;
+    const currentBalance =
+      tokenInfo.symbol === "ETH"
+        ? Number(unifiedNative[0].unified)
+        : Number(unifiedBalances[0].unified.balance);
+
+    console.log(currentBalance);
+    console.log(amountParsed);
+
+    if (amountParsed > currentBalance) {
+      toast({
+        title: "Insufficient balance",
+        description: "You don't have enough balance to support",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      let itxHash: string | undefined = undefined;
+      if (tokenInfo.symbol === "ETH") {
+        itxHash = await videoSupportEth(
+          streamer as Address,
+          values.videoId as Address,
+          values.message,
+          BigInt(amountParsed)
+        );
+      } else {
+        console.log("With USDC");
+      }
+
+      if (itxHash) {
+        toast({
+          title: "Interchain transaction submitted!",
+          action: (
+            <ToastTx
+              explorerLink={`https://explorer.klaster.io/details`}
+              explorerName="Klaster Explorer"
+              txHash={itxHash as Address}
+            />
+          ),
+        });
+        form.reset();
+        setQuickAmount(0);
+        setTokenInfo({
+          address: "",
+          balance: 0,
+          decimals: 0,
+          symbol: "",
+          allowance: 0,
+          currentPrice: 0,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -215,7 +283,7 @@ export default function SupportFormVideo({
                         {unifiedNative[0].symbol}
                       </div>
                     ) : (
-                      <Loader />
+                      <Loader size="20" />
                     )
                   ) : unifiedBalances[0] ? (
                     <div>
@@ -228,7 +296,7 @@ export default function SupportFormVideo({
                       {unifiedBalances[0].symbol}
                     </div>
                   ) : (
-                    <Loader />
+                    <Loader size="20" />
                   )}
                 </div>
               )}
@@ -237,25 +305,32 @@ export default function SupportFormVideo({
           )}
         />
 
-        <div className="space-y-2 h-full w-full">
-          <Label>Select Video</Label>
-          <div className="flex flex-row gap-5 items-center pb-2 overflow-x-scroll">
-            {videos.map((video: Video) => (
-              <VideoOption
-                key={video.video_id}
-                video={video}
-                tokenInfo={tokenInfo}
-                handleQuickSupport={handleQuickSupport}
-                quickAmount={quickAmount}
-                isFetchingBalance={isFetchingBalance}
-                isSubmitting={isSubmitting}
-              />
-            ))}
-          </div>
-        </div>
+        <FormField
+          control={form.control}
+          name="videoId"
+          render={() => (
+            <div className="space-y-2 h-full w-full">
+              <Label>Select Video</Label>
+              <div className="flex flex-row gap-5 items-center pb-2 overflow-x-scroll">
+                {videos.map((video: Video, idx: number) => (
+                  <VideoOption
+                    number={idx}
+                    key={video.video_id}
+                    video={video}
+                    tokenInfo={tokenInfo}
+                    handleQuickSupport={handleQuickSupport}
+                    quickAmount={quickAmount}
+                    isFetchingBalance={isFetchingBalance}
+                    isSubmitting={isSubmitting}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        />
 
         <div className="flex flex-row space-x-2">
-          <p className="text-sm text-white/80">Equivalent:</p>
+          <p className="text-sm text-white/80">Price:</p>
           {isFetchingBalance ? (
             <Loader size="20" />
           ) : (

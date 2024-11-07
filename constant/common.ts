@@ -6,6 +6,7 @@ import {
 
 import { defineChain } from "@particle-network/connectkit/chains";
 
+export const VIDEO_NAMES = ["Bird Pack", "Dripping Coin", "Fireworks"];
 export const STREAMFUND_ADDRESS = "0xcaFcAF4Aa0949dA2d3D3b303291c951301B75821";
 export const BASENAMES_ADDRESS = "0x03c4738Ee98aE44591e1A4A4F3CaB6641d95DD9a";
 export const NATIVE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
@@ -149,7 +150,7 @@ export const AVAILABLE_VIDEO = [
     value: 25,
     src: "/videos/video-3.mp4",
   },
-] as Video[];
+] as unknown as Video[];
 
 export const sepolia = defineChain({
   id: 11_155_111,
