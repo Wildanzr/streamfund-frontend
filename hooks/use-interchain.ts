@@ -129,14 +129,10 @@ export const useInterchain = () => {
      * 3. Support with token
      */
 
-    // create a variable adjustedAmount, this value is amount + 1.5% of amount
-    const adjustedAmount =
-      amount + BigInt(Math.ceil((Number(amount) * 1.5) / 100));
-
     console.log("Klaster", klaster);
     const bridging = await encodeBridgingOps({
       account: klaster.account,
-      amount: adjustedAmount,
+      amount: amount,
       bridgePlugin: acrossBridgePlugin,
       client: mcClient,
       tokenMapping: mcUSDC,
@@ -151,7 +147,7 @@ export const useInterchain = () => {
       data: encodeFunctionData({
         abi: TOKEN_ABI,
         functionName: "approve",
-        args: [STREAMFUND_ADDRESS, adjustedAmount],
+        args: [STREAMFUND_ADDRESS, amount],
       }),
     });
 
@@ -161,7 +157,7 @@ export const useInterchain = () => {
       data: encodeFunctionData({
         abi: STREAMFUND_ABI,
         functionName: "supportWithToken",
-        args: [destination, tokenAddress, adjustedAmount, message],
+        args: [destination, tokenAddress, amount, message],
       }),
     });
 
@@ -260,10 +256,13 @@ export const useInterchain = () => {
   ) => {
     if (!klaster) return;
 
+    // create a variable adjustedAmount, this value is amount + 1% of amount
+    const adjustedAmount = value + BigInt(Math.ceil((Number(value) * 1) / 100));
+
     const data = rawTx({
       gasLimit: MAX_GAS_LIMIT,
       to: STREAMFUND_ADDRESS,
-      value: value,
+      value: adjustedAmount,
       data: encodeFunctionData({
         abi: STREAMFUND_ABI,
         functionName: "supportWithVideoETH",
@@ -291,23 +290,36 @@ export const useInterchain = () => {
     }
   };
 
-  const videoSupportToken = async (
+  const videoSupportWithToken = async (
     destination: Address,
     videoId: Address,
-    message: string,
-    value: bigint,
-    tokenAddress: Address
+    tokenAddress: Address,
+    amount: bigint,
+    message: string
   ) => {
     if (!klaster) return;
 
-    const data = rawTx({
+    // create a variable adjustedAmount, this value is amount + 1% of amount
+    const adjustedAmount =
+      amount + BigInt(Math.round((Number(amount) * 1) / 100));
+
+    const tokenApproval = rawTx({
+      gasLimit: MAX_GAS_LIMIT,
+      to: tokenAddress,
+      data: encodeFunctionData({
+        abi: TOKEN_ABI,
+        functionName: "approve",
+        args: [STREAMFUND_ADDRESS, adjustedAmount],
+      }),
+    });
+
+    const sendToken = rawTx({
       gasLimit: MAX_GAS_LIMIT,
       to: STREAMFUND_ADDRESS,
-      value: value,
       data: encodeFunctionData({
         abi: STREAMFUND_ABI,
         functionName: "supportWithVideo",
-        args: [destination, videoId, tokenAddress, value, message],
+        args: [destination, videoId, tokenAddress, adjustedAmount, message],
       }),
     });
 
@@ -318,7 +330,7 @@ export const useInterchain = () => {
         steps: [
           {
             chainId: sepolia.id,
-            txs: [data],
+            txs: [tokenApproval, sendToken],
           },
         ],
       });
@@ -371,7 +383,7 @@ export const useInterchain = () => {
     supportWithToken,
     withdrawEthToAddress,
     videoSupportEth,
-    videoSupportToken,
+    videoSupportWithToken,
     updateLiveAdsPrice,
   };
 };

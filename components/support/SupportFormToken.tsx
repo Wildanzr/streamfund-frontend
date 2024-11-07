@@ -183,8 +183,9 @@ export default function SupportFormToken({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!soc) return;
-    const amountParsed =
-      stringToNumber(values.amount) * 10 ** tokenInfo.decimals;
+    const amountParsed = Math.ceil(
+      stringToNumber(values.amount) * 10 ** tokenInfo.decimals
+    );
     const currentBalance =
       tokenInfo.symbol === "ETH"
         ? Number(unifiedNative[0].unified)

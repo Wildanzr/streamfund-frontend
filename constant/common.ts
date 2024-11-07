@@ -7,7 +7,7 @@ import {
 import { defineChain } from "@particle-network/connectkit/chains";
 
 export const VIDEO_NAMES = ["Bird Pack", "Dripping Coin", "Fireworks"];
-export const STREAMFUND_ADDRESS = "0xcaFcAF4Aa0949dA2d3D3b303291c951301B75821";
+export const STREAMFUND_ADDRESS = "0x47b5663245523e49762b3De8776Fc24d5b0A7d88";
 export const BASENAMES_ADDRESS = "0x03c4738Ee98aE44591e1A4A4F3CaB6641d95DD9a";
 export const NATIVE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const SUPPORT_OPTIONS = [1, 1.5, 3, 5, 10];

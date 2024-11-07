@@ -53,7 +53,7 @@ const formSchema = z.object({
   token: z.string(),
   amount: z.string(),
   videoId: z.string(),
-  message: z.string(),
+  message: z.string().min(1),
 });
 
 export default function SupportFormVideo({
@@ -63,7 +63,7 @@ export default function SupportFormVideo({
 }: SupportFormVideoProps) {
   const publicClient = usePublicClient();
   const { toast } = useToast();
-  const { videoSupportEth } = useInterchain();
+  const { videoSupportEth, videoSupportWithToken } = useInterchain();
   const { status, address, chain, isConnected } = useAccount();
   const { unifiedBalances, unifiedNative, soc } = useKlaster({
     address,
@@ -179,8 +179,9 @@ export default function SupportFormVideo({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!soc) return;
-    const amountParsed =
-      stringToNumber(values.amount) * 10 ** tokenInfo.decimals;
+    const amountParsed = Math.ceil(
+      stringToNumber(values.amount) * 10 ** tokenInfo.decimals
+    );
     const currentBalance =
       tokenInfo.symbol === "ETH"
         ? Number(unifiedNative[0].unified)
@@ -209,7 +210,13 @@ export default function SupportFormVideo({
           BigInt(amountParsed)
         );
       } else {
-        console.log("With USDC");
+        itxHash = await videoSupportWithToken(
+          streamer as Address,
+          values.videoId as Address,
+          values.token as Address,
+          BigInt(amountParsed),
+          values.message
+        );
       }
 
       if (itxHash) {

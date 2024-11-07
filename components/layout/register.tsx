@@ -14,19 +14,6 @@ const Register = () => {
   const { toast } = useToast();
   const { registerAsStreamer } = useInterchain();
   const [isRegistering, setIsRegistering] = useState(false);
-  const RELOAD_TIME = 10 * 1000; // 10 seconds
-
-  const handlePostAction = () => {
-    toast({
-      title: "Transaction confirmed",
-      description: "Please wait for your profile to be created",
-      variant: "success",
-    });
-
-    setTimeout(() => {
-      window.location.reload();
-    }, RELOAD_TIME);
-  };
 
   const handleRegister = async () => {
     if (!address) return;
@@ -54,10 +41,6 @@ const Register = () => {
           />
         ),
       });
-
-      // wait for 30 seconds for the transaction to be confirmed
-      await new Promise((resolve) => setTimeout(resolve, 30 * 1000));
-      handlePostAction();
     } catch (error) {
       console.error(error);
       toast({
