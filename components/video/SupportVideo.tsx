@@ -54,7 +54,7 @@ const SupportVideo = (props: SupportVideo) => {
   useSocketEvent<ListenSupportResponse>(socket, "support", {
     onMessage: async (message) => {
       // SKIP IF NOT VIDEO SUPPORT
-      if (newSupport.data.type !== SupportType.Video) return;
+      if (message.data.type !== SupportType.Video) return;
 
       console.log("Message", message);
       setNewSupport({

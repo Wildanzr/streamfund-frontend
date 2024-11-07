@@ -291,6 +291,46 @@ export const useInterchain = () => {
     }
   };
 
+  const videoSupportToken = async (
+    destination: Address,
+    videoId: Address,
+    message: string,
+    value: bigint,
+    tokenAddress: Address
+  ) => {
+    if (!klaster) return;
+
+    const data = rawTx({
+      gasLimit: MAX_GAS_LIMIT,
+      to: STREAMFUND_ADDRESS,
+      value: value,
+      data: encodeFunctionData({
+        abi: STREAMFUND_ABI,
+        functionName: "supportWithVideo",
+        args: [destination, videoId, tokenAddress, value, message],
+      }),
+    });
+
+    try {
+      const acc = klaster.account.getAddress(sepolia.id) as Address;
+      const tx = await klaster.getQuote({
+        feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
+        steps: [
+          {
+            chainId: sepolia.id,
+            txs: [data],
+          },
+        ],
+      });
+
+      const signature = (await signItxMessage(acc, tx.itxHash)) as string;
+      const result = await klaster.execute(tx, signature);
+      return result.itxHash;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const updateLiveAdsPrice = async (amount: number) => {
     if (!klaster) return;
 
@@ -331,6 +371,7 @@ export const useInterchain = () => {
     supportWithToken,
     withdrawEthToAddress,
     videoSupportEth,
-    updateLiveAdsPrice
+    videoSupportToken,
+    updateLiveAdsPrice,
   };
 };
