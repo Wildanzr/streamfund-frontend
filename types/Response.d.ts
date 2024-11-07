@@ -22,6 +22,7 @@ declare global {
     price: number;
     link: string;
     thumbnail: string;
+    name?: string
   }
 
   interface TokenResponse {

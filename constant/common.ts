@@ -138,17 +138,17 @@ export const AVAILABLE_VIDEO = [
   {
     name: "Bird Pack",
     value: 5,
-    src: "/videos/video-1.mp4",
+    link: "/videos/video-1.mp4",
   },
   {
     name: "Dripping Coin",
     value: 10,
-    src: "/videos/video-2.mp4",
+    link: "/videos/video-2.mp4",
   },
   {
     name: "Fireworks",
     value: 25,
-    src: "/videos/video-3.mp4",
+    link: "/videos/video-3.mp4",
   },
 ] as unknown as Video[];
 

@@ -321,7 +321,7 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
               font={watchedValues.font}
               sender="0xxx"
               videoName={AVAILABLE_VIDEO[0].name}
-              src={AVAILABLE_VIDEO[0].src}
+              src={AVAILABLE_VIDEO[0].link}
               mainColor={watchedValues.mainColor}
               secondColor={watchedValues.secondColor}
               backgroundColor={watchedValues.backgroundColor}

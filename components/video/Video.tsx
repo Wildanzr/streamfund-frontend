@@ -6,7 +6,7 @@ interface VideoProps {
   textSize: string;
   font: string;
   effect: string;
-  videoName: string;
+  videoName?: string;
   src: string;
   mainColor: string;
   secondColor: string;
@@ -55,7 +55,7 @@ const Video = ({
           segments={[
             { text: sender, isMain: true },
             { text: " sent " },
-            { text: `${videoName}`, isMain: true },
+            { text: `${videoName ? videoName : "Video"}`, isMain: true },
             { text: " to you" },
           ]}
           type={effect as never}
