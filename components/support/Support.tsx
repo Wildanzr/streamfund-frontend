@@ -9,11 +9,12 @@ import {
   CardDescription,
   CardContent,
 } from "../ui/card";
-import { CoinsIcon, VideoIcon } from "lucide-react";
+import { CoinsIcon, MegaphoneIcon, VideoIcon } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import SupportFormToken from "./SupportFormToken";
 import Unauthenticated from "../layout/unauthenticated";
 import SupportFormVideo from "./SupportFormVideo";
+import SupportFormAds from "./SupportFormAds";
 interface SupportProps {
   tokens: Token[];
   streamer: string;
@@ -50,7 +51,7 @@ export default function Support({ tokens, streamer, videos }: SupportProps) {
                 onValueChange={setActiveTab}
                 className="w-full h-full"
               >
-                <TabsList className="grid w-full h-full grid-cols-2 mb-6 bg-transparent text-white gap-x-2">
+                <TabsList className="grid w-full h-full grid-cols-3 mb-6 bg-transparent text-white gap-x-2">
                   <TabsTrigger
                     value="tokens"
                     className="flex flex-col items-center py-2"
@@ -68,13 +69,28 @@ export default function Support({ tokens, streamer, videos }: SupportProps) {
                     <VideoIcon className="h-5 w-5" />
                     <div className="hidden sm:block">Videos</div>
                   </TabsTrigger>
+
+                  <TabsTrigger
+                    value="ads"
+                    className="flex flex-col items-center py-2"
+                    onClick={() => setActiveTab("ads")}
+                  >
+                    <MegaphoneIcon className="h-5 w-5" />
+                    <div className="hidden sm:block">Ads</div>
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
 
               {activeTab === "tokens" ? (
                 <SupportFormToken tokens={tokens} streamer={streamer} />
+              ) : activeTab === "videos" ? (
+                <SupportFormVideo
+                  videos={videos}
+                  tokens={tokens}
+                  streamer={streamer}
+                />
               ) : (
-                <SupportFormVideo videos={videos} tokens={tokens} streamer={streamer} />
+                <SupportFormAds tokens={tokens} streamer={streamer} />
               )}
             </CardContent>
           </Card>
