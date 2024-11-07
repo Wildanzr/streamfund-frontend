@@ -25,19 +25,13 @@ import {
   FormMessage,
 } from "../ui/form";
 import Loader from "../shared/Loader";
-import {
-  Address,
-  formatEther,
-  formatUnits,
-  parseEther,
-  parseUnits,
-} from "viem";
+import { Address, formatEther, formatUnits } from "viem";
 import {
   NATIVE_ADDRESS,
   STREAMFUND_ADDRESS,
   SUPPORT_OPTIONS,
 } from "@/constant/common";
-import { displayFormatter } from "@/lib/utils";
+import { displayFormatter, stringToNumber } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
 import {
   TooltipProvider,
@@ -83,7 +77,7 @@ export default function SupportFormToken({
   });
   const { toast } = useToast();
   const { supportWithEth, supportWithToken } = useInterchain();
-  const { data, refetch } = useBalance({
+  const { data } = useBalance({
     address: address as Address,
   });
   const [quickAmount, setQuickAmount] = useState(0);
@@ -119,16 +113,19 @@ export default function SupportFormToken({
     [tokens]
   );
 
-  const readAllowedTokenPrice = async (token: Address) => {
-    const result = await publicClient?.readContract({
-      abi: STREAMFUND_ABI,
-      address: STREAMFUND_ADDRESS,
-      functionName: "getAllowedTokenPrice",
-      args: [token],
-    });
+  const readAllowedTokenPrice = useCallback(
+    async (token: Address) => {
+      const result = await publicClient?.readContract({
+        abi: STREAMFUND_ABI,
+        address: STREAMFUND_ADDRESS,
+        functionName: "getAllowedTokenPrice",
+        args: [token],
+      });
 
-    return result ? Number(result[0]) / 10 ** (Number(result[1]) ?? 18) : 0;
-  };
+      return result ? Number(result[0]) / 10 ** (Number(result[1]) ?? 18) : 0;
+    },
+    [publicClient]
+  );
 
   const handleFetchingBalance = useCallback(
     async (token: string) => {
@@ -170,7 +167,7 @@ export default function SupportFormToken({
         setQuickAmount(0);
       }
     },
-    [address, data?.value, form, getTokenInfo, refetch]
+    [address, data?.value, form, getTokenInfo, readAllowedTokenPrice]
   );
 
   const handleQuickSupport = useCallback(
@@ -186,83 +183,42 @@ export default function SupportFormToken({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!soc) return;
-    const amountParsed = Number(values.amount);
+    const amountParsed =
+      stringToNumber(values.amount) * 10 ** tokenInfo.decimals;
+    const currentBalance =
+      tokenInfo.symbol === "ETH"
+        ? Number(unifiedNative[0].unified)
+        : Number(unifiedBalances[0].unified.balance);
 
-    // // SUPPORT WITH NATIVE TOKEN
-    if (tokenInfo.symbol === "ETH") {
-      if (amountParsed > Number(formatEther(unifiedNative[0].unified))) {
-        toast({
-          title: "Insufficient balance",
-          description: "You don't have enough balance to support",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      try {
-        setIsSubmitting(true);
-        const itxHash = await supportWithEth(
-          streamer as Address,
-          form.getValues("message"),
-          parseEther(form.getValues("amount"))
-        );
-
-        toast({
-          title: "Interchain transaction submitted!",
-          action: (
-            <ToastTx
-              explorerLink={`https://explorer.klaster.io/details`}
-              explorerName="Klaster Explorer"
-              txHash={itxHash as Address}
-            />
-          ),
-        });
-        form.reset();
-        setQuickAmount(0);
-        setTokenInfo({
-          address: "",
-          balance: 0,
-          decimals: 0,
-          symbol: "",
-          allowance: 0,
-          currentPrice: 0,
-        });
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsSubmitting(false);
-      }
+    if (amountParsed > currentBalance) {
+      toast({
+        title: "Insufficient balance",
+        description: "You don't have enough balance to support",
+        variant: "destructive",
+      });
+      return;
     }
 
-    // SUPORT WITH ERC20 TOKEN
-    else {
-      if (
-        amountParsed >
-        Number(
-          formatUnits(
-            unifiedBalances[0].unified.balance,
-            unifiedBalances[0].unified.decimals
-          )
-        )
-      ) {
-        toast({
-          title: "Insufficient balance",
-          description: "You don't have enough balance to support",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      try {
-        setIsSubmitting(true);
-        const itxHash = await supportWithToken(
+    try {
+      setIsSubmitting(true);
+      let itxHash: string | undefined = undefined;
+      if (tokenInfo.symbol === "ETH") {
+        itxHash = await supportWithEth(
+          streamer as Address,
+          form.getValues("message"),
+          BigInt(amountParsed)
+        );
+      } else {
+        itxHash = await supportWithToken(
           unifiedBalances[0],
           streamer as Address,
           tokenInfo.address as Address,
           form.getValues("message"),
-          parseUnits(form.getValues("amount"), tokenInfo.decimals)
+          BigInt(amountParsed)
         );
+      }
 
+      if (itxHash) {
         toast({
           title: "Interchain transaction submitted!",
           action: (
@@ -283,11 +239,11 @@ export default function SupportFormToken({
           allowance: 0,
           currentPrice: 0,
         });
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsSubmitting(false);
       }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

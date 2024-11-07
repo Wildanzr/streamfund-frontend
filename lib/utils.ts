@@ -107,3 +107,14 @@ export const formatDate = (date: Date) => {
   date = new Date(date);
   return format(date, "d MMMM yyyy, h:mm a");
 };
+
+export const stringToNumber = (value: string): number => {
+  const cleanedValue = value.replace(/,/g, "");
+  const result = parseFloat(cleanedValue);
+
+  if (isNaN(result)) {
+    throw new Error(`Invalid number: ${value}`);
+  }
+
+  return result;
+};

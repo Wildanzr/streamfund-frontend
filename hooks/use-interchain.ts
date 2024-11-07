@@ -129,8 +129,9 @@ export const useInterchain = () => {
      * 3. Support with token
      */
 
-    // create a variable adjustedAmount, this value is amount + 1% of amount
-    const adjustedAmount = amount + BigInt((Number(amount) * 1.5) / 100);
+    // create a variable adjustedAmount, this value is amount + 1.5% of amount
+    const adjustedAmount =
+      amount + BigInt(Math.ceil((Number(amount) * 1.5) / 100));
 
     console.log("Klaster", klaster);
     const bridging = await encodeBridgingOps({
