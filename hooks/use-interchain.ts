@@ -470,6 +470,99 @@ export const useInterchain = () => {
     }
   };
 
+  const liveAdsWithEth = async (
+    destination: Address,
+    message: string,
+    value: bigint
+  ) => {
+    if (!klaster) return;
+
+    // create a variable adjustedAmount, this value is amount + 1% of amount
+    const adjustedAmount = value + BigInt(Math.ceil((Number(value) * 1) / 100));
+
+    const data = rawTx({
+      gasLimit: MAX_GAS_LIMIT,
+      to: STREAMFUND_ADDRESS,
+      value: adjustedAmount,
+      data: encodeFunctionData({
+        abi: STREAMFUND_ABI,
+        functionName: "liveAdsWithETH",
+        args: [destination, message],
+      }),
+    });
+
+    try {
+      const acc = klaster.account.getAddress(sepolia.id) as Address;
+      const tx = await klaster.getQuote({
+        feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
+        steps: [
+          {
+            chainId: sepolia.id,
+            txs: [data],
+          },
+        ],
+      });
+
+      const signature = (await signItxMessage(acc, tx.itxHash)) as string;
+      const result = await klaster.execute(tx, signature);
+      return result.itxHash;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const liveAdsWithToken = async (
+    destination: Address,
+    tokenAddress: Address,
+    amount: bigint,
+    message: string
+  ) => {
+    if (!klaster) return;
+
+    // create a variable adjustedAmount, this value is amount + 1% of amount
+    const adjustedAmount =
+      amount + BigInt(Math.round((Number(amount) * 1) / 100));
+
+    const tokenApproval = rawTx({
+      gasLimit: MAX_GAS_LIMIT,
+      to: tokenAddress,
+      data: encodeFunctionData({
+        abi: TOKEN_ABI,
+        functionName: "approve",
+        args: [STREAMFUND_ADDRESS, adjustedAmount],
+      }),
+    });
+
+    const sendToken = rawTx({
+      gasLimit: MAX_GAS_LIMIT,
+      to: STREAMFUND_ADDRESS,
+      data: encodeFunctionData({
+        abi: STREAMFUND_ABI,
+        functionName: "liveAdsWithToken",
+        args: [destination, tokenAddress, adjustedAmount, message],
+      }),
+    });
+
+    try {
+      const acc = klaster.account.getAddress(sepolia.id) as Address;
+      const tx = await klaster.getQuote({
+        feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
+        steps: [
+          {
+            chainId: sepolia.id,
+            txs: [tokenApproval, sendToken],
+          },
+        ],
+      });
+
+      const signature = (await signItxMessage(acc, tx.itxHash)) as string;
+      const result = await klaster.execute(tx, signature);
+      return result.itxHash;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
     registerAsStreamer,
     supportWithEth,
@@ -480,5 +573,7 @@ export const useInterchain = () => {
     adsSupportEth,
     adsSupportWithToken,
     updateLiveAdsPrice,
+    liveAdsWithEth,
+    liveAdsWithToken,
   };
 };

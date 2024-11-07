@@ -51,7 +51,7 @@ const formSchema = z.object({
   streamer: z.string(),
   token: z.string(),
   amount: z.string(),
-  message: z.string(),
+  message: z.string().min(1),
 });
 
 export default function SupportFormAds({
@@ -68,7 +68,7 @@ export default function SupportFormAds({
     chain,
   });
   const { toast } = useToast();
-  const { supportWithEth, supportWithToken } = useInterchain();
+  const { liveAdsWithEth, liveAdsWithToken } = useInterchain();
   const { data } = useBalance({
     address: address as Address,
   });
@@ -182,18 +182,17 @@ export default function SupportFormAds({
       setIsSubmitting(true);
       let itxHash: string | undefined = undefined;
       if (tokenInfo.symbol === "ETH") {
-        itxHash = await supportWithEth(
+        itxHash = await liveAdsWithEth(
           streamer as Address,
-          form.getValues("message"),
+          values.message,
           BigInt(amountParsed)
         );
       } else {
-        itxHash = await supportWithToken(
-          unifiedBalances[0],
+        itxHash = await liveAdsWithToken(
           streamer as Address,
           tokenInfo.address as Address,
-          form.getValues("message"),
-          BigInt(amountParsed)
+          BigInt(amountParsed),
+          values.message
         );
       }
 
@@ -267,7 +266,7 @@ export default function SupportFormAds({
                         {unifiedNative[0].symbol}
                       </div>
                     ) : (
-                      <Loader />
+                      <Loader size="20" />
                     )
                   ) : unifiedBalances[0] ? (
                     <div>
@@ -280,7 +279,7 @@ export default function SupportFormAds({
                       {unifiedBalances[0].symbol}
                     </div>
                   ) : (
-                    <Loader />
+                    <Loader size="20" />
                   )}
                 </div>
               )}
