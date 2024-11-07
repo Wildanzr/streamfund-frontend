@@ -1,4 +1,5 @@
 // import Video from "@/components/video/Video";
+import SupportVideo from "@/components/video/SupportVideo";
 import { generateServerSignature } from "@/lib/server";
 import { Metadata } from "next";
 import React from "react";
@@ -62,7 +63,7 @@ const VideoPage = async ({ searchParams }: URLProps) => {
     return <div>Invalid Stream Key</div>;
   }
 
-  url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/vd?streamkey=${streamkey}`;
+  url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/stream/video?streamkey=${streamkey}`;
   timestamp = Math.floor(Date.now() / 1000);
   headers = generateServerSignature({
     method: "GET",
@@ -77,13 +78,21 @@ const VideoPage = async ({ searchParams }: URLProps) => {
     },
   });
   const videoConfig = await reqVideoConfig.json();
-  // const videoData = videoConfig.data.config as VideoConfigResponse;
-
-  console.log(videoConfig);
+  const config = videoConfig.data.config as VideoConfigResponse;
 
   return (
     <div className="flex flex-col w-full h-full min-h-screen bg-transparent items-start justify-start">
       {/* VIDEO SUPPORT COMPONENT */}
+      <SupportVideo
+        effect={config.effect}
+        font={config.font}
+        mainColor={config.mainColor}
+        owner={config.streamer.address}
+        secondColor={config.secondColor}
+        backgroundColor={config.backgroundColor}
+        textSize={config.textSize.toString()}
+        streamkey={streamkey!}
+      />
     </div>
   );
 };

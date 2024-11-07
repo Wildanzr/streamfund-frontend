@@ -363,7 +363,7 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
             className="w-full bg-sunset text-midnight text-lg font-bold"
             onClick={() =>
               window.open(
-                `${process.env.NEXT_PUBLIC_HOST_URL}/widgets/alert?streamkey=${streamkey}`,
+                `${process.env.NEXT_PUBLIC_HOST_URL}/widgets/vd?streamkey=${streamkey}`,
                 "_blank"
               )
             }

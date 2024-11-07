@@ -58,6 +58,8 @@ const SupportAlert = (props: SupportAlert) => {
         },
       });
       setRenderKey((prev) => prev + 1);
+
+      if(newSupport.data.type)
       setIsVisible(true);
 
       // play the sound via clicking button to avoid the browser's restriction
