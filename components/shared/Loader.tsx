@@ -21,7 +21,7 @@ const Loader = ({
     getLoader();
   }, []);
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="absolute w-full h-screen flex items-center justify-center">
       <l-tail-chase size={size} speed={speed} color={color} />
     </div>
   );

@@ -58,23 +58,17 @@ export function ManagementPlatformComponent() {
     retry: false,
   });
 
-  return (
-    <div className="flex flex-col w-full h-full items-center justify-center mx-auto bg-transparent text-white">
-      {!isConnected ? (
-        <Unauthenticated />
-      ) : isLoading || !soc ? (
-        <div className="flex z-10 flex-col w-full h-full min-h-screen items-center justify-center text-white">
-          <Loader />
-        </div>
-      ) : streamer ? (
-        <ManagementApp
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          streamer={streamer}
-        />
-      ) : (
-        <Register />
-      )}
-    </div>
+  return !isConnected ? (
+    <Unauthenticated />
+  ) : isLoading || !soc ? (
+    <Loader />
+  ) : streamer ? (
+    <ManagementApp
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      streamer={streamer}
+    />
+  ) : (
+    <Register />
   );
 }

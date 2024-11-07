@@ -1,7 +1,8 @@
 import React from "react";
+import Background from "@/components/layout/background";
 
 const LoadingPage = () => {
-  return <div>Loading...</div>;
+  return <Background />;
 };
 
 export default LoadingPage;
