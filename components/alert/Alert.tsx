@@ -1,6 +1,7 @@
 import React from "react";
 import TextAnimation from "../texts/animation";
 import { formatUnits } from "viem";
+import { SupportType } from "@/types/SupportType";
 
 interface AlertProps {
   sender: string;
@@ -14,6 +15,7 @@ interface AlertProps {
   backgroundColor: string;
   font: string;
   effect: string;
+  type: SupportType;
 }
 
 const Alert = ({
@@ -28,6 +30,7 @@ const Alert = ({
   mainColor,
   backgroundColor,
   font,
+  type: supportType
 }: AlertProps) => {
   return (
     <div
@@ -44,6 +47,7 @@ const Alert = ({
             { text: `${formatUnits(BigInt(amount), decimals)}`, isMain: true },
             { text: ` ${symbol}`, isMain: true },
             { text: " to you" },
+            { text: supportType.toString() }
           ]}
           type={effect as never}
           font={font}

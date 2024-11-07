@@ -1,6 +1,8 @@
 // Response.d.ts for API response global type declaration
 
-export {};
+import { SupportType } from "./SupportType";
+
+export { };
 
 declare global {
   interface CheckStreamKeyResponse {
@@ -40,6 +42,7 @@ declare global {
       from: string;
       message: string;
       symbol: string;
+      type: SupportType;
     };
   }
 

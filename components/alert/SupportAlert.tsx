@@ -7,6 +7,7 @@ import { useSocket, useSocketEvent } from "socket.io-react-hook";
 import useSound from "use-sound";
 import { Button } from "../ui/button";
 import { AVAILABLE_SOUNDS } from "@/constant/common";
+import { SupportType } from "@/types/SupportType";
 
 interface SupportAlert {
   owner: string;
@@ -38,6 +39,7 @@ const SupportAlert = (props: SupportAlert) => {
       from: "",
       message: "",
       symbol: "",
+      type: SupportType.Unknown
     },
   });
   const { sendMessage } = useSocketEvent<string>(socket, "listen-support");
@@ -52,6 +54,7 @@ const SupportAlert = (props: SupportAlert) => {
           from: trimAddress(message.data.from),
           message: message.data.message,
           symbol: message.data.symbol,
+          type: message.data.type
         },
       });
       setRenderKey((prev) => prev + 1);
@@ -106,6 +109,7 @@ const SupportAlert = (props: SupportAlert) => {
           amount={newSupport.data.amount}
           decimals={newSupport.data.decimals}
           symbol={newSupport.data.symbol}
+          type={newSupport.data.type}
         />
       </div>
     </>

@@ -40,6 +40,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { generateClientSignature } from "@/lib/client";
 import axios from "axios";
 import { useSocket, useSocketEvent } from "socket.io-react-hook";
+import { SupportType } from "@/types/SupportType";
 
 interface AlertFormProps {
   address: string;
@@ -359,6 +360,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
               owner={"This is the message from your viewers"}
               sender="0xxx"
               symbol="ETH"
+              type={SupportType.Normal}
             />
           </div>
         )}
@@ -381,7 +383,16 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
             onClick={handleTestAlert}
             className="w-full bg-green-500 text-white text-lg font-bold"
           >
-            {isTesting ? <Loader size="20" /> : "Test Alert"}
+            {isTesting ? <Loader size="20" /> : "Test Normal Alert"}
+          </Button>
+          <Button
+            type="button"
+            disabled={isTesting}
+            variant="secondary"
+            onClick={handleTestAlert}
+            className="w-full bg-yellow-600 text-white text-lg font-bold"
+          >
+            {isTesting ? <Loader size="20" /> : "Test Ads Alert"}
           </Button>
           <Button
             type="button"
