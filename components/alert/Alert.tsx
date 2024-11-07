@@ -41,14 +41,13 @@ const Alert = ({
         style={{ backgroundColor: backgroundColor }}
       >
         <TextAnimation
-          segments={[
+          segments={supportType == SupportType.Normal ? [
             { text: sender, isMain: true },
             { text: " support " },
             { text: `${formatUnits(BigInt(amount), decimals)}`, isMain: true },
             { text: ` ${symbol}`, isMain: true },
-            { text: " to you" },
-            { text: supportType.toString() }
-          ]}
+            { text: " to you" }
+          ] : [{ text: owner, isMain: true }]}
           type={effect as never}
           font={font}
           fontSize={Number(textSize)}
@@ -61,7 +60,8 @@ const Alert = ({
       </div>
       <div className="flex flex-col items-center justify-center min-h-10 bg-white rounded-b-[20px] shadow border">
         <p className={`text-black text-base p-5 text-center tracking-wider`}>
-          {owner}
+          {supportType == SupportType.Normal ?
+            owner : `${sender} support ${formatUnits(BigInt(amount), decimals)} ${symbol} to you.`}
         </p>
       </div>
     </div>

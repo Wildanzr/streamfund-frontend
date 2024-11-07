@@ -78,6 +78,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
   const { socket } = useSocket(HOST);
   const { sendMessage: sendTesting } = useSocketEvent<string>(socket, "test");
   const { sendMessage: sendReload } = useSocketEvent<string>(socket, "reload");
+  const [activeSupportType, setActiveSupportType] = useState(SupportType.Normal);
 
   const queryClient = useQueryClient();
   const updateMutation = useMutation({
@@ -149,11 +150,12 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
     alert("Copied to clipboard");
   };
 
-  const handleTestAlert = async () => {
+  const handleTest = async (type: SupportType) => {
     setIsTesting(true);
     try {
       const payload = {
         to: address,
+        type: type
       };
       sendTesting(JSON.stringify(payload));
     } catch (error) {
@@ -163,6 +165,16 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
         setIsTesting(false);
       }, 10000);
     }
+  }
+
+  const handleTestNormalAlert = async () => {
+    setActiveSupportType(SupportType.Normal)
+    await handleTest(SupportType.Normal)
+  };
+
+  const handleTestAdsAlert = async () => {
+    setActiveSupportType(SupportType.Ads)
+    await handleTest(SupportType.Ads)
   };
 
   useEffect(() => {
@@ -360,7 +372,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
               owner={"This is the message from your viewers"}
               sender="0xxx"
               symbol="ETH"
-              type={SupportType.Normal}
+              type={activeSupportType}
             />
           </div>
         )}
@@ -380,7 +392,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
             type="button"
             disabled={isTesting}
             variant="secondary"
-            onClick={handleTestAlert}
+            onClick={handleTestNormalAlert}
             className="w-full bg-green-500 text-white text-lg font-bold"
           >
             {isTesting ? <Loader size="20" /> : "Test Normal Alert"}
@@ -389,7 +401,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
             type="button"
             disabled={isTesting}
             variant="secondary"
-            onClick={handleTestAlert}
+            onClick={handleTestAdsAlert}
             className="w-full bg-yellow-600 text-white text-lg font-bold"
           >
             {isTesting ? <Loader size="20" /> : "Test Ads Alert"}
