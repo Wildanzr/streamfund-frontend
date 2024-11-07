@@ -46,7 +46,8 @@ const SupportAlert = (props: SupportAlert) => {
   useSocketEvent<ListenSupportResponse>(socket, "support", {
     onMessage: async (message) => {
       // SKIP IF NOT ALERT SUPPORT
-      if (newSupport.data.type !== SupportType.Normal) return;
+      if (message.data.type != SupportType.Normal &&
+        message.data.type != SupportType.Ads) return;
 
       console.log("Message", message);
       setNewSupport({
@@ -61,6 +62,9 @@ const SupportAlert = (props: SupportAlert) => {
         },
       });
       setRenderKey((prev) => prev + 1);
+
+      if (message.data.type)
+        setIsVisible(true);
 
       // play the sound via clicking button to avoid the browser's restriction
       document.getElementById("play-sound")?.click();
