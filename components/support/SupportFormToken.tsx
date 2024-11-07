@@ -56,7 +56,7 @@ const formSchema = z.object({
   streamer: z.string(),
   token: z.string(),
   amount: z.string(),
-  message: z.string(),
+  message: z.string().min(1),
 });
 
 export default function SupportFormToken({

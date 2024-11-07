@@ -80,7 +80,7 @@ export default function Support({
                     value="ads"
                     className="flex flex-col items-center py-2"
                     onClick={() => setActiveTab("ads")}
-                    // disabled={liveAdsPrice === 0}
+                    disabled={liveAdsPrice === 0}
                   >
                     <MegaphoneIcon className="h-5 w-5" />
                     <div className="hidden sm:block">Ads</div>
