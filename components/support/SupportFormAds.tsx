@@ -43,6 +43,7 @@ import { STREAMFUND_ABI } from "@/constant/streamfund-abi";
 
 interface SupportFormAdsProps {
   streamer: string;
+  liveAdsPrice: number;
   tokens: Token[];
 }
 
@@ -56,6 +57,7 @@ const formSchema = z.object({
 export default function SupportFormAds({
   tokens,
   streamer,
+  liveAdsPrice,
 }: SupportFormAdsProps) {
   const publicClient = usePublicClient();
   const { status, address, chain, isConnected } = useAccount();
@@ -292,7 +294,7 @@ export default function SupportFormAds({
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Amount (Minimum: $15)</FormLabel>
+              <FormLabel>Amount (Minimum: ${liveAdsPrice})</FormLabel>
               <FormControl>
                 <Input
                   type="number"

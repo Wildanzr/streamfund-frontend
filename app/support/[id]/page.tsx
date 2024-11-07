@@ -88,11 +88,31 @@ const SupportPage = async ({ params }: URLProps) => {
   const resVideos = await reqVideos.json();
   const videos = (await resVideos.data) as Video[];
 
+  const detailsUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/contracts/streamers?limit=10&q=${params.id}&page=1`;
+  headers = generateServerSignature({
+    method: "GET",
+    timestamp,
+    url: detailsUrl,
+  });
+  const reqDetails = await fetch(detailsUrl, {
+    method: "GET",
+    headers,
+    next: {
+      tags: ["streamer-details"],
+    },
+  });
+  const resDetails = await reqDetails.json();
+  const streamer = (await resDetails.data.streamer[0]) as QueryStreamerResponse;
   return (
     <div className="flex relative flex-col items-center justify-center w-full h-full min-h-screen">
       <Background />
       <Header />
-      <Support tokens={tokens} videos={videos} streamer={params.id} />
+      <Support
+        tokens={tokens}
+        videos={videos}
+        streamer={params.id}
+        liveAdsPrice={streamer.liveAdsPrice}
+      />
     </div>
   );
 };

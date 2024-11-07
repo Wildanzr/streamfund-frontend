@@ -41,10 +41,16 @@ import { generateClientSignature } from "@/lib/client";
 import axios from "axios";
 import { useSocket, useSocketEvent } from "socket.io-react-hook";
 import { SupportType } from "@/types/SupportType";
+import { Input } from "../ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { useInterchain } from "@/hooks/use-interchain";
+import ToastTx from "../shared/ToastTx";
+import { Address } from "viem";
 
 interface AlertFormProps {
   address: string;
   streamkey: string;
+  price: number;
   config: AlertConfigResponse;
 }
 
@@ -68,17 +74,22 @@ const formSchema = z.object({
   effect: z.string(),
 });
 
-const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
+const AlertForm = ({ config, streamkey, address, price }: AlertFormProps) => {
   const [, copy] = useCopyToClipboard();
+  const { toast } = useToast();
+  const { updateLiveAdsPrice } = useInterchain();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [alertKey, setAlertKey] = useState(0);
+  const [liveAdsPrice, setLiveAdsPrice] = useState(price);
 
   const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamKey=${streamkey}`;
   const { socket } = useSocket(HOST);
   const { sendMessage: sendTesting } = useSocketEvent<string>(socket, "test");
   const { sendMessage: sendReload } = useSocketEvent<string>(socket, "reload");
-  const [activeSupportType, setActiveSupportType] = useState(SupportType.Normal);
+  const [activeSupportType, setActiveSupportType] = useState(
+    SupportType.Normal
+  );
 
   const queryClient = useQueryClient();
   const updateMutation = useMutation({
@@ -155,7 +166,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
     try {
       const payload = {
         to: address,
-        type: type
+        type: type,
       };
       sendTesting(JSON.stringify(payload));
     } catch (error) {
@@ -165,16 +176,40 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
         setIsTesting(false);
       }, 10000);
     }
-  }
+  };
 
   const handleTestNormalAlert = async () => {
-    setActiveSupportType(SupportType.Normal)
-    await handleTest(SupportType.Normal)
+    setActiveSupportType(SupportType.Normal);
+    await handleTest(SupportType.Normal);
   };
 
   const handleTestAdsAlert = async () => {
-    setActiveSupportType(SupportType.Ads)
-    await handleTest(SupportType.Ads)
+    setActiveSupportType(SupportType.Ads);
+    await handleTest(SupportType.Ads);
+  };
+
+  const handleUpdateLiveAdsPrice = async () => {
+    setIsSubmitting(true);
+    try {
+      const itxHash = await updateLiveAdsPrice(liveAdsPrice);
+
+      if (itxHash) {
+        toast({
+          title: "Interchain transaction submitted!",
+          action: (
+            <ToastTx
+              explorerLink={`https://explorer.klaster.io/details`}
+              explorerName="Klaster Explorer"
+              txHash={itxHash as Address}
+            />
+          ),
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -188,6 +223,28 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6 w-full h-full overflow-hidden"
       >
+        <div className="flex flex-col space-y-3">
+          <p>Current live ads price : ${price}</p>
+          <div className="flex flex-row space-x-5 w-full h-full items-center justify-center">
+            <Input
+              type="number"
+              step={1}
+              min={0}
+              value={liveAdsPrice}
+              onChange={(e) => setLiveAdsPrice(Number(e.target.value))}
+              className="p-5 w-full"
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={isSubmitting}
+              onClick={handleUpdateLiveAdsPrice}
+              className="bg-aqua text-midnight text-lg font-bold"
+            >
+              UPDATE
+            </Button>
+          </div>
+        </div>
         {/* TEXT */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField

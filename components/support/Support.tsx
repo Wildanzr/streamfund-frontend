@@ -18,10 +18,16 @@ import SupportFormAds from "./SupportFormAds";
 interface SupportProps {
   tokens: Token[];
   streamer: string;
+  liveAdsPrice: number;
   videos: Video[];
 }
 
-export default function Support({ tokens, streamer, videos }: SupportProps) {
+export default function Support({
+  tokens,
+  streamer,
+  liveAdsPrice,
+  videos,
+}: SupportProps) {
   const { status } = useAccount();
   const [isClient, setIsClient] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("tokens");
@@ -74,6 +80,7 @@ export default function Support({ tokens, streamer, videos }: SupportProps) {
                     value="ads"
                     className="flex flex-col items-center py-2"
                     onClick={() => setActiveTab("ads")}
+                    // disabled={liveAdsPrice === 0}
                   >
                     <MegaphoneIcon className="h-5 w-5" />
                     <div className="hidden sm:block">Ads</div>
@@ -90,7 +97,11 @@ export default function Support({ tokens, streamer, videos }: SupportProps) {
                   streamer={streamer}
                 />
               ) : (
-                <SupportFormAds tokens={tokens} streamer={streamer} />
+                <SupportFormAds
+                  tokens={tokens}
+                  streamer={streamer}
+                  liveAdsPrice={liveAdsPrice}
+                />
               )}
             </CardContent>
           </Card>

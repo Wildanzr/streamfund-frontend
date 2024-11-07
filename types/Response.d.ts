@@ -2,7 +2,7 @@
 
 import { SupportType } from "./SupportType";
 
-export { };
+export {};
 
 declare global {
   interface CheckStreamKeyResponse {
@@ -109,6 +109,7 @@ declare global {
     _id: string;
     streamkey: string;
     address: string;
+    liveAdsPrice: number;
     supports: SupportResponse[];
   }
 }
