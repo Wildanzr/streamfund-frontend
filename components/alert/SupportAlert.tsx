@@ -39,12 +39,15 @@ const SupportAlert = (props: SupportAlert) => {
       from: "",
       message: "",
       symbol: "",
-      type: SupportType.Unknown
+      type: SupportType.Unknown,
     },
   });
   const { sendMessage } = useSocketEvent<string>(socket, "listen-support");
   useSocketEvent<ListenSupportResponse>(socket, "support", {
     onMessage: async (message) => {
+      // SKIP IF NOT ALERT SUPPORT
+      if (newSupport.data.type !== SupportType.Normal) return;
+
       console.log("Message", message);
       setNewSupport({
         message: "New Support",
@@ -54,13 +57,10 @@ const SupportAlert = (props: SupportAlert) => {
           from: trimAddress(message.data.from),
           message: message.data.message,
           symbol: message.data.symbol,
-          type: message.data.type
+          type: message.data.type,
         },
       });
       setRenderKey((prev) => prev + 1);
-
-      if(newSupport.data.type)
-      setIsVisible(true);
 
       // play the sound via clicking button to avoid the browser's restriction
       document.getElementById("play-sound")?.click();

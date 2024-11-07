@@ -4,6 +4,7 @@ import { trimAddress } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useSocket, useSocketEvent } from "socket.io-react-hook";
 import Video from "./Video";
+import { SupportType } from "@/types/SupportType";
 
 interface SupportVideo {
   owner: string;
@@ -30,7 +31,7 @@ const SupportVideo = (props: SupportVideo) => {
       from: "",
       message: "",
       symbol: "",
-      type: null,
+      type: SupportType.Unknown,
     },
   });
   const { sendMessage } = useSocketEvent<string>(socket, "listen-support");
@@ -45,7 +46,7 @@ const SupportVideo = (props: SupportVideo) => {
         from: "",
         message: "",
         symbol: "",
-        type: null,
+        type: SupportType.Unknown,
       },
     });
   };
@@ -53,7 +54,7 @@ const SupportVideo = (props: SupportVideo) => {
   useSocketEvent<ListenSupportResponse>(socket, "support", {
     onMessage: async (message) => {
       // SKIP IF NOT VIDEO SUPPORT
-      if (message.data.type && message.data.type !== 1) return;
+      if (newSupport.data.type !== SupportType.Video) return;
 
       console.log("Message", message);
       setNewSupport({
