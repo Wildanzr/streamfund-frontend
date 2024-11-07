@@ -381,7 +381,7 @@ const AlertForm = ({ config, streamkey, address }: AlertFormProps) => {
         <div className="flex flex-col items-start justify-start w-full h-full">
           <p className="font-play text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl text-white pb-1">
             {process.env.NEXT_PUBLIC_HOST_URL}
-            /widgets/mq?streamkey={streamkey}
+            /widgets/alert?streamkey={streamkey}
           </p>
           <div className="bg-white rounded-md w-full h-[1px]" />
         </div>
