@@ -69,10 +69,14 @@ const SupportAlert = (props: SupportAlert) => {
       // play the sound via clicking button to avoid the browser's restriction
       document.getElementById("play-sound")?.click();
 
+      let alertTimeout = 10000; /* timeout for normal */
+      if (message.data.type == SupportType.Ads) {
+        alertTimeout = 30000; /* timeout for ads */
+      }
       setTimeout(() => {
         stop();
         setIsVisible(false);
-      }, 10000);
+      }, alertTimeout);
     },
   });
 
