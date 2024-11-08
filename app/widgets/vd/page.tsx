@@ -80,10 +80,23 @@ const VideoPage = async ({ searchParams }: URLProps) => {
   const videoConfig = await reqVideoConfig.json();
   const config = videoConfig.data.config as VideoConfigResponse;
 
+  // VIDEOS
+  const videoUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/videos`;
+  const reqVideos = await fetch(videoUrl, {
+    method: "GET",
+    headers,
+    next: {
+      tags: ["videos"],
+    },
+  });
+  const resVideos = await reqVideos.json();
+  const videos = (await resVideos.data) as Video[];
+
   return (
     <div className="flex flex-col w-full h-full min-h-screen bg-transparent items-start justify-start">
       {/* VIDEO SUPPORT COMPONENT */}
       <SupportVideo
+        videos={videos}
         effect={config.effect}
         font={config.font}
         mainColor={config.mainColor}

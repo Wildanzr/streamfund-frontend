@@ -15,17 +15,20 @@ interface SupportVideo {
   font: string;
   effect: string;
   streamkey: string;
+  videos: Video[];
 }
 
 const SupportVideo = (props: SupportVideo) => {
   const HOST = `${process.env.NEXT_PUBLIC_BACKEND_URL}?streamKey=${props.streamkey}`;
   const { socket, connected } = useSocket(HOST);
   const [renderKey, setRenderKey] = useState(0);
+  const [src, setSrc] = useState<string>("");
   const [isVisible, setIsVisible] = useState(false);
   const [sended, setSended] = useState(false);
   const [newSupport, setNewSupport] = useState<ListenSupportResponse>({
     message: "",
     data: {
+      ref_id: "",
       amount: 0,
       decimals: 0,
       from: "",
@@ -36,30 +39,21 @@ const SupportVideo = (props: SupportVideo) => {
   });
   const { sendMessage } = useSocketEvent<string>(socket, "listen-support");
 
-  const handleVideoEnd = () => {
-    setIsVisible(false);
-    setNewSupport({
-      message: "",
-      data: {
-        amount: 0,
-        decimals: 0,
-        from: "",
-        message: "",
-        symbol: "",
-        type: SupportType.Unknown,
-      },
-    });
-  };
-
   useSocketEvent<ListenSupportResponse>(socket, "support", {
     onMessage: async (message) => {
       // SKIP IF NOT VIDEO SUPPORT
       if (message.data.type !== SupportType.Video) return;
 
+      const src =
+        props.videos?.find((video) => video.video_id === message.data.ref_id)
+          ?.link || "/videos/video-1.mp4";
+      setSrc(src);
+
       console.log("Message", message);
       setNewSupport({
         message: "New Support",
         data: {
+          ref_id: message.data.ref_id,
           amount: message.data.amount,
           decimals: message.data.decimals,
           from: trimAddress(message.data.from),
@@ -68,6 +62,7 @@ const SupportVideo = (props: SupportVideo) => {
           type: message.data.type,
         },
       });
+
       setRenderKey((prev) => prev + 1);
       setIsVisible(true);
     },
@@ -85,6 +80,26 @@ const SupportVideo = (props: SupportVideo) => {
   });
 
   useEffect(() => {
+    if (src !== "") {
+      setTimeout(() => {
+        setIsVisible(false);
+        setNewSupport({
+          message: "",
+          data: {
+            ref_id: "",
+            amount: 0,
+            decimals: 0,
+            from: "",
+            message: "",
+            symbol: "",
+            type: SupportType.Unknown,
+          },
+        });
+      }, 10000);
+    }
+  }, [src]);
+
+  useEffect(() => {
     if (connected && !sended) {
       console.log("send message");
       sendMessage();
@@ -95,13 +110,11 @@ const SupportVideo = (props: SupportVideo) => {
   return (
     <div className={`w-full h-full ${isVisible ? "flex" : "hidden"}`}>
       <Video
+        src={src}
         key={renderKey}
         {...props}
         videoName="Video"
-        src="/videos/video-1.mp4"
         sender={newSupport.data.from}
-        onVideoEnd={handleVideoEnd}
-        isVisible={isVisible}
       />
     </div>
   );

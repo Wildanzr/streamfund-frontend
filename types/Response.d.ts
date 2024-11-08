@@ -22,7 +22,7 @@ declare global {
     price: number;
     link: string;
     thumbnail: string;
-    name?: string
+    name?: string;
   }
 
   interface TokenResponse {
@@ -38,6 +38,7 @@ declare global {
 
   interface ListenSupportResponse extends BaseWebsocketResponse {
     data: {
+      ref_id: string;
       amount: number;
       decimals: number;
       from: string;
