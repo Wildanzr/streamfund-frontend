@@ -189,6 +189,7 @@ export default function SupportFormAds({
         );
       } else {
         itxHash = await liveAdsWithToken(
+          unifiedBalances[0],
           streamer as Address,
           tokenInfo.address as Address,
           BigInt(amountParsed),

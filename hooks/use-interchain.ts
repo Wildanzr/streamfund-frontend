@@ -281,6 +281,7 @@ export const useInterchain = () => {
   };
 
   const videoSupportWithToken = async (
+    tokenUnified: TokenUBalance,
     destination: Address,
     videoId: Address,
     tokenAddress: Address,
@@ -289,9 +290,27 @@ export const useInterchain = () => {
   ) => {
     if (!klaster) return;
 
-    // create a variable adjustedAmount, this value is amount + 1% of amount
+    // create a variable adjustedAmount, this value is amount + 1.5% of amount
     const adjustedAmount =
-      amount + BigInt(Math.round((Number(amount) * 1) / 100));
+      amount + BigInt(Math.round((Number(amount) * 1.5) / 100));
+    const bridgeAdjustedAmount =
+      amount + BigInt(Math.round((Number(amount) * 15) / 100));
+
+    const bridging = await encodeBridgingOps({
+      account: klaster.account,
+      amount: bridgeAdjustedAmount,
+      bridgePlugin: acrossBridgePlugin,
+      client: mcClient,
+      tokenMapping: mcUSDC,
+      destinationChainId: sepolia.id,
+      unifiedBalance: tokenUnified.unified,
+    });
+
+    const totalReceived =
+      tokenUnified.unified.breakdown[0].amount +
+      bridging.totalReceivedOnDestination;
+
+    console.log("Total received", totalReceived);
 
     const tokenApproval = rawTx({
       gasLimit: MAX_GAS_LIMIT,
@@ -299,31 +318,65 @@ export const useInterchain = () => {
       data: encodeFunctionData({
         abi: TOKEN_ABI,
         functionName: "approve",
-        args: [STREAMFUND_ADDRESS, adjustedAmount],
-      }),
-    });
-
-    const sendToken = rawTx({
-      gasLimit: MAX_GAS_LIMIT,
-      to: STREAMFUND_ADDRESS,
-      data: encodeFunctionData({
-        abi: STREAMFUND_ABI,
-        functionName: "supportWithVideo",
-        args: [destination, videoId, tokenAddress, adjustedAmount, message],
+        args: [STREAMFUND_ADDRESS, bridgeAdjustedAmount],
       }),
     });
 
     try {
+      const sepoliaBalance = tokenUnified.unified.breakdown.find(
+        (item) => item.chainId === sepolia.id
+      )!;
+      const isAmountSufficient = sepoliaBalance.amount > amount;
       const acc = klaster.account.getAddress(sepolia.id) as Address;
-      const tx = await klaster.getQuote({
-        feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
-        steps: [
-          {
-            chainId: sepolia.id,
-            txs: [tokenApproval, sendToken],
-          },
-        ],
-      });
+      let tx: QuoteResponse | undefined;
+
+      if (isAmountSufficient) {
+        console.log("Direct support with token");
+        const sendToken = rawTx({
+          gasLimit: MAX_GAS_LIMIT,
+          to: STREAMFUND_ADDRESS,
+          data: encodeFunctionData({
+            abi: STREAMFUND_ABI,
+            functionName: "supportWithVideo",
+            args: [destination, videoId, tokenAddress, adjustedAmount, message],
+          }),
+        });
+        tx = await klaster.getQuote({
+          feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
+          steps: [
+            {
+              chainId: sepolia.id,
+              txs: [tokenApproval, sendToken],
+            },
+          ],
+        });
+      } else {
+        console.log("Support with bridging");
+        const sendToken = rawTx({
+          gasLimit: MAX_GAS_LIMIT,
+          to: STREAMFUND_ADDRESS,
+          data: encodeFunctionData({
+            abi: STREAMFUND_ABI,
+            functionName: "supportWithVideo",
+            args: [
+              destination,
+              videoId,
+              tokenAddress,
+              bridgeAdjustedAmount,
+              message,
+            ],
+          }),
+        });
+        tx = await klaster.getQuote({
+          feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
+          steps: bridging.steps.concat([
+            {
+              chainId: sepolia.id,
+              txs: [tokenApproval, sendToken],
+            },
+          ]),
+        });
+      }
 
       const signature = (await signItxMessage(acc, tx.itxHash)) as string;
       const result = await klaster.execute(tx, signature);
@@ -409,6 +462,7 @@ export const useInterchain = () => {
   };
 
   const liveAdsWithToken = async (
+    tokenUnified: TokenUBalance,
     destination: Address,
     tokenAddress: Address,
     amount: bigint,
@@ -416,9 +470,27 @@ export const useInterchain = () => {
   ) => {
     if (!klaster) return;
 
-    // create a variable adjustedAmount, this value is amount + 1% of amount
+    // create a variable adjustedAmount, this value is amount + 1.5% of amount
     const adjustedAmount =
-      amount + BigInt(Math.round((Number(amount) * 1) / 100));
+      amount + BigInt(Math.round((Number(amount) * 1.5) / 100));
+    const bridgeAdjustedAmount =
+      amount + BigInt(Math.round((Number(amount) * 15) / 100));
+
+    const bridging = await encodeBridgingOps({
+      account: klaster.account,
+      amount: bridgeAdjustedAmount,
+      bridgePlugin: acrossBridgePlugin,
+      client: mcClient,
+      tokenMapping: mcUSDC,
+      destinationChainId: sepolia.id,
+      unifiedBalance: tokenUnified.unified,
+    });
+
+    const totalReceived =
+      tokenUnified.unified.breakdown[0].amount +
+      bridging.totalReceivedOnDestination;
+
+    console.log("Total received", totalReceived);
 
     const tokenApproval = rawTx({
       gasLimit: MAX_GAS_LIMIT,
@@ -426,31 +498,59 @@ export const useInterchain = () => {
       data: encodeFunctionData({
         abi: TOKEN_ABI,
         functionName: "approve",
-        args: [STREAMFUND_ADDRESS, adjustedAmount],
-      }),
-    });
-
-    const sendToken = rawTx({
-      gasLimit: MAX_GAS_LIMIT,
-      to: STREAMFUND_ADDRESS,
-      data: encodeFunctionData({
-        abi: STREAMFUND_ABI,
-        functionName: "liveAdsWithToken",
-        args: [destination, tokenAddress, adjustedAmount, message],
+        args: [STREAMFUND_ADDRESS, bridgeAdjustedAmount],
       }),
     });
 
     try {
+      const sepoliaBalance = tokenUnified.unified.breakdown.find(
+        (item) => item.chainId === sepolia.id
+      )!;
+      const isAmountSufficient = sepoliaBalance.amount > amount;
       const acc = klaster.account.getAddress(sepolia.id) as Address;
-      const tx = await klaster.getQuote({
-        feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
-        steps: [
-          {
-            chainId: sepolia.id,
-            txs: [tokenApproval, sendToken],
-          },
-        ],
-      });
+      let tx: QuoteResponse | undefined;
+
+      if (isAmountSufficient) {
+        console.log("Direct support with token");
+        const sendToken = rawTx({
+          gasLimit: MAX_GAS_LIMIT,
+          to: STREAMFUND_ADDRESS,
+          data: encodeFunctionData({
+            abi: STREAMFUND_ABI,
+            functionName: "liveAdsWithToken",
+            args: [destination, tokenAddress, adjustedAmount, message],
+          }),
+        });
+        tx = await klaster.getQuote({
+          feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
+          steps: [
+            {
+              chainId: sepolia.id,
+              txs: [tokenApproval, sendToken],
+            },
+          ],
+        });
+      } else {
+        console.log("Support with bridging");
+        const sendToken = rawTx({
+          gasLimit: MAX_GAS_LIMIT,
+          to: STREAMFUND_ADDRESS,
+          data: encodeFunctionData({
+            abi: STREAMFUND_ABI,
+            functionName: "liveAdsWithToken",
+            args: [destination, tokenAddress, adjustedAmount, message],
+          }),
+        });
+        tx = await klaster.getQuote({
+          feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
+          steps: bridging.steps.concat([
+            {
+              chainId: sepolia.id,
+              txs: [tokenApproval, sendToken],
+            },
+          ]),
+        });
+      }
 
       const signature = (await signItxMessage(acc, tx.itxHash)) as string;
       const result = await klaster.execute(tx, signature);

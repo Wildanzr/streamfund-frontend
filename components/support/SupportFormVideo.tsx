@@ -211,6 +211,7 @@ export default function SupportFormVideo({
         );
       } else {
         itxHash = await videoSupportWithToken(
+          unifiedBalances[0],
           streamer as Address,
           values.videoId as Address,
           values.token as Address,
