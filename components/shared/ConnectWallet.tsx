@@ -5,7 +5,7 @@ import React from "react";
 import { useAccount, useModal, useWallets } from "@particle-network/connectkit";
 import { CopyIcon, EllipsisVerticalIcon, LogOutIcon } from "lucide-react";
 import { Button } from "../ui/button";
-import { trimAddress } from "@/lib/utils";
+import { getExplorer, trimAddress } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -43,6 +43,7 @@ const ConnectWallet = () => {
   const wallet = useWallets();
   const truncatedAddress = klaster ? trimAddress(soc as string) : "";
 
+  const explorer = getExplorer();
   const handleCopyAddress = (address: string) => {
     copy(address);
     alert("Copied to clipboard");
@@ -101,7 +102,13 @@ const ConnectWallet = () => {
             <div className="flex flex-row items-center gap-2 justify-between">
               <div>Owner Address: </div>
               <div className="flex flex-row gap-1 items-center">
-                <div>{address && trimAddress(address as string)}</div>
+                <Link
+                  className="hover:underline cursor-pointer"
+                  href={`${explorer.url}/address/${address}`}
+                  target="_blank"
+                >
+                  {address && trimAddress(address as string)}
+                </Link>
                 <CopyIcon
                   onClick={() => handleCopyAddress(address as string)}
                   color="gray"
@@ -115,7 +122,13 @@ const ConnectWallet = () => {
               <div className="flex flex-row items-center gap-2 justify-between">
                 <div>Klaster Address: </div>
                 <div className="flex flex-row gap-1 items-center">
-                  <p>{trimAddress(soc)}</p>
+                  <Link
+                    className="hover:underline cursor-pointer"
+                    href={`${explorer.url}/address/${soc}`}
+                    target="_blank"
+                  >
+                    {trimAddress(soc)}
+                  </Link>
                   <CopyIcon
                     onClick={() => handleCopyAddress(soc)}
                     color="gray"

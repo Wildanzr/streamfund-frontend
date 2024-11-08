@@ -6,8 +6,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatDate, trimAddress } from "@/lib/utils";
+import { formatDate, getExplorer, trimAddress } from "@/lib/utils";
 import { CopyIcon } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 import { useCopyToClipboard } from "usehooks-ts";
 import { formatUnits } from "viem";
@@ -17,10 +18,13 @@ export default function SupportTable({
 }: {
   supports: SupportResponse[];
 }) {
+  const explorer = getExplorer();
   const [, copy] = useCopyToClipboard();
+
   const handleCopyAddress = (address: string) => {
-    copy(address);
-    alert("Copied to clipboard");
+    copy(address).then(() => {
+      alert("Address copied to clipboard");
+    });
   };
 
   return (
@@ -49,10 +53,17 @@ export default function SupportTable({
               </TableCell>
               <TableCell>
                 <div className="flex flex-row gap-2 items-center">
-                  <p>{trimAddress(support.from)}</p>
+                  <Link
+                    className="hover:underline"
+                    href={`${explorer.url}/address/${support.hash}`}
+                    target="_blank"
+                  >
+                    {trimAddress(support.from)}
+                  </Link>
+
                   <CopyIcon
                     onClick={() => handleCopyAddress(support.from)}
-                    color="gray"
+                    color="white"
                     size={14}
                     className="cursor-pointer"
                   />
@@ -65,10 +76,17 @@ export default function SupportTable({
               </TableCell>
               <TableCell>
                 <div className="flex flex-row gap-2 items-center">
-                  <p>{trimAddress(support.hash)}</p>
+                  <Link
+                    className="hover:underline"
+                    href={`${explorer.url}/tx/${support.hash}`}
+                    target="_blank"
+                  >
+                    {trimAddress(support.hash)}
+                  </Link>
+
                   <CopyIcon
-                    onClick={() => handleCopyAddress(support.hash)}
-                    color="gray"
+                    onClick={() => handleCopyAddress(support.from)}
+                    color="white"
                     size={14}
                     className="cursor-pointer"
                   />

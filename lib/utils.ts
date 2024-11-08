@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { HmacSHA256, enc } from "crypto-js";
 import qs from "query-string";
-import { base, baseSepolia } from "viem/chains";
+import { mainnet, sepolia } from "viem/chains";
 import { format } from "date-fns";
 
 interface UrlQueryProps {
@@ -88,8 +88,8 @@ export const getExplorer = () => {
   const NETWORK = process.env.NEXT_PUBLIC_NETWORK as "mainnet" | "testnet";
   const explorer =
     NETWORK === "mainnet"
-      ? base.blockExplorers.default
-      : baseSepolia.blockExplorers.default;
+      ? mainnet.blockExplorers.default
+      : sepolia.blockExplorers.default;
 
   return explorer;
 };
