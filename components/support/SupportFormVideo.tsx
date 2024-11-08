@@ -315,14 +315,15 @@ export default function SupportFormVideo({
         <FormField
           control={form.control}
           name="videoId"
-          render={() => (
+          render={({ field }) => (
             <div className="space-y-2 h-full w-full">
               <Label>Select Video</Label>
               <div className="flex flex-row gap-5 items-center pb-2 overflow-x-scroll">
                 {videos.map((video: Video, idx: number) => (
                   <VideoOption
-                    number={idx}
                     key={video.video_id}
+                    number={idx}
+                    value={field.value}
                     video={video}
                     tokenInfo={tokenInfo}
                     handleQuickSupport={handleQuickSupport}

@@ -1,10 +1,11 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import { VIDEO_NAMES } from "@/constant/common";
 
 interface VideoButtonProps {
   number: number;
   video: Video;
+  value: string;
   isFetchingBalance: boolean;
   isSubmitting: boolean;
   quickAmount: number;
@@ -22,6 +23,7 @@ interface VideoButtonProps {
 const VideoOption = ({
   number,
   video,
+  value,
   isFetchingBalance,
   isSubmitting,
   quickAmount,
@@ -36,6 +38,15 @@ const VideoOption = ({
       videoRef.current.play();
     }
   };
+
+  useEffect(() => {
+    if (value !== video.video_id) {
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      }
+    }
+  }, [value, video.video_id]);
 
   return (
     <Button
