@@ -153,16 +153,6 @@ export const useInterchain = () => {
       }),
     });
 
-    const supportToken = rawTx({
-      gasLimit: MAX_GAS_LIMIT,
-      to: STREAMFUND_ADDRESS,
-      data: encodeFunctionData({
-        abi: STREAMFUND_ABI,
-        functionName: "supportWithToken",
-        args: [destination, tokenAddress, adjustedAmount, message],
-      }),
-    });
-
     try {
       const sepoliaBalance = tokenUnified.unified.breakdown.find(
         (item) => item.chainId === sepolia.id
@@ -172,6 +162,17 @@ export const useInterchain = () => {
       let tx: QuoteResponse | undefined;
       if (isAmountSufficient) {
         console.log("Direct support with token");
+        console.log("With allowance", amount);
+        console.log("With amount", amount);
+        const supportToken = rawTx({
+          gasLimit: MAX_GAS_LIMIT,
+          to: STREAMFUND_ADDRESS,
+          data: encodeFunctionData({
+            abi: STREAMFUND_ABI,
+            functionName: "supportWithToken",
+            args: [destination, tokenAddress, amount, message],
+          }),
+        });
         tx = await klaster.getQuote({
           feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
           steps: [
@@ -183,6 +184,17 @@ export const useInterchain = () => {
         });
       } else {
         console.log("Support with bridging");
+        console.log("With allowance", amount);
+        console.log("With amount", adjustedAmount);
+        const supportToken = rawTx({
+          gasLimit: MAX_GAS_LIMIT,
+          to: STREAMFUND_ADDRESS,
+          data: encodeFunctionData({
+            abi: STREAMFUND_ABI,
+            functionName: "supportWithToken",
+            args: [destination, tokenAddress, adjustedAmount, message],
+          }),
+        });
         const iTX = buildItx({
           feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
           steps: bridging.steps.concat([
