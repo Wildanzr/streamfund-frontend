@@ -35,6 +35,7 @@ import axios from "axios";
 import { useSocket, useSocketEvent } from "socket.io-react-hook";
 import Video from "./Video";
 import { HexColorPicker } from "react-colorful";
+import { SupportType } from "@/types/SupportType";
 
 interface VideoFormProps {
   address: string;
@@ -139,11 +140,12 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
     alert("Copied to clipboard");
   };
 
-  const handleTestVideo = async () => {
+  const handleTestVideo = async (type: SupportType) => {
     setIsTesting(true);
     try {
       const payload = {
         to: address,
+        type,
       };
       sendTesting(JSON.stringify(payload));
     } catch (error) {
@@ -315,6 +317,7 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
         {watchedValues && (
           <div className="flex w-full h-full items-center justify-center">
             <Video
+              isVisible={true}
               key={videoKey}
               effect={watchedValues.effect as never}
               textSize={watchedValues.textSize.toString()}
@@ -344,7 +347,7 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
             type="button"
             disabled={isTesting}
             variant="secondary"
-            onClick={handleTestVideo}
+            onClick={() => handleTestVideo(SupportType.Video)}
             className="w-full bg-green-500 text-white text-lg font-bold"
           >
             {isTesting ? <Loader size="20" /> : "Test Video"}

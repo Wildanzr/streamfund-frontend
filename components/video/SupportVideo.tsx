@@ -101,6 +101,7 @@ const SupportVideo = (props: SupportVideo) => {
         src="/videos/video-1.mp4"
         sender={newSupport.data.from}
         onVideoEnd={handleVideoEnd}
+        isVisible={isVisible}
       />
     </div>
   );

@@ -12,6 +12,7 @@ interface VideoProps {
   secondColor: string;
   backgroundColor: string;
   enableLoop?: boolean;
+  isVisible: boolean;
   onVideoEnd?: () => void;
 }
 
@@ -25,6 +26,7 @@ const Video = ({
   mainColor,
   secondColor,
   backgroundColor,
+  isVisible,
   enableLoop,
   onVideoEnd,
 }: VideoProps) => {
@@ -38,7 +40,7 @@ const Video = ({
         <video
           className="w-full min-w-[400px] max-w-[800px] h-full"
           onEnded={onVideoEnd ? onVideoEnd : () => {}}
-          autoPlay
+          autoPlay={isVisible}
           loop={enableLoop ? true : false}
         >
           <source src={src} type="video/mp4" />

@@ -53,7 +53,7 @@ const VideoOption = ({
         <source src={video.link} type="video/mp4" />
       </video>
       <div className="text-white text-xs py-2">
-        Video {VIDEO_NAMES[number]} (${video.price})
+        {VIDEO_NAMES[number]} (${video.price})
       </div>
     </Button>
   );
