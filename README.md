@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StreamFund
 
-## Getting Started
+## Summary
 
-First, run the development server:
+**StreamFund** is designed to enhance the relationship between content creators on platforms like YouTube, TikTok, and Facebook and their audience. Unlike traditional donation tools, StreamFund provides real-time engagement, allowing viewers to send personalized messages that appear directly on the stream. By offering instant payouts, ease of setup, and seamless integration with OBS Studio, StreamFund aims to transform viewers into active supporters, creating meaningful connections and supporting streamers as they create content.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Overview
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### The Problem
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Streamers face several challenges:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Fragmented and Platform-Restricted Donations**: Each streaming platform has its own donation system, creating issues with fund consolidation and access.
+- **Limited Audience Engagement**: Existing platforms offer limited interaction, typically restricted to basic chat.
+- **Complex Setup Processes**: Many solutions are challenging to set up, making them impractical for streamers seeking simplicity.
 
-## Learn More
+### Our Solution
 
-To learn more about Next.js, take a look at the following resources:
+StreamFund provides:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Unified Donations**: Consolidates donations across platforms, eliminating the need to manage multiple donation accounts and enabling instant, direct payouts.
+- **Real-Time Viewer Interaction**: Allows viewers to send personalized messages and questions displayed live on the stream, deepening engagement.
+- **Simple Setup**: A seamless integration with OBS Studio/Streamlabs/other streaming apps through a stream key, allowing streamers to start using StreamFund with minimal setup.
+- **Stablecoin Donations**: Supports popular stablecoins (USDT, USDC, DAI) and ETH, providing a stable and accessible means for viewers to donate.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Why StreamFund?
 
-## Deploy on Vercel
+With StreamFund, we aim to eliminate the barriers between streamers and their audiences, providing a streamlined, transparent, and engaging way to support creators. Viewers become more than fans—they become partners, empowering creators to continue doing what they love.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Screenshots
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Here are some screenshots showcasing the StreamFund platform in action:
+
+- **Dashboard Overview**  
+  ![Dashboard Overview](/public/images/img1.png)
+
+- **Simple Setup with OBS Studio**  
+  ![OBS Studio Integration](/public/images/img2.png)
+
+- **Real-Time Viewer Interaction**  
+  ![Real-Time Interaction](/public/images/img2.jpg)
