@@ -129,7 +129,6 @@ export const useInterchain = () => {
      * 3. Support with token
      */
 
-    console.log("Klaster", klaster);
     const bridging = await encodeBridgingOps({
       account: klaster.account,
       amount: amount,
@@ -139,7 +138,10 @@ export const useInterchain = () => {
       destinationChainId: sepolia.id,
       unifiedBalance: tokenUnified.unified,
     });
-    console.log("Bridging", bridging);
+
+    const adjustedAmount =
+      tokenUnified.unified.breakdown[0].amount +
+      bridging.totalReceivedOnDestination;
 
     const tokenApproval = rawTx({
       gasLimit: MAX_GAS_LIMIT,
@@ -157,7 +159,7 @@ export const useInterchain = () => {
       data: encodeFunctionData({
         abi: STREAMFUND_ABI,
         functionName: "supportWithToken",
-        args: [destination, tokenAddress, amount, message],
+        args: [destination, tokenAddress, adjustedAmount, message],
       }),
     });
 
@@ -166,9 +168,6 @@ export const useInterchain = () => {
         (item) => item.chainId === sepolia.id
       )!;
       const isAmountSufficient = sepoliaBalance.amount > amount;
-      console.log("Sepolia Balance", sepoliaBalance.amount);
-      console.log("Requested Amount", amount);
-      console.log("isAmountSufficient", isAmountSufficient);
       const acc = klaster.account.getAddress(sepolia.id) as Address;
       let tx: QuoteResponse | undefined;
       if (isAmountSufficient) {
@@ -184,14 +183,6 @@ export const useInterchain = () => {
         });
       } else {
         console.log("Support with bridging");
-
-        const teee = bridging.steps.concat([
-          {
-            chainId: sepolia.id,
-            txs: [tokenApproval, supportToken],
-          },
-        ]);
-        console.log("bridging", teee);
         const iTX = buildItx({
           feeTx: klaster.encodePaymentFee(sepolia.id, "ETH"),
           steps: bridging.steps.concat([
@@ -206,7 +197,6 @@ export const useInterchain = () => {
       }
 
       const signature = (await signItxMessage(acc, tx.itxHash)) as string;
-      console.log("Signature", signature);
       const result = await klaster.execute(tx, signature);
       console.log("Result: ", result);
 
