@@ -110,6 +110,7 @@ const SupportVideo = (props: SupportVideo) => {
   return (
     <div className={`w-full h-full ${isVisible ? "flex" : "hidden"}`}>
       <Video
+        isVisible={isVisible}
         src={src}
         key={renderKey}
         {...props}

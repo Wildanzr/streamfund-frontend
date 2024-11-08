@@ -11,6 +11,7 @@ interface VideoProps {
   mainColor: string;
   secondColor: string;
   backgroundColor: string;
+  isVisible: boolean;
 }
 
 const Video = ({
@@ -23,6 +24,7 @@ const Video = ({
   mainColor,
   secondColor,
   backgroundColor,
+  isVisible,
 }: VideoProps) => {
   return (
     <div
@@ -34,8 +36,7 @@ const Video = ({
         <video
           className="w-full min-w-[400px] max-w-[800px] h-full"
           autoPlay={true}
-          
-          loop={true}
+          loop={isVisible}
         >
           <source src={src} type="video/mp4" />
         </video>

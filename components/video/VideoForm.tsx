@@ -317,6 +317,7 @@ const VideoForm = ({ config, streamkey, address }: VideoFormProps) => {
         {watchedValues && (
           <div className="flex w-full h-full items-center justify-center">
             <Video
+              isVisible={true}
               key={videoKey}
               effect={watchedValues.effect as never}
               textSize={watchedValues.textSize.toString()}
