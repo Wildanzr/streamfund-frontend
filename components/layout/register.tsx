@@ -54,8 +54,8 @@ const Register = () => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full min-h-screen items-center justify-center space-y-4">
-      <h3 className="font-play text-3xl font-bold">
+    <div className="flex flex-col w-full h-full text-white min-h-screen items-center justify-center space-y-6">
+      <h3 className="font-play text-3xl font-bold text-center px-4">
         Are you ready to start your journey with StreamFund? Register now!
       </h3>
       <Button
@@ -63,7 +63,7 @@ const Register = () => {
         disabled={isRegistering}
         className="flex bg-aqua font-play font-bold text-xl p-6 text-midnight hover:bg-aqua/80"
       >
-        {isRegistering ? <Loader /> : "Register Now"}
+        {isRegistering ? <Loader /> : "Register as Streamer"}
       </Button>
     </div>
   );
