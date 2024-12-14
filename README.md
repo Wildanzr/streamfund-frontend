@@ -4,7 +4,19 @@
 
 **StreamFund** is designed to enhance the relationship between content creators on platforms like YouTube, TikTok, and Facebook and their audience. Unlike traditional donation tools, StreamFund provides real-time engagement, allowing viewers to send personalized messages that appear directly on the stream. By offering instant payouts, ease of setup, and seamless integration with OBS Studio, StreamFund aims to transform viewers into active supporters, creating meaningful connections and supporting streamers as they create content.
 
-## Overview
+StreamFund provides instant payouts, no locking funds, and easy setup for streamers. With only a stream key, they can integrate StreamFund into tools like OBS Studio and start receiving donations seamlessly. It also has easy onboarding for the user through an account abstraction and offer execelent experience since it also enable the user to use unified assets that can bridge automaticalty over multiple chain.
+
+Through this app user can register as streamer and then configuring the streaming tools such as running text, QR code, support notification and share the support link directly or through a QR code.
+
+As for the supporter they will redirected to the support page after entering the link / scanning barcode shared by the streamer and can do various type of support such as notification support, video support, and ads support.
+
+## HOW THE BOUNTY IS INTEGRATED
+
+- Particle Network :
+  We're utilizing particle connect as WaaS in the project, making the onboarding process of the user much more easier since it's also supporting web2 OAuth such as from Google, X, Github and many more throught it's account abstraction feature.
+
+- Klaster SDK:
+  By utilizing Klaster SDK combined with Particle Connect, we're enabling the user to have the ability using a unified balanced of an ERC20 token. In this project we're using Native balance (ETH) & stable coin (USDC) as the currency to do a transaction.
 
 ### The Problem
 
