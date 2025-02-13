@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { HmacSHA256, enc } from "crypto-js";
 import qs from "query-string";
-import { base, baseSepolia } from "viem/chains";
+import { manta, mantaSepoliaTestnet } from "viem/chains";
 
 interface UrlQueryProps {
   params: string;
@@ -87,8 +87,8 @@ export const getExplorer = () => {
   const NETWORK = process.env.NEXT_PUBLIC_NETWORK as "mainnet" | "testnet";
   const explorer =
     NETWORK === "mainnet"
-      ? base.blockExplorers.default
-      : baseSepolia.blockExplorers.default;
+      ? manta.blockExplorers.default
+      : mantaSepoliaTestnet.blockExplorers.default;
 
   return explorer;
 };

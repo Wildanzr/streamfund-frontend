@@ -257,7 +257,7 @@ const RunningForm = ({ config, streamkey }: RunningFormProps) => {
             onClick={handleCopy}
             className="w-full bg-vivid text-midnight text-lg font-bold"
           >
-            Copy QR URL
+            Copy Marquee URL
           </Button>
           <Button
             type="button"
