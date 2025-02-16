@@ -137,16 +137,32 @@ export const readAllowance = async (address: Address, token: Address) => {
 
 export const readAllowedTokenPrice = async (token: Address) => {
   try {
-    const result = await publicClient.readContract({
-      abi: STREAMFUND_ABI,
-      address: STREAMFUND_ADDRESS,
-      functionName: "getAllowedTokenPrice",
-      args: [token],
-    });
+    const tokenAndPrice = [
+      {
+        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        price: 2698.1234,
+      },
+      {
+        address: "0xe38d35E5701dB10ae19373fDddE42925E698F69B",
+        price: 1,
+      },
+      {
+        address: "0xA5dd89e5369b2319d5CE2E742872bEf8B07344e4",
+        price: 0.9998,
+      },
+      {
+        address: "0x660D9f97cb2C014dc68e4aFb1Ca65F00eD45e886",
+        price: 0.9992,
+      },
+    ];
+    // const result = await publicClient.readContract({
+    //   abi: STREAMFUND_ABI,
+    //   address: STREAMFUND_ADDRESS,
+    //   functionName: "getAllowedTokenPrice",
+    //   args: [token],
+    // });
 
-    const inUSD = Number(result[0]) / 10 ** (Number(result[1]) ?? 18);
-
-    return inUSD;
+    return tokenAndPrice.find((t) => t.address === token)?.price || 0;
   } catch (error) {
     console.error(error);
     return 0;
